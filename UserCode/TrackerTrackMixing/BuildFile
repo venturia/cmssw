@@ -1,0 +1,10 @@
+<use name=boost>
+<use name=DataFormats/TrackReco>
+<use name=DataFormats/TrackerRecHit2D>
+<export>
+<use name=boost>
+    <lib name=UserCodeTrackerTrackMixing>
+    <use name=DataFormats/TrackReco>
+    <use name=DataFormats/TrackerRecHit2D>
+</export>
+
