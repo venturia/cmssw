@@ -1,0 +1,13 @@
+<use name="root"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="FWCore/ParameterSet"/>
+<use name="DataFormats/JetReco"/>
+<use name="DataFormats/VertexReco"/>
+<use name="DataFormats/TrackReco"/>
+<use name="DataFormats/BeamSpot"/>
+<use name="FWCore/PluginManager"/>
+<library file="*.cc" name = "TrackingPFGTrackJetsPlugins">
+	<flags EDM_PLUGIN="1"/>
+</library>
