@@ -1,0 +1,21 @@
+<use name="root"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/Utilities"/>
+<use name="FWCore/ServiceRegistry"/>
+<use name="FWCore/MessageLogger"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="DataFormats/DetId"/>
+<use name="DataFormats/TrajectorySeed"/>
+<use name="DataFormats/TrackReco"/>
+<use name="DataFormats/TrackerRecHit2D"/>
+<use name="TrackingTools/PatternTools"/>
+<use name="TrackingTools/TrajectoryState"/>
+<use name="TrackingTools/TransientTrackingRecHit"/>
+<use name="TrackingTools/Records"/>
+<use name="MagneticField/Records"/>
+<use name="MagneticField/Engine"/>
+<library file="*.cc" name="trackingTrackRecoMonitoringPlugins">
+	<flags EDM_PLUGIN="1"/>
+</library>
