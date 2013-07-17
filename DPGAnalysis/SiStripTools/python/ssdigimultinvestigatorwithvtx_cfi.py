@@ -2,7 +2,15 @@ import FWCore.ParameterSet.Config as cms
 
 ssdigimultinvestigatorwithvtx = cms.EDAnalyzer('MultiplicityInvestigator',
                                                vertexCollection = cms.InputTag("offlinePrimaryVertices"),
+                                               wantInvestHist = cms.bool(True),
                                                wantVtxCorrHist = cms.bool(True),
+                                               wantLumiCorrHist = cms.bool(False),
+                                               wantPileupCorrHist = cms.bool(False),
+                                               digiLumiCorrConfig = cms.PSet(lumiProducer=cms.InputTag("")),
+                                               digiPileupCorrConfig = cms.PSet(
+                                                                               pileupSummaryCollection=cms.InputTag(""),
+                                                                               useVisibleVertices = cms.bool(False)
+                                                                               ),
                                                digiVtxCorrConfig = cms.PSet(
     wantedSubDets = cms.untracked.VPSet(    
     cms.PSet(detSelection = cms.uint32(0),detLabel = cms.string("TK"),  binMax = cms.int32(9523712))
@@ -21,7 +29,8 @@ ssdigimultinvestigatorwithvtx = cms.EDAnalyzer('MultiplicityInvestigator',
                                                hitName = cms.untracked.string("digi"),
                                                multiplicityMap = cms.InputTag("ssdigimultprod"),
                                                numberOfBins = cms.untracked.int32(2000),   
-                                               orbitNbin = cms.untracked.int32(3600),   
+                                               maxLSBeforeRebin = cms.untracked.uint32(100),   
+                                               startingLSFraction = cms.untracked.uint32(4),   
                                                scaleFactor = cms.untracked.int32(100)
                                                )
 

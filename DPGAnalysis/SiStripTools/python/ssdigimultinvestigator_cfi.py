@@ -2,8 +2,16 @@ import FWCore.ParameterSet.Config as cms
 
 ssdigimultinvestigator = cms.EDAnalyzer('MultiplicityInvestigator',
                                         vertexCollection = cms.InputTag(""),
+                                        wantInvestHist = cms.bool(True),
                                         wantVtxCorrHist = cms.bool(False),
+                                        wantLumiCorrHist = cms.bool(False),
+                                        wantPileupCorrHist = cms.bool(False),
                                         digiVtxCorrConfig = cms.PSet(),
+                                        digiLumiCorrConfig = cms.PSet(lumiProducer=cms.InputTag("")),
+                                        digiPileupCorrConfig = cms.PSet(
+                                                                        pileupSummaryCollection=cms.InputTag(""),
+                                                                        useVisibleVertices = cms.bool(False)
+                                                                        ),
                               wantedSubDets = cms.untracked.VPSet(    
                                 cms.PSet(detSelection = cms.uint32(0),detLabel = cms.string("TK"),  binMax = cms.int32(9523712)),
                                 cms.PSet(detSelection = cms.uint32(3),detLabel = cms.string("TIB"), binMax = cms.int32(1787904)),
@@ -14,7 +22,8 @@ ssdigimultinvestigator = cms.EDAnalyzer('MultiplicityInvestigator',
                                          hitName = cms.untracked.string("digi"),
                                          multiplicityMap = cms.InputTag("ssdigimultprod"),
                                          numberOfBins = cms.untracked.int32(2000),   
-                                         orbitNbin = cms.untracked.int32(3600),   
+                                         maxLSBeforeRebin = cms.untracked.uint32(100),   
+                                         startingLSFraction = cms.untracked.uint32(4),   
                                          scaleFactor = cms.untracked.int32(100)
                                       )
 

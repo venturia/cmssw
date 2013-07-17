@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Venturi
 //         Created:  Mon Oct 27 17:37:53 CET 2008
-// $Id: MultiplicityInvestigator.cc,v 1.4 2011/02/02 11:05:50 venturia Exp $
+// $Id: MultiplicityInvestigator.cc,v 1.4 2011/12/11 09:59:11 venturia Exp $
 //
 //
 
@@ -41,6 +41,8 @@
 
 #include "DPGAnalysis/SiStripTools/interface/DigiInvestigatorHistogramMaker.h"
 #include "DPGAnalysis/SiStripTools/interface/DigiVertexCorrHistogramMaker.h"
+#include "DPGAnalysis/SiStripTools/interface/DigiLumiCorrHistogramMaker.h"
+#include "DPGAnalysis/SiStripTools/interface/DigiPileupCorrHistogramMaker.h"
 
 //
 // class decleration
@@ -61,12 +63,17 @@ private:
 
       // ----------member data ---------------------------
 
-  const bool _wantVtxCorrHist;
-  DigiInvestigatorHistogramMaker _digiinvesthmevent;
-  DigiVertexCorrHistogramMaker _digivtxcorrhmevent;
+  const bool m_wantInvestHist;
+  const bool m_wantVtxCorrHist;
+  const bool m_wantLumiCorrHist;
+  const bool m_wantPileupCorrHist;
+  DigiInvestigatorHistogramMaker m_digiinvesthmevent;
+  DigiVertexCorrHistogramMaker m_digivtxcorrhmevent;
+  DigiLumiCorrHistogramMaker m_digilumicorrhmevent;
+  DigiPileupCorrHistogramMaker m_digipileupcorrhmevent;
 
-  edm::InputTag _multiplicityMap;
-  edm::InputTag _vertexCollection;
+  edm::InputTag m_multiplicityMap;
+  edm::InputTag m_vertexCollection;
 
 };
 
@@ -82,18 +89,25 @@ private:
 // constructors and destructor
 //
 MultiplicityInvestigator::MultiplicityInvestigator(const edm::ParameterSet& iConfig):
-  //  _digiinvesthmevent(iConfig.getParameter<edm::ParameterSet>("digiInvestConfig")),  
-  _wantVtxCorrHist(iConfig.getParameter<bool>("wantVtxCorrHist")),
-  _digiinvesthmevent(iConfig),
-  _digivtxcorrhmevent(iConfig.getParameter<edm::ParameterSet>("digiVtxCorrConfig")),
-  _multiplicityMap(iConfig.getParameter<edm::InputTag>("multiplicityMap")),
-  _vertexCollection(iConfig.getParameter<edm::InputTag>("vertexCollection"))
+  //  m_digiinvesthmevent(iConfig.getParameter<edm::ParameterSet>("digiInvestConfig")),  
+  m_wantInvestHist(iConfig.getParameter<bool>("wantInvestHist")),
+  m_wantVtxCorrHist(iConfig.getParameter<bool>("wantVtxCorrHist")),
+  m_wantLumiCorrHist(iConfig.getParameter<bool>("wantLumiCorrHist")),
+  m_wantPileupCorrHist(iConfig.getParameter<bool>("wantPileupCorrHist")),
+  m_digiinvesthmevent(iConfig),
+  m_digivtxcorrhmevent(iConfig.getParameter<edm::ParameterSet>("digiVtxCorrConfig")),
+  m_digilumicorrhmevent(iConfig.getParameter<edm::ParameterSet>("digiLumiCorrConfig")),
+  m_digipileupcorrhmevent(iConfig.getParameter<edm::ParameterSet>("digiPileupCorrConfig")),
+  m_multiplicityMap(iConfig.getParameter<edm::InputTag>("multiplicityMap")),
+  m_vertexCollection(iConfig.getParameter<edm::InputTag>("vertexCollection"))
 {
    //now do what ever initialization is needed
 
 
-  _digiinvesthmevent.book("EventProcs");
-  if(_wantVtxCorrHist) _digivtxcorrhmevent.book("VtxCorr");
+  if(m_wantInvestHist)  m_digiinvesthmevent.book("EventProcs");
+  if(m_wantVtxCorrHist) m_digivtxcorrhmevent.book("VtxCorr");
+  if(m_wantLumiCorrHist) m_digilumicorrhmevent.book("LumiCorr");
+  if(m_wantPileupCorrHist) m_digipileupcorrhmevent.book("PileupCorr");
 
 }
 
@@ -118,16 +132,19 @@ MultiplicityInvestigator::analyze(const edm::Event& iEvent, const edm::EventSetu
   using namespace edm;
   
   Handle<std::map<unsigned int, int> > mults;
-  iEvent.getByLabel(_multiplicityMap,mults);
+  iEvent.getByLabel(m_multiplicityMap,mults);
   
-  _digiinvesthmevent.fill(iEvent.orbitNumber(),*mults);
+  if(m_wantInvestHist) m_digiinvesthmevent.fill(iEvent.orbitNumber(),*mults);
   
-  if(_wantVtxCorrHist) {
+  if(m_wantVtxCorrHist) {
     Handle<reco::VertexCollection> vertices;
-    iEvent.getByLabel(_vertexCollection,vertices);
+    iEvent.getByLabel(m_vertexCollection,vertices);
 
-    _digivtxcorrhmevent.fill(vertices->size(),*mults);
+    m_digivtxcorrhmevent.fill(iEvent,vertices->size(),*mults);
   }
+
+  if(m_wantLumiCorrHist) m_digilumicorrhmevent.fill(iEvent,*mults);
+  if(m_wantPileupCorrHist) m_digipileupcorrhmevent.fill(iEvent,*mults);
 
 }
 
@@ -142,7 +159,9 @@ MultiplicityInvestigator::beginJob()
 void
 MultiplicityInvestigator::beginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) {
 
-  _digiinvesthmevent.beginRun(iRun.run());
+  m_digiinvesthmevent.beginRun(iRun.run());
+  m_digivtxcorrhmevent.beginRun(iRun);
+  m_digilumicorrhmevent.beginRun(iRun);
 
 }
 
