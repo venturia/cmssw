@@ -309,7 +309,7 @@ SeedMultiplicityAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
   
   // preparation for loop on seeds
   
-  TrajectoryStateTransform tsTransform;
+  //  TrajectoryStateTransform tsTransform;
   TSCBLBuilderNoMaterial tscblBuilder; // I could have used TSCBLBuilderWithPropagator
   
   edm::ESHandle<MagneticField> theMF;
