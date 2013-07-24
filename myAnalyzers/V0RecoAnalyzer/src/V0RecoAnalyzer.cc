@@ -1882,7 +1882,7 @@ void V0RecoAnalyzer::endJob() {
     }
 
     ksEtaCount = ksPhiCount = 0;
-    int numEta = ksMass_eta_nBins * 2;
+    //    int numEta = ksMass_eta_nBins * 2;
     int numPhi = ksMass_phi_nBins / 2;
     for( vector<TH1F*>::iterator iEP = ksMass_eta_phi.begin();
 	 iEP != ksMass_eta_phi.end();
