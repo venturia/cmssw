@@ -195,13 +195,16 @@ OverlapProblemTPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     
     // get the SimHIt from tracker only
     
-    std::vector<PSimHit> tksimhits = tp->trackPSimHit(DetId::Tracker);
+    // Commented since the new TP's do not have this method
+    //    std::vector<PSimHit> tksimhits = tp->trackPSimHit(DetId::Tracker);
     
     
     m_ptp->Fill(tp->p());
     m_etatp->Fill(tp->eta());
     //     m_nhits->Fill(tp->matchedHit());
-    m_nhits->Fill(tksimhits.size());
+    // With the new Tracking Particles I have to use a different method
+    //    m_nhits->Fill(tksimhits.size());
+    m_nhits->Fill(tp->numberOfTrackerHits());
     
     
     m_pdgid->Fill(tp->pdgId());
@@ -234,7 +237,8 @@ OverlapProblemTPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     }
     
     m_nrechits->Fill(rechits.size());
-    m_nrecvssimhits->Fill(tksimhits.size(),rechits.size());
+    // new method used to be compliant with the new TP's
+    m_nrecvssimhits->Fill(tp->numberOfTrackerHits(),rechits.size());
     
     LogDebug("RecHitDetId") << "List of " << rechits.size() << " rechits detid from muon with p = " << tp->p() 
 			    << "and eta = " << tp->eta();
@@ -246,9 +250,12 @@ OverlapProblemTPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
     // loop on sim hits
     
     
-    LogDebug("SimHitDetId") << "List of " << tksimhits.size() << " simhits detid from muon with p = " << tp->p() 
+    LogDebug("SimHitDetId") << "List of " << tp->numberOfTrackerHits() << " simhits detid from muon with p = " << tp->p() 
 			    << "and eta = " << tp->eta();
     
+    // commented since with the new TP's I don't know how to loop on PSimHits
+
+    /*
     for( std::vector<PSimHit>::const_iterator sh = tksimhits.begin(); sh!= tksimhits.end(); ++sh) {
       
       // check if the SimHit is Tracker and TEC
@@ -272,7 +279,7 @@ OverlapProblemTPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetu
 	
       }
     }
-    
+    */    
   }
   
 }
