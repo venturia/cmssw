@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Venturi
 //         Created:  Thu Dec 16 16:32:56 CEST 2010
-// $Id: MCVerticesAnalyzer.cc,v 1.6 2011/11/12 16:49:19 venturia Exp $
+// $Id: MCVerticesAnalyzer.cc,v 1.5 2011/11/12 09:41:59 venturia Exp $
 //
 //
 
@@ -77,7 +77,6 @@ private:
   edm::InputTag m_weight;
 
   TH1F* m_hnvtx;
-  TH2F* m_hnvtxvsbx;
   TH1F* m_hlumi;
   TH2F* m_hnvtxvslumi;
   TH1F* m_hnvtxweight;
@@ -116,10 +115,6 @@ MCVerticesAnalyzer::MCVerticesAnalyzer(const edm::ParameterSet& iConfig):
 
   m_hnvtx = tfserv->make<TH1F>("nvtx","Number of pileup vertices",60,-0.5,59.5);
   m_hnvtx->GetXaxis()->SetTitle("Number of Interactions");
-
-  m_hnvtxvsbx = tfserv->make<TH2F>("nvtxvsbx","Number of pileup vertices vs BX",9,-4.5,4.5,60,-0.5,59.5);
-  m_hnvtxvsbx->GetXaxis()->SetTitle("BX number");
-  m_hnvtxvsbx->GetYaxis()->SetTitle("Number of Interactions");
 
   m_hlumi = tfserv->make<TH1F>("lumi","BX luminosity*xsect",200,0.,50.);
   m_hlumi->GetXaxis()->SetTitle("Average Number of Interactions");
@@ -186,12 +181,6 @@ MCVerticesAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // look for the intime PileupSummaryInfo
 
      std::vector<PileupSummaryInfo>::const_iterator pileupinfo;
-
-     for(pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
-       m_hnvtxvsbx->Fill(pileupinfo->getBunchCrossing(),pileupinfo->getPU_NumInteractions(),weight);
-     } 
-
-
      for(pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
        if(pileupinfo->getBunchCrossing()==0) break;
      } 
