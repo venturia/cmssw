@@ -65,11 +65,7 @@ process.MessageLogger.suppressInfo.append("newTracksFromOtobV0")
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.source = cms.Source("PoolSource",
-<<<<<<< HEAD
-                    fileNames = cms.untracked.vstring(),
-=======
                     fileNames = cms.untracked.vstring(options.inputFiles),
->>>>>>> 9ea5873... Added a 2D histogram to monitor MC vertices vs BX number: 2nd step
     
 #                    skipBadFiles = cms.untracked.bool(True),
                     inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*")

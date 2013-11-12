@@ -13,11 +13,7 @@
 //
 // Original Author:  Andrea Venturi
 //         Created:  Thu Dec 16 16:32:56 CEST 2010
-<<<<<<< HEAD
-// $Id: MCVerticesAnalyzer.cc,v 1.5 2011/11/12 09:41:59 venturia Exp $
-=======
 // $Id: MCVerticesAnalyzer.cc,v 1.6 2011/11/12 16:49:19 venturia Exp $
->>>>>>> 9ea5873... Added a 2D histogram to monitor MC vertices vs BX number: 2nd step
 //
 //
 
@@ -81,10 +77,7 @@ private:
   edm::InputTag m_weight;
 
   TH1F* m_hnvtx;
-<<<<<<< HEAD
-=======
   TH2F* m_hnvtxvsbx;
->>>>>>> 9ea5873... Added a 2D histogram to monitor MC vertices vs BX number: 2nd step
   TH1F* m_hlumi;
   TH2F* m_hnvtxvslumi;
   TH1F* m_hnvtxweight;
@@ -124,13 +117,10 @@ MCVerticesAnalyzer::MCVerticesAnalyzer(const edm::ParameterSet& iConfig):
   m_hnvtx = tfserv->make<TH1F>("nvtx","Number of pileup vertices",60,-0.5,59.5);
   m_hnvtx->GetXaxis()->SetTitle("Number of Interactions");
 
-<<<<<<< HEAD
-=======
   m_hnvtxvsbx = tfserv->make<TH2F>("nvtxvsbx","Number of pileup vertices vs BX",9,-4.5,4.5,60,-0.5,59.5);
   m_hnvtxvsbx->GetXaxis()->SetTitle("BX number");
   m_hnvtxvsbx->GetYaxis()->SetTitle("Number of Interactions");
 
->>>>>>> 9ea5873... Added a 2D histogram to monitor MC vertices vs BX number: 2nd step
   m_hlumi = tfserv->make<TH1F>("lumi","BX luminosity*xsect",200,0.,50.);
   m_hlumi->GetXaxis()->SetTitle("Average Number of Interactions");
 
@@ -196,15 +186,12 @@ MCVerticesAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   // look for the intime PileupSummaryInfo
 
      std::vector<PileupSummaryInfo>::const_iterator pileupinfo;
-<<<<<<< HEAD
-=======
 
      for(pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
        m_hnvtxvsbx->Fill(pileupinfo->getBunchCrossing(),pileupinfo->getPU_NumInteractions(),weight);
      } 
 
 
->>>>>>> 9ea5873... Added a 2D histogram to monitor MC vertices vs BX number: 2nd step
      for(pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
        if(pileupinfo->getBunchCrossing()==0) break;
      } 
