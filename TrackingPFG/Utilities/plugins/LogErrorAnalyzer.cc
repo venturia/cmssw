@@ -143,9 +143,10 @@ LogErrorAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
    for(std::vector<ErrorSummaryEntry>::const_iterator err = errors->begin(); err!= errors->end() ; ++err) {
 
-     if(err->severity.getLevel() == edm::ELseverityLevel::ELsev_error ||
+     if(err->severity.getLevel() == edm::ELseverityLevel::ELsev_error // ||
 	//	err->severity.getLevel() == edm::ELseverityLevel::ELsev_warning ||
-	err->severity.getLevel() == edm::ELseverityLevel::ELsev_error2  ) {
+	//	err->severity.getLevel() == edm::ELseverityLevel::ELsev_error2  
+	) {
 
        ++nese;
        nerrors += err->count;
