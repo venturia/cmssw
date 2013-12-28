@@ -10,9 +10,12 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "FWCore/Utilities/interface/InputTag.h"
+#include "FWCore/Utilities/interface/EDGetToken.h"
+#include "DataFormats/Candidate/interface/VertexCompositeCandidate.h"
 
 namespace edm {
   class ParameterSet;
+  class ConsumesCollector;
   class Event;
   class EventSetup;
   template <class T> class Handle;
@@ -26,7 +29,7 @@ class TrackFromV0Selector {
   
   /// Constructors
   TrackFromV0Selector();
-  TrackFromV0Selector ( const edm::ParameterSet & cfg );
+  TrackFromV0Selector ( const edm::ParameterSet & cfg, edm::ConsumesCollector&& iC );
   const_iterator begin() const { return selected_.begin(); }
   const_iterator end() const { return selected_.end(); }
     
@@ -35,7 +38,7 @@ class TrackFromV0Selector {
   size_t size() const;
       
  protected:
-      std::vector<edm::InputTag> v0collections_;
+      std::vector<edm::EDGetTokenT<reco::VertexCompositeCandidateCollection> > v0collectionTokens_;
       double massmin_;
       double massmax_;
       container selected_;
