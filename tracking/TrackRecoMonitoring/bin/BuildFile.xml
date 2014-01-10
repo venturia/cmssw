@@ -1,0 +1,6 @@
+<library   name="trackingTrackRecoMonitoringMacros" file="*.cc">
+<use   name="DPGAnalysis/SiStripTools"/>
+<use   name="root"/>
+<use   name="rootcintex"/>
+<use   name="rootgraphics"/>
+</library>
