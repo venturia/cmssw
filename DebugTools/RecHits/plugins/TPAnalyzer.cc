@@ -174,13 +174,12 @@ TPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // get the SimHIt from tracker only
     
-    //    std::vector<PSimHit> tksimhits = tp->trackPSimHit(DetId::Tracker);
+    std::vector<PSimHit> tksimhits = tp->trackPSimHit(DetId::Tracker);
     
     
     m_ptp->Fill(tp->p());
     m_etatp->Fill(tp->eta());
-    //    m_nhits->Fill(tksimhits.size());
-    m_nhits->Fill(tp->numberOfTrackerHits());
+    m_nhits->Fill(tksimhits.size());
     
     
     m_pdgid->Fill(tp->pdgId());
@@ -191,8 +190,6 @@ TPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     std::vector<int> nhits(m_detsels.size(),0);
 
-    // This loop is no more possible with the new TP's    
-    /*
     for( std::vector<PSimHit>::const_iterator sh = tksimhits.begin(); sh!= tksimhits.end(); ++sh) {
 
       for(unsigned int i=0;i<m_detsels.size();++i) {
@@ -200,7 +197,6 @@ TPAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
       
     }
-    */
 
     for(unsigned int i=0;i<nhits.size();++i) {
       m_selnhits[i]->Fill(nhits[i]);
