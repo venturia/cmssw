@@ -15,6 +15,7 @@
 <use   name="SimDataFormats/TrackingHit"/>
 <use   name="SimTracker/TrackAssociation"/>
 <use   name="SimTracker/Records"/>
+<use   name="tracking/TrackRecoMonitoring"/>
 <library   name="DebugToolsOverlapProblemPlugins" file="*.cc">
   <flags   EDM_PLUGIN="1"/>
 </library>
