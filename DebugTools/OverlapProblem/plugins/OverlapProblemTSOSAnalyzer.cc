@@ -13,7 +13,7 @@
 //
 // Original Author:  Andrea Venturi
 //         Created:  Thu Dec 16 16:32:56 CEST 2010
-// $Id: OverlapProblemTSOSAnalyzer.cc,v 1.1 2011/01/22 17:59:36 venturia Exp $
+// $Id: OverlapProblemTSOSAnalyzer.cc,v 1.2 2013/04/10 21:08:01 venturia Exp $
 //
 //
 
@@ -55,6 +55,8 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 
 #include "TH1F.h"
+
+#include "tracking/TrackRecoMonitoring/interface/TSOSHistogramMaker.h"
 //
 // class decleration
 //
@@ -84,6 +86,8 @@ private:
   bool m_validOnly;
   edm::InputTag m_ttacollection;
 
+  TSOSHistogramMaker m_tsoshm;
+
 };
 
 //
@@ -100,7 +104,8 @@ private:
 OverlapProblemTSOSAnalyzer::OverlapProblemTSOSAnalyzer(const edm::ParameterSet& iConfig):
   m_tsosytecr(),m_ttrhytecr(),m_tsosdytecr(),
   m_validOnly(iConfig.getParameter<bool>("onlyValidRecHit")),
-  m_ttacollection(iConfig.getParameter<edm::InputTag>("trajTrackAssoCollection"))
+  m_ttacollection(iConfig.getParameter<edm::InputTag>("trajTrackAssoCollection")),
+  m_tsoshm(iConfig.getParameter<edm::ParameterSet>("tsosHMConf"))
 
 {
    //now do what ever initialization is needed
@@ -179,6 +184,8 @@ OverlapProblemTSOSAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSe
       TrajectoryStateOnSurface tsos = tsoscomb(meas->forwardPredictedState(), meas->backwardPredictedState());
       TransientTrackingRecHit::ConstRecHitPointer hit = meas->recHit();
       
+      m_tsoshm.fill(tsos,hit);
+
       if(!hit->isValid() && m_validOnly) continue;
 
       if(hit->geographicalId().det() != DetId::Tracker) continue;
