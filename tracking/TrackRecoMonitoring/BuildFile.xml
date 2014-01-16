@@ -1,0 +1,10 @@
+<use   name="root"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="CommonTools/UtilAlgos"/>
+<use   name="TrackingTools/TrajectoryState"/>
+<use   name="TrackingTools/TransientTrackingRecHit"/>
+<export>
+  <lib   name="1"/>
+</export>
+
