@@ -1,0 +1,6 @@
+<library   name="TrackingPFGUtilitiesMacros" file="*.cc">
+  <use   name="root"/>
+  <use   name="rootcintex"/>
+  <use   name="rootgraphics"/>
+  <use   name="DPGAnalysis/SiStripTools"/>
+</library>

@@ -1,0 +1,120 @@
+import FWCore.ParameterSet.Config as cms
+
+# multiplicity monitoring
+
+from DPGAnalysis.SiStripTools.ssclusmultinvestigator_cfi import *
+ssclusmultinvestnoncoll = ssclusmultinvestigator.clone(scaleFactor=cms.untracked.int32(2))
+
+from DPGAnalysis.SiStripTools.spclusmultinvestigator_cfi import *
+spclusmultinvestnoncoll = spclusmultinvestigator.clone(scaleFactor=cms.untracked.int32(5))
+
+
+
+ssclusmultinvestnoncollCut1 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut1 = spclusmultinvestnoncoll.clone()
+ssclusmultinvestnoncollCut2 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut2 = spclusmultinvestnoncoll.clone()
+ssclusmultinvestnoncollCut3 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut3 = spclusmultinvestnoncoll.clone()
+ssclusmultinvestnoncollCut4 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut4 = spclusmultinvestnoncoll.clone()
+ssclusmultinvestnoncollCut5 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut5 = spclusmultinvestnoncoll.clone()
+ssclusmultinvestnoncollCut6 = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollCut6 = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollHpFracCut = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollHpFracCut = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollPxProbCut = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollPxProbCut = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollLogErrCut = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollLogErrCut = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollTrigSel = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollTrigSel = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollTrigSelCut1 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut1 = spclusmultinvestnoncollTrigSel.clone()
+ssclusmultinvestnoncollTrigSelCut2 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut2 = spclusmultinvestnoncollTrigSel.clone()
+ssclusmultinvestnoncollTrigSelCut3 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut3 = spclusmultinvestnoncollTrigSel.clone()
+ssclusmultinvestnoncollTrigSelCut4 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut4 = spclusmultinvestnoncollTrigSel.clone()
+ssclusmultinvestnoncollTrigSelCut5 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut5 = spclusmultinvestnoncollTrigSel.clone()
+ssclusmultinvestnoncollTrigSelCut6 = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelCut6 = spclusmultinvestnoncollTrigSel.clone()
+
+ssclusmultinvestnoncollTrigSelHpFracCut = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelHpFracCut = spclusmultinvestnoncollTrigSel.clone()
+
+ssclusmultinvestnoncollTrigSelPxProbCut = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelPxProbCut = spclusmultinvestnoncollTrigSel.clone()
+
+ssclusmultinvestnoncollTrigSelLogErrCut = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelLogErrCut = spclusmultinvestnoncollTrigSel.clone()
+
+ssclusmultinvestnoncollTrigSelHpFracVtxCut = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelHpFracVtxCut = spclusmultinvestnoncollTrigSel.clone()
+
+ssclusmultinvestnoncollTrigSelPxProbVtxCut = ssclusmultinvestnoncollTrigSel.clone()
+spclusmultinvestnoncollTrigSelPxProbVtxCut = spclusmultinvestnoncollTrigSel.clone()
+
+
+ssclusmultinvestnoncollTrackSel = ssclusmultinvestnoncoll.clone()
+spclusmultinvestnoncollTrackSel = spclusmultinvestnoncoll.clone()
+
+ssclusmultinvestnoncollTrackSelCut1 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut1 = spclusmultinvestnoncollTrackSel.clone()
+ssclusmultinvestnoncollTrackSelCut2 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut2 = spclusmultinvestnoncollTrackSel.clone()
+ssclusmultinvestnoncollTrackSelCut3 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut3 = spclusmultinvestnoncollTrackSel.clone()
+ssclusmultinvestnoncollTrackSelCut4 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut4 = spclusmultinvestnoncollTrackSel.clone()
+ssclusmultinvestnoncollTrackSelCut5 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut5 = spclusmultinvestnoncollTrackSel.clone()
+ssclusmultinvestnoncollTrackSelCut6 = ssclusmultinvestnoncollTrackSel.clone()
+spclusmultinvestnoncollTrackSelCut6 = spclusmultinvestnoncollTrackSel.clone()
+
+
+seqClusMultInvestPVEffNonColl = cms.Sequence(spclusmultinvestnoncoll + ssclusmultinvestnoncoll )
+
+seqClusMultInvestPVEffNonCollCut1 = cms.Sequence(spclusmultinvestnoncollCut1 + ssclusmultinvestnoncollCut1 )
+seqClusMultInvestPVEffNonCollCut2 = cms.Sequence(spclusmultinvestnoncollCut2 + ssclusmultinvestnoncollCut2 )
+seqClusMultInvestPVEffNonCollCut3 = cms.Sequence(spclusmultinvestnoncollCut3 + ssclusmultinvestnoncollCut3 )
+seqClusMultInvestPVEffNonCollCut4 = cms.Sequence(spclusmultinvestnoncollCut4 + ssclusmultinvestnoncollCut4 )
+seqClusMultInvestPVEffNonCollCut5 = cms.Sequence(spclusmultinvestnoncollCut5 + ssclusmultinvestnoncollCut5 )
+seqClusMultInvestPVEffNonCollCut6 = cms.Sequence(spclusmultinvestnoncollCut6 + ssclusmultinvestnoncollCut6 )
+
+seqClusMultInvestPVEffNonCollHpFracCut = cms.Sequence(spclusmultinvestnoncollHpFracCut + ssclusmultinvestnoncollHpFracCut )
+seqClusMultInvestPVEffNonCollPxProbCut = cms.Sequence(spclusmultinvestnoncollPxProbCut + ssclusmultinvestnoncollPxProbCut )
+seqClusMultInvestPVEffNonCollLogErrCut = cms.Sequence(spclusmultinvestnoncollLogErrCut + ssclusmultinvestnoncollLogErrCut )
+
+seqClusMultInvestPVEffNonCollTrigSel = cms.Sequence(spclusmultinvestnoncollTrigSel + ssclusmultinvestnoncollTrigSel )
+
+seqClusMultInvestPVEffNonCollTrigSelCut1 = cms.Sequence(spclusmultinvestnoncollTrigSelCut1 + ssclusmultinvestnoncollTrigSelCut1 )
+seqClusMultInvestPVEffNonCollTrigSelCut2 = cms.Sequence(spclusmultinvestnoncollTrigSelCut2 + ssclusmultinvestnoncollTrigSelCut2 )
+seqClusMultInvestPVEffNonCollTrigSelCut3 = cms.Sequence(spclusmultinvestnoncollTrigSelCut3 + ssclusmultinvestnoncollTrigSelCut3 )
+seqClusMultInvestPVEffNonCollTrigSelCut4 = cms.Sequence(spclusmultinvestnoncollTrigSelCut4 + ssclusmultinvestnoncollTrigSelCut4 )
+seqClusMultInvestPVEffNonCollTrigSelCut5 = cms.Sequence(spclusmultinvestnoncollTrigSelCut5 + ssclusmultinvestnoncollTrigSelCut5 )
+seqClusMultInvestPVEffNonCollTrigSelCut6 = cms.Sequence(spclusmultinvestnoncollTrigSelCut6 + ssclusmultinvestnoncollTrigSelCut6 )
+
+seqClusMultInvestPVEffNonCollTrigSelHpFracCut = cms.Sequence(spclusmultinvestnoncollTrigSelHpFracCut + ssclusmultinvestnoncollTrigSelHpFracCut )
+seqClusMultInvestPVEffNonCollTrigSelPxProbCut = cms.Sequence(spclusmultinvestnoncollTrigSelPxProbCut + ssclusmultinvestnoncollTrigSelPxProbCut )
+seqClusMultInvestPVEffNonCollTrigSelLogErrCut = cms.Sequence(spclusmultinvestnoncollTrigSelLogErrCut + ssclusmultinvestnoncollTrigSelLogErrCut )
+seqClusMultInvestPVEffNonCollTrigSelHpFracVtxCut = cms.Sequence(spclusmultinvestnoncollTrigSelHpFracVtxCut + ssclusmultinvestnoncollTrigSelHpFracVtxCut )
+seqClusMultInvestPVEffNonCollTrigSelPxProbVtxCut = cms.Sequence(spclusmultinvestnoncollTrigSelPxProbVtxCut + ssclusmultinvestnoncollTrigSelPxProbVtxCut )
+
+seqClusMultInvestPVEffNonCollTrackSel = cms.Sequence(spclusmultinvestnoncollTrackSel + ssclusmultinvestnoncollTrackSel )
+
+seqClusMultInvestPVEffNonCollTrackSelCut1 = cms.Sequence(spclusmultinvestnoncollTrackSelCut1 + ssclusmultinvestnoncollTrackSelCut1 )
+seqClusMultInvestPVEffNonCollTrackSelCut2 = cms.Sequence(spclusmultinvestnoncollTrackSelCut2 + ssclusmultinvestnoncollTrackSelCut2 )
+seqClusMultInvestPVEffNonCollTrackSelCut3 = cms.Sequence(spclusmultinvestnoncollTrackSelCut3 + ssclusmultinvestnoncollTrackSelCut3 )
+seqClusMultInvestPVEffNonCollTrackSelCut4 = cms.Sequence(spclusmultinvestnoncollTrackSelCut4 + ssclusmultinvestnoncollTrackSelCut4 )
+seqClusMultInvestPVEffNonCollTrackSelCut5 = cms.Sequence(spclusmultinvestnoncollTrackSelCut5 + ssclusmultinvestnoncollTrackSelCut5 )
+seqClusMultInvestPVEffNonCollTrackSelCut6 = cms.Sequence(spclusmultinvestnoncollTrackSelCut6 + ssclusmultinvestnoncollTrackSelCut6 )
+

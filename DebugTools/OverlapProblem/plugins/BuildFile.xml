@@ -1,0 +1,22 @@
+<use   name="root"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/MessageLogger"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="FWCore/Utilities"/>
+<use   name="CommonTools/UtilAlgos"/>
+<use   name="TrackingTools/PatternTools"/>
+<use   name="TrackingTools/TrajectoryState"/>
+<use   name="TrackingTools/TrackFitters"/>
+<use   name="DataFormats/SiStripDetId"/>
+<use   name="DataFormats/DetId"/>
+<use   name="DataFormats/TrackReco"/>
+<use   name="SimDataFormats/TrackingAnalysis"/>
+<use   name="SimDataFormats/TrackingHit"/>
+<use   name="SimTracker/TrackAssociation"/>
+<use   name="SimTracker/Records"/>
+<use   name="tracking/TrackRecoMonitoring"/>
+<library   name="DebugToolsOverlapProblemPlugins" file="*.cc">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+

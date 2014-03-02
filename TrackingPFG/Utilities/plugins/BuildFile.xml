@@ -1,0 +1,19 @@
+<use   name="root"/>
+<use   name="FWCore/Framework"/>
+<use   name="FWCore/ParameterSet"/>
+<use   name="FWCore/MessageLogger"/>
+<use   name="FWCore/ServiceRegistry"/>
+<use   name="FWCore/Utilities"/>
+<use   name="CommonTools/UtilAlgos"/>
+<use   name="DataFormats/Luminosity"/>
+<use   name="DataFormats/TrackReco"/>
+<use   name="DataFormats/VertexReco"/>
+<use   name="DataFormats/JetReco"/>
+<use   name="DataFormats/Common"/>
+<use   name="DPGAnalysis/SiStripTools"/>
+<use   name="TrackingPFG/Utilities"/>
+<use   name="PhysicsTools/SelectorUtils"/>
+<library   name="TrackingPFGUtilitiesPlugins" file="*.cc">
+  <flags   EDM_PLUGIN="1"/>
+</library>
+
