@@ -50,7 +50,7 @@ class InputInfo(object):
         self.ib_blacklist = ib_blacklist
         self.ib_block = ib_block
         
-    def dbs(self):
+    def das(self):
         query_by = "block" if self.ib_block else "dataset"
         query_source = "{0}#{1}".format(self.dataSet, self.ib_block) if self.ib_block else self.dataSet
         if len(self.run) is not 0:
@@ -318,7 +318,7 @@ baseDataSetRelease=[
     'CMSSW_6_2_0_pre8-PRE_SH62_V15-v2',
     'CMSSW_6_1_0_pre6-STARTHI61_V6-v1',
     'CMSSW_6_2_0_pre8-PRE_ST62_V8-v3',
-    'CMSSW_6_2_0_pre8-PRE_PO62_V7-v1'    # for _13  TeV samples; replace them with 6_2_0_patch1 when available (those GEN-SIM have '--magField':'38T_PostLS1')
+    'CMSSW_6_2_0_patch1-POSTLS162_V1_30Aug2013-v2' # 6_2_0_patch1 for 13 TeV samples
     ]
 
 # note: INPUT commands to be added once GEN-SIM w/ 13TeV+PostLS1Geo will be available 
@@ -349,7 +349,7 @@ steps['LM1_sftsINPUT']={'INPUT':InputInfo(dataSet='/RelValLM1_sfts/%s/GEN-SIM'%(
 steps['QCD_FlatPt_15_3000INPUT']={'INPUT':InputInfo(dataSet='/RelValQCD_FlatPt_15_3000/%s/GEN-SIM'%(baseDataSetRelease[0],),location='STD')}
 
 steps['QCD_FlatPt_15_3000HSINPUT']={'INPUT':InputInfo(dataSet='/RelValQCD_FlatPt_15_3000HS/CMSSW_6_2_0_pre8-PRE_ST62_V8-v1/GEN-SIM',location='STD')}
-#the following dataset used to be in input but is currently not valid dbs datasets
+#the following dataset used to be in input but is currently not valid das datasets
 steps['QCD_FlatPt_15_3000HS__DIGIPU1INPUT']={'INPUT':InputInfo(dataSet='/RelValQCD_FlatPt_15_3000/CMSSW_5_2_2-PU_START52_V4_special_120326-v1/GEN-SIM-DIGI-RAW-HLTDEBUG',location='STD')}
 steps['TTbar__DIGIPU1INPUT']={'INPUT':InputInfo(dataSet='/RelValTTbar/CMSSW_5_2_2-PU_START52_V4_special_120326-v1/GEN-SIM-DIGI-RAW-HLTDEBUG',location='STD')}
 
@@ -382,7 +382,7 @@ steps['H130GGgluonfusion_13INPUT']={'INPUT':InputInfo(dataSet='/RelValH130GGgluo
 steps['PhotonJets_Pt_10_13INPUT']={'INPUT':InputInfo(dataSet='/RelValPhotonJets_Pt_10_13/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
 steps['QQH1352T_Tauola_13INPUT']={'INPUT':InputInfo(dataSet='/RelValQQH1352T_Tauola_13/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
 steps['ADDMonoJet_d3MD3_13INPUT']={'INPUT':InputInfo(dataSet='/RelValADDMonoJet_d3MD3_13/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
-steps['BeamHalo_13INPUT']={'INPUT':InputInfo(dataSet='/RelValBeamHalo_13/%s/GEN-SIM'%(baseDataSetRelease[0],),location='STD')}
+steps['BeamHalo_13INPUT']={'INPUT':InputInfo(dataSet='/RelValBeamHalo_13/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
 # particle guns with postLS1 geometry recycle GEN-SIM input
 steps['SingleElectronPt10_UP15INPUT']={'INPUT':InputInfo(dataSet='/RelValSingleElectronPt10_UP15/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
 steps['SingleElectronPt35_UP15INPUT']={'INPUT':InputInfo(dataSet='/RelValSingleElectronPt35_UP15/%s/GEN-SIM'%(baseDataSetRelease[6],),location='STD')}
@@ -506,246 +506,7 @@ steps['QCD_Pt_20_30']=genS('QCD_Pt_20_30_8TeV_cfi',Kby(25,100))
 steps['QCD_Pt_170_230']=genS('QCD_Pt_170_230_8TeV_cfi',Kby(25,100))
 
 
-## upgrade dedicated wf
-## extendedPhase1
-step1UpepiDefaults = {'-s' : 'GEN,SIM',
-                             '-n' : 10,
-                             '--conditions' : 'DESIGN61_V10::All', #should be updated with autocond
-                             '--beamspot' : 'Gauss',
-                             '--datatier' : 'GEN-SIM',
-                             '--eventcontent': 'FEVTDEBUG',
-                             '--geometry' : 'ExtendedPhaseIPixel',
-                             '--customise' : 'SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise'
-                             }
-def genepi(fragment,howMuch):
-    global step1UpepiDefaults
-    return merge([{'cfg':fragment},howMuch,step1UpepiDefaults])
-
-steps['FourMuPt1_200_UPGPhase1']=genepi('FourMuPt_1_200_cfi',Kby(10,100))
-steps['SingleElectronPt10_UPGPhase1']=genepi('SingleElectronPt10_cfi',Kby(9,3000))
-steps['SingleElectronPt35_UPGPhase1']=genepi('SingleElectronPt35_cfi',Kby(9,500))
-steps['SingleElectronPt1000_UPGPhase1']=genepi('SingleElectronPt1000_cfi',Kby(9,50))
-steps['SingleGammaPt10_UPGPhase1']=genepi('SingleGammaPt10_cfi',Kby(9,3000))
-steps['SingleGammaPt35_UPGPhase1']=genepi('SingleGammaPt35_cfi',Kby(9,500))
-steps['SingleMuPt1_UPGPhase1']=genepi('SingleMuPt1_cfi',Kby(25,1000))
-steps['SingleMuPt10_UPGPhase1']=genepi('SingleMuPt10_cfi',Kby(25,500))
-steps['SingleMuPt100_UPGPhase1']=genepi('SingleMuPt100_cfi',Kby(9,500))
-steps['SingleMuPt1000_UPGPhase1']=genepi('SingleMuPt1000_cfi',Kby(9,500))
-
-steps['TTbarLepton_UPGPhase1_8']=genepi('TTbarLepton_Tauola_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPGPhase1_8']=genepi('Wjet_Pt_80_120_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPGPhase1_8']=genepi('Wjet_Pt_3000_3500_8TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPGPhase1_8']=genepi('LM1_sfts_8TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPGPhase1_8']=genepi('QCD_Pt_3000_3500_8TeV_cfi',Kby(9,25))
-steps['QCD_Pt_600_800_UPGPhase1_8']=genepi('QCD_Pt_600_800_8TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPGPhase1_8']=genepi('QCD_Pt_80_120_8TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPGPhase1_8']=genepi('H200ChargedTaus_Tauola_8TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPGPhase1_8']=genepi('JpsiMM_8TeV_cfi',Kby(66,1000))
-steps['TTbar_UPGPhase1_8']=genepi('TTbar_Tauola_8TeV_cfi',Kby(9,100))
-steps['WE_UPGPhase1_8']=genepi('WE_8TeV_cfi',Kby(9,100))
-steps['ZEE_UPGPhase1_8']=genepi('ZEE_8TeV_cfi',Kby(9,100))
-steps['ZTT_UPGPhase1_8']=genepi('ZTT_Tauola_All_hadronic_8TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPGPhase1_8']=genepi('H130GGgluonfusion_8TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPGPhase1_8']=genepi('PhotonJet_Pt_10_8TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPGPhase1_8']=genepi('QQH1352T_Tauola_8TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPGPhase1_8']=genepi('MinBias_TuneZ2star_8TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPGPhase1_8']=genepi('WM_8TeV_cfi',Kby(9,200))
-steps['ZMM_UPGPhase1_8']=genepi('ZMM_8TeV_cfi',Kby(18,300))
-
-steps['ADDMonoJet_d3MD3_UPGPhase1_8']=genepi('ADDMonoJet_8TeV_d3MD3_cfi',Kby(9,100))
-steps['ZpMM_UPGPhase1_8']=genepi('ZpMM_8TeV_cfi',Kby(9,200))
-steps['WpM_UPGPhase1_8']=genepi('WpM_8TeV_cfi',Kby(9,200))
-
-
-
-
-
-#14TeV
-#steps['TTbarLepton_UPGPhase1_14']=genepi('TTbarLepton_Tauola_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPGPhase1_14']=genepi('Wjet_Pt_80_120_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPGPhase1_14']=genepi('Wjet_Pt_3000_3500_14TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPGPhase1_14']=genepi('LM1_sfts_14TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPGPhase1_14']=genepi('QCD_Pt_3000_3500_14TeV_cfi',Kby(9,25))
-#steps['QCD_Pt_600_800_UPGPhase1_14']=genepi('QCD_Pt_600_800_14TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPGPhase1_14']=genepi('QCD_Pt_80_120_14TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPGPhase1_14']=genepi('H200ChargedTaus_Tauola_14TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPGPhase1_14']=genepi('JpsiMM_14TeV_cfi',Kby(66,1000))
-steps['TTbar_UPGPhase1_14']=genepi('TTbar_Tauola_14TeV_cfi',Kby(9,100))
-steps['WE_UPGPhase1_14']=genepi('WE_14TeV_cfi',Kby(9,100))
-steps['ZEE_UPGPhase1_14']=genepi('ZEE_14TeV_cfi',Kby(9,100))
-steps['ZTT_UPGPhase1_14']=genepi('ZTT_Tauola_All_hadronic_14TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPGPhase1_14']=genepi('H130GGgluonfusion_14TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPGPhase1_14']=genepi('PhotonJet_Pt_10_14TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPGPhase1_14']=genepi('QQH1352T_Tauola_14TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPGPhase1_14']=genepi('MinBias_TuneZ2star_14TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPGPhase1_14']=genepi('WM_14TeV_cfi',Kby(9,200))
-steps['ZMM_UPGPhase1_14']=genepi('ZMM_14TeV_cfi',Kby(18,300))
-
-#steps['ADDMonoJet_d3MD3_UPGPhase1_14']=genepi('ADDMonoJet_14TeV_d3MD3_cfi',Kby(9,100))
-#steps['ZpMM_UPGPhase1_14']=genepi('ZpMM_14TeV_cfi',Kby(9,200))
-#steps['WpM_UPGPhase1_14']=genepi('WpM_14TeV_cfi',Kby(9,200))
-
-
-## 2015
-steps['FourMuPt1_200_UPG2015']=gen2015('FourMuPt_1_200_cfi',Kby(10,100))
-steps['SingleElectronPt10_UPG2015']=gen2015('SingleElectronPt10_cfi',Kby(9,3000))
-steps['SingleElectronPt35_UPG2015']=gen2015('SingleElectronPt35_cfi',Kby(9,500))
-steps['SingleElectronPt1000_UPG2015']=gen2015('SingleElectronPt1000_cfi',Kby(9,50))
-steps['SingleGammaPt10_UPG2015']=gen2015('SingleGammaPt10_cfi',Kby(9,3000))
-steps['SingleGammaPt35_UPG2015']=gen2015('SingleGammaPt35_cfi',Kby(9,500))
-steps['SingleMuPt1_UPG2015']=gen2015('SingleMuPt1_cfi',Kby(25,1000))
-steps['SingleMuPt10_UPG2015']=gen2015('SingleMuPt10_cfi',Kby(25,500))
-steps['SingleMuPt100_UPG2015']=gen2015('SingleMuPt100_cfi',Kby(9,500))
-steps['SingleMuPt1000_UPG2015']=gen2015('SingleMuPt1000_cfi',Kby(9,500))
-
-steps['TTbarLepton_UPG2015_8']=gen2015('TTbarLepton_Tauola_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPG2015_8']=gen2015('Wjet_Pt_80_120_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPG2015_8']=gen2015('Wjet_Pt_3000_3500_8TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPG2015_8']=gen2015('LM1_sfts_8TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPG2015_8']=gen2015('QCD_Pt_3000_3500_8TeV_cfi',Kby(9,25))
-steps['QCD_Pt_600_800_UPG2015_8']=gen2015('QCD_Pt_600_800_8TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPG2015_8']=gen2015('QCD_Pt_80_120_8TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPG2015_8']=gen2015('H200ChargedTaus_Tauola_8TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPG2015_8']=gen2015('JpsiMM_8TeV_cfi',Kby(66,1000))
-steps['TTbar_UPG2015_8']=gen2015('TTbar_Tauola_8TeV_cfi',Kby(9,100))
-steps['WE_UPG2015_8']=gen2015('WE_8TeV_cfi',Kby(9,100))
-steps['ZEE_UPG2015_8']=gen2015('ZEE_8TeV_cfi',Kby(9,100))
-steps['ZTT_UPG2015_8']=gen2015('ZTT_Tauola_All_hadronic_8TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPG2015_8']=gen2015('H130GGgluonfusion_8TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPG2015_8']=gen2015('PhotonJet_Pt_10_8TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPG2015_8']=gen2015('QQH1352T_Tauola_8TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPG2015_8']=gen2015('MinBias_TuneZ2star_8TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPG2015_8']=gen2015('WM_8TeV_cfi',Kby(9,200))
-steps['ZMM_UPG2015_8']=gen2015('ZMM_8TeV_cfi',Kby(18,300))
-
-steps['ADDMonoJet_d3MD3_UPG2015_8']=gen2015('ADDMonoJet_8TeV_d3MD3_cfi',Kby(9,100))
-steps['ZpMM_UPG2015_8']=gen2015('ZpMM_8TeV_cfi',Kby(9,200))
-steps['WpM_UPG2015_8']=gen2015('WpM_8TeV_cfi',Kby(9,200))
-
-
-
-#14TeV
-#steps['TTbarLepton_UPG2015_14']=gen2015('TTbarLepton_Tauola_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPG2015_14']=gen2015('Wjet_Pt_80_120_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPG2015_14']=gen2015('Wjet_Pt_3000_3500_14TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPG2015_14']=gen2015('LM1_sfts_14TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPG2015_14']=gen2015('QCD_Pt_3000_3500_14TeV_cfi',Kby(9,25))
-#steps['QCD_Pt_600_800_UPG2015_14']=gen2015('QCD_Pt_600_800_14TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPG2015_14']=gen2015('QCD_Pt_80_120_14TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPG2015_14']=gen2015('H200ChargedTaus_Tauola_14TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPG2015_14']=gen2015('JpsiMM_14TeV_cfi',Kby(66,1000))
-steps['TTbar_UPG2015_14']=gen2015('TTbar_Tauola_14TeV_cfi',Kby(9,100))
-steps['WE_UPG2015_14']=gen2015('WE_14TeV_cfi',Kby(9,100))
-steps['ZEE_UPG2015_14']=gen2015('ZEE_14TeV_cfi',Kby(9,100))
-steps['ZTT_UPG2015_14']=gen2015('ZTT_Tauola_All_hadronic_14TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPG2015_14']=gen2015('H130GGgluonfusion_14TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPG2015_14']=gen2015('PhotonJet_Pt_10_14TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPG2015_14']=gen2015('QQH1352T_Tauola_14TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPG2015_14']=gen2015('MinBias_TuneZ2star_14TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPG2015_14']=gen2015('WM_14TeV_cfi',Kby(9,200))
-steps['ZMM_UPG2015_14']=gen2015('ZMM_14TeV_cfi',Kby(18,300))
-
-#steps['ADDMonoJet_d3MD3_UPG2015_14']=gen2015('ADDMonoJet_14TeV_d3MD3_cfi',Kby(9,100))
-#steps['ZpMM_UPG2015_14']=gen2015('ZpMM_14TeV_cfi',Kby(9,200))
-#steps['WpM_UPG2015_14']=gen2015('WpM_14TeV_cfi',Kby(9,200))
-
-
-
-step1Up2017Defaults = {'-s' : 'GEN,SIM',
-                             '-n' : 10,
-                             '--conditions' : 'auto:upgradePLS1', 
-                             '--beamspot' : 'Gauss',
-                             '--datatier' : 'GEN-SIM',
-                             '--eventcontent': 'FEVTDEBUG',
-                             '--geometry' : 'Extended2017',
-                             '--customise' : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise'
-                             }
-def gen2017(fragment,howMuch):
-    global step1Up2017Defaults
-    return merge([{'cfg':fragment},howMuch,step1Up2017Defaults])
-
-steps['FourMuPt1_200_UPG2017']=gen2017('FourMuPt_1_200_cfi',Kby(10,100))
-steps['SingleElectronPt10_UPG2017']=gen2017('SingleElectronPt10_cfi',Kby(9,3000))
-steps['SingleElectronPt35_UPG2017']=gen2017('SingleElectronPt35_cfi',Kby(9,500))
-steps['SingleElectronPt1000_UPG2017']=gen2017('SingleElectronPt1000_cfi',Kby(9,50))
-steps['SingleGammaPt10_UPG2017']=gen2017('SingleGammaPt10_cfi',Kby(9,3000))
-steps['SingleGammaPt35_UPG2017']=gen2017('SingleGammaPt35_cfi',Kby(9,500))
-steps['SingleMuPt1_UPG2017']=gen2017('SingleMuPt1_cfi',Kby(25,1000))
-steps['SingleMuPt10_UPG2017']=gen2017('SingleMuPt10_cfi',Kby(25,500))
-steps['SingleMuPt100_UPG2017']=gen2017('SingleMuPt100_cfi',Kby(9,500))
-steps['SingleMuPt1000_UPG2017']=gen2017('SingleMuPt1000_cfi',Kby(9,500))
-
-steps['TTbarLepton_UPG2017_8']=gen2017('TTbarLepton_Tauola_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPG2017_8']=gen2017('Wjet_Pt_80_120_8TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPG2017_8']=gen2017('Wjet_Pt_3000_3500_8TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPG2017_8']=gen2017('LM1_sfts_8TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPG2017_8']=gen2017('QCD_Pt_3000_3500_8TeV_cfi',Kby(9,25))
-steps['QCD_Pt_600_800_UPG2017_8']=gen2017('QCD_Pt_600_800_8TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPG2017_8']=gen2017('QCD_Pt_80_120_8TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPG2017_8']=gen2017('H200ChargedTaus_Tauola_8TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPG2017_8']=gen2017('JpsiMM_8TeV_cfi',Kby(66,1000))
-steps['TTbar_UPG2017_8']=gen2017('TTbar_Tauola_8TeV_cfi',Kby(9,100))
-steps['WE_UPG2017_8']=gen2017('WE_8TeV_cfi',Kby(9,100))
-steps['ZEE_UPG2017_8']=gen2017('ZEE_8TeV_cfi',Kby(9,100))
-steps['ZTT_UPG2017_8']=gen2017('ZTT_Tauola_All_hadronic_8TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPG2017_8']=gen2017('H130GGgluonfusion_8TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPG2017_8']=gen2017('PhotonJet_Pt_10_8TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPG2017_8']=gen2017('QQH1352T_Tauola_8TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPG2017_8']=gen2017('MinBias_TuneZ2star_8TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPG2017_8']=gen2017('WM_8TeV_cfi',Kby(9,200))
-steps['ZMM_UPG2017_8']=gen2017('ZMM_8TeV_cfi',Kby(18,300))
-
-steps['ADDMonoJet_d3MD3_UPG2017_8']=gen2017('ADDMonoJet_8TeV_d3MD3_cfi',Kby(9,100))
-steps['ZpMM_UPG2017_8']=gen2017('ZpMM_8TeV_cfi',Kby(9,200))
-steps['WpM_UPG2017_8']=gen2017('WpM_8TeV_cfi',Kby(9,200))
-
-
-
-#14TeV
-#steps['TTbarLepton_UPG2017_14']=gen2017('TTbarLepton_Tauola_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_80_120_UPG2017_14']=gen2017('Wjet_Pt_80_120_14TeV_cfi',Kby(9,100))
-steps['Wjet_Pt_3000_3500_UPG2017_14']=gen2017('Wjet_Pt_3000_3500_14TeV_cfi',Kby(9,50))
-steps['LM1_sfts_UPG2017_14']=gen2017('LM1_sfts_14TeV_cfi',Kby(9,100))
-
-steps['QCD_Pt_3000_3500_UPG2017_14']=gen2017('QCD_Pt_3000_3500_14TeV_cfi',Kby(9,25))
-#steps['QCD_Pt_600_800_UPG2017_14']=gen2017('QCD_Pt_600_800_14TeV_cfi',Kby(9,50))
-steps['QCD_Pt_80_120_UPG2017_14']=gen2017('QCD_Pt_80_120_14TeV_cfi',Kby(9,100))
-
-steps['Higgs200ChargedTaus_UPG2017_14']=gen2017('H200ChargedTaus_Tauola_14TeV_cfi',Kby(9,100))
-steps['JpsiMM_UPG2017_14']=gen2017('JpsiMM_14TeV_cfi',Kby(66,1000))
-steps['TTbar_UPG2017_14']=gen2017('TTbar_Tauola_14TeV_cfi',Kby(9,100))
-steps['WE_UPG2017_14']=gen2017('WE_14TeV_cfi',Kby(9,100))
-steps['ZEE_UPG2017_14']=gen2017('ZEE_14TeV_cfi',Kby(9,100))
-steps['ZTT_UPG2017_14']=gen2017('ZTT_Tauola_All_hadronic_14TeV_cfi',Kby(9,150))
-steps['H130GGgluonfusion_UPG2017_14']=gen2017('H130GGgluonfusion_14TeV_cfi',Kby(9,100))
-steps['PhotonJets_Pt_10_UPG2017_14']=gen2017('PhotonJet_Pt_10_14TeV_cfi',Kby(9,150))
-steps['QQH1352T_Tauola_UPG2017_14']=gen2017('QQH1352T_Tauola_14TeV_cfi',Kby(9,100))
-
-steps['MinBias_TuneZ2star_UPG2017_14']=gen2017('MinBias_TuneZ2star_14TeV_pythia6_cff',Kby(9,300))
-steps['WM_UPG2017_14']=gen2017('WM_14TeV_cfi',Kby(9,200))
-steps['ZMM_UPG2017_14']=gen2017('ZMM_14TeV_cfi',Kby(18,300))
-
-#steps['ADDMonoJet_d3MD3_UPG2017_14']=gen2017('ADDMonoJet_14TeV_d3MD3_cfi',Kby(9,100))
-#steps['ZpMM_UPG2017_14']=gen2017('ZpMM_14TeV_cfi',Kby(9,200))
-#steps['WpM_UPG2017_14']=gen2017('WpM_14TeV_cfi',Kby(9,200))
-
-
-
+   
 ## pPb tests
 step1PPbDefaults={'--beamspot':'Realistic8TeVCollisionPPbBoost'}
 steps['AMPT_PPb_5020GeV_MinimumBias']=merge([{'-n':10},step1PPbDefaults,genS('AMPT_PPb_5020GeV_MinimumBias_cfi',Kby(9,100))])
@@ -874,17 +635,98 @@ steps['ZJetsLNu_TuneZ2star_8TeV_madgraph-tauola']=genvalid('Hadronizer_MgmMatchT
 steps['ZJetsLNu_Tune4C_8TeV_madgraph-pythia8']=genvalid('Hadronizer_MgmMatchTune4C_8TeV_madgraph_pythia8_cff',step1GenDefaults,fi=5591)
 steps['ReggeGribovPartonMC_EposLHC_5TeV_pPb']=genvalid('GeneratorInterface/ReggeGribovPartonMCInterface/ReggeGribovPartonMC_EposLHC_5TeV_pPb_cfi',step1GenDefaults)
 
-PU={'-n':10,'--pileup':'default','--pileup_input':'dbs:/RelValMinBias/%s/GEN-SIM'%(baseDataSetRelease[0],)}
+PU={'-n':10,'--pileup':'default','--pileup_input':'das:/RelValMinBias/%s/GEN-SIM'%(baseDataSetRelease[0],)}
 PUFS={'--pileup':'default'}
 PUFS2={'--pileup':'mix_2012_Startup_inTimeOnly'}
 steps['TTbarFSPU']=merge([PUFS,Kby(100,500),steps['TTbarFS']] )
 steps['TTbarFSPU2']=merge([PUFS2,Kby(100,500),steps['TTbarFS']])
 ##########################
 
+#### fastsim section for phase2 ####
+##no forseen to do things in two steps GEN-SIM then FASTIM->end: maybe later
+step1FastDefaultsP1 =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--conditions':'auto:upgradePLS3', 
+			   '--fast':'',
+			   '--geometry' : 'Extended2017',
+			   '--customise' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimDefault',
+                           '--relval':'27000,3000'},
+                          step1Defaults])
+
+steps['TTbarFSP1']=merge([{'cfg':'TTbar_Tauola_14TeV_cfi'},Kby(100,1000),step1FastDefaultsP1])
+steps['TTbar8FSP1']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1FastDefaultsP1])
+steps['SingleMuPt1FSP1']=merge([{'cfg':'SingleMuPt1_cfi'},step1FastDefaultsP1])
+steps['SingleMuPt10FSP1']=merge([{'cfg':'SingleMuPt10_cfi'},step1FastDefaultsP1])
+steps['SingleMuPt100FSP1']=merge([{'cfg':'SingleMuPt100_cfi'},step1FastDefaultsP1])
+steps['MinBias_TuneZ2starFSP1']=merge([{'cfg':'MinBias_TuneZ2star_14TeV_pythia6_cff'},step1FastDefaultsP1])
+steps['MinBias_TuneZ2star8FSP1']=merge([{'cfg':'MinBias_TuneZ2star_8TeV_pythia6_cff'},step1FastDefaultsP1])
+
+step1FastDefaultsP1PU =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--conditions':'auto:upgradePLS3', 
+			   '--fast':'',
+			   '--pileup':'default',
+			   '--geometry' : 'Extended2017',
+			   '--customise' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimDefault',
+                           '--relval':'27000,3000'},
+                          step1Defaults])
+
+steps['TTbar8FSPUP1']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1FastDefaultsP1PU])
+
+step1FastDefaultsP2 =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+			   '--fast':'',
+                           '--conditions':'auto:upgradePLS3', 
+			   '--geometry' : 'ExtendedPhase2TkBE',
+			   '--customise' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
+                           '--relval':'27000,3000'},
+                          step1Defaults])
+
+steps['TTbarFSP2']=merge([{'cfg':'TTbar_Tauola_14TeV_cfi'},Kby(100,1000),step1FastDefaultsP2])
+steps['TTbar8FSP2']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1FastDefaultsP2])
+steps['SingleMuPt1FSP2']=merge([{'cfg':'SingleMuPt1_cfi'},step1FastDefaultsP2])
+steps['SingleMuPt10FSP2']=merge([{'cfg':'SingleMuPt10_cfi'},step1FastDefaultsP2])
+steps['SingleMuPt100FSP2']=merge([{'cfg':'SingleMuPt100_cfi'},step1FastDefaultsP2])
+steps['MinBias_TuneZ2starFSP2']=merge([{'cfg':'MinBias_TuneZ2star_14TeV_pythia6_cff'},step1FastDefaultsP2])
+steps['MinBias_TuneZ2star8FSP2']=merge([{'cfg':'MinBias_TuneZ2star_8TeV_pythia6_cff'},step1FastDefaultsP2])
+
+
+step1FastDefaultsP2PU =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+			   '--fast':'',
+			   '--pileup':'default',
+                           '--conditions':'auto:upgradePLS3', 
+			   '--geometry' : 'ExtendedPhase2TkBE',
+			   '--customise' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
+                           '--relval':'27000,3000'},
+                          step1Defaults])
+steps['TTbar8FSPUP2']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1FastDefaultsP2PU])
+
+step1FastDefaultsP2Forw =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
+                           '--eventcontent':'FEVTDEBUGHLT,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--conditions':'auto:upgradePLS3', 
+			   '--geometry' : 'ExtendedPhase2TkBEForward',
+			   '--fast':'',
+			   '--customise' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimDefault',
+                           '--relval':'27000,3000'},
+                          step1Defaults])
+
+steps['TTbarFSP2Forw']=merge([{'cfg':'TTbar_Tauola_14TeV_cfi'},Kby(100,1000),step1FastDefaultsP2Forw])
+steps['SingleMuPt1FSP2Forw']=merge([{'cfg':'SingleMuPt1_cfi'},step1FastDefaultsP2Forw])
+steps['SingleMuPt10FSP2Forw']=merge([{'cfg':'SingleMuPt10_cfi'},step1FastDefaultsP2Forw])
+steps['SingleMuPt100FSP2Forw']=merge([{'cfg':'SingleMuPt100_cfi'},step1FastDefaultsP2Forw])
+steps['MinBias_TuneZ2starFSP2Forw']=merge([{'cfg':'MinBias_TuneZ2star_14TeV_pythia6_cff'},step1FastDefaultsP2Forw])
+
 
 
 # step2 
-step2Defaults = { '-s'            : 'DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@relval,RAW2DIGI,L1Reco',
+step2Defaults = { 
+                  '-s'            : 'DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@relval,RAW2DIGI,L1Reco',
                   '--datatier'    : 'GEN-SIM-DIGI-RAW-HLTDEBUG',
                   '--eventcontent': 'FEVTDEBUGHLT',
                   '--conditions'  : 'auto:startup',
@@ -892,7 +734,7 @@ step2Defaults = { '-s'            : 'DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@relval,RA
 #for 2015
 step2Upg2015Defaults = {'-s'     :'DIGI:pdigi_valid,L1,DIGI2RAW,HLT:@relval,RAW2DIGI,L1Reco',
                  '--conditions'  :'auto:upgradePLS1', 
-                 # '--magField'    : '38T_PostLS1',   #activate when 6_2_0_patch1 GEN-SIM will be available ( 6_2_0_pre8 GEN-SIM don't have 38T_PostLS1)
+                 '--magField'    : '38T_PostLS1',
                  '--datatier'    :'GEN-SIM-DIGI-RAW',
                  '-n'            :'10',
                  '--eventcontent':'FEVTDEBUGHLT',
@@ -920,29 +762,19 @@ steps['DIGIHI']=merge([{'--conditions':'auto:starthi_HIon', '-s':'DIGI:pdigi_val
 
 #wmsplit['DIGIHI']=5
 
-#for pix phase1
-step2Upgpixphase1Defaults = {'-s':'DIGI:pdigi_valid,L1,DIGI2RAW',
-                 '--conditions':'DESIGN61_V10::All', #to be updtaed with autocond
-                 '--datatier':'GEN-SIM-DIGI-RAW',
-                 '-n':'10',
-                 '--eventcontent':'FEVTDEBUGHLT',
-                 '--customise': 'SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-                 '--geometry' : 'ExtendedPhaseIPixel'
-                  }
-steps['DIGIUP']=merge([step2Upgpixphase1Defaults])
 
-#for 2017
-step2Upg2017Defaults = {'-s':'DIGI:pdigi_valid,L1,DIGI2RAW',
-                 '--conditions':'auto:upgradePLS1', 
-                 '--datatier':'GEN-SIM-DIGI-RAW',
-                 '-n':'10',
-                 '--eventcontent':'FEVTDEBUGHLT',
-                 '--customise': 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-                 '--geometry' : 'Extended2017'
-                  }
-steps['DIGIUP17']=merge([step2Upg2017Defaults])
 #add this line when testing from an input file that is not strictly GEN-SIM
 #addForAll(step2,{'--process':'DIGI'})
+
+dataReco={'--conditions':'auto:com10',
+          '-s':'RAW2DIGI,L1Reco,RECO,ALCA:SiStripCalZeroBias+SiStripCalMinBias+TkAlMinBias,DQM',
+          '--datatier':'RECO,DQMROOT',
+          '--eventcontent':'RECO,DQMROOT',
+          '--data':'',
+          '--process':'reRECO',
+          '--scenario':'pp',
+          }
+
 
 dataReco={'--conditions':'auto:com10',
           '-s':'RAW2DIGI,L1Reco,RECO,EI,ALCA:SiStripCalZeroBias+SiStripCalMinBias+TkAlMinBias,DQM',
@@ -1025,28 +857,6 @@ steps['DIGIPU']=merge([{'--process':'REDIGI'},steps['DIGIPU1']])
 #wmsplit['DIGIPU']=4
 #wmsplit['DIGIPU1']=4
 
-#for 2015
-step3Up2015Defaults = {'-s':'RAW2DIGI,L1Reco,RECO,EI,VALIDATION,DQM',
-                 '--conditions':'auto:upgradePLS1', 
-                 #'--magField'    : '38T_PostLS1',    #activate when 6_2_0_patch1 GEN-SIM will be available ( 6_2_0_pre8 GEN-SIM don't have 38T_PostLS1)
-                 '--datatier':'GEN-SIM-RECO,DQM',
-                 '-n':'10',
-                 '--eventcontent':'FEVTDEBUGHLT,DQM',
-                 '--customise' : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1',
-                 '--geometry' : 'Extended2015'
-                 }
-step3Up2015Hal = {'-s'           :'RAW2DIGI,L1Reco,RECO,EI,VALIDATION,DQM',
-                 '--conditions'  :'auto:upgradePLS1', 
-                 '--eventcontent':'RECOSIM,AODSIM',
-                 '-n'            :'10',
-                 '--datatier'    : 'GEN-SIM-RECO,DQM',
-                 '--customise'   : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1',
-                 '--geometry'    : 'Extended2015'
-                 }
-                             
-steps['RECOUP15']=merge([step3Up2015Defaults]) # todo: remove UP from label
-
-
 steps['RECODreHLT']=merge([{'--hltProcess':'reHLT','--conditions':'auto:com10_%s'%menu},steps['RECOD']])
 #wmsplit['RECODreHLT']=2
 
@@ -1054,10 +864,7 @@ steps['RECO']=merge([step3Defaults])
 steps['RECODBG']=merge([{'--eventcontent':'RECODEBUG,DQM'},steps['RECO']])
 steps['RECOPROD1']=merge([{ '-s' : 'RAW2DIGI,L1Reco,RECO,EI', '--datatier' : 'GEN-SIM-RECO,AODSIM', '--eventcontent' : 'RECOSIM,AODSIM'},step3Defaults])
 steps['RECOCOS']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,ALCA:MuAlCalIsolatedMu,DQM','--scenario':'cosmics'},stCond,step3Defaults])
-#steps['RECOHAL']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,ALCA:MuAlCalIsolatedMu,DQM','--scenario':'cosmics','--magField':'38T_PostLS1',},step3Up2015Hal])   #activate when 6_2_0_patch1 GEN-SIM will be available ( 6_2_0_pre8 GEN-SIM don't have 38T_PostLS1)
-steps['RECOHAL']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,ALCA:MuAlCalIsolatedMu,DQM','--scenario':'cosmics'},step3Up2015Hal])
 steps['RECOMIN']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,EI,ALCA:SiStripCalZeroBias+SiStripCalMinBias+EcalCalPhiSym+EcalCalPi0Calib+EcalCalEtaCalib,VALIDATION,DQM'},stCond,step3Defaults])
-steps['RECOMINUP15']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,EI,ALCA:SiStripCalZeroBias+SiStripCalMinBias+EcalCalPhiSym+EcalCalPi0Calib+EcalCalEtaCalib,VALIDATION,DQM'},step3Up2015Defaults])
 
 steps['RECODDQM']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,EI,DQM:@common+@muon+@hcal+@jetmet+@ecal'},steps['RECOD']])
 
@@ -1082,30 +889,6 @@ steps['RECOHIR10D11']=merge([{'--filein':'file:step2_inREPACKRAW.root',
 steps['RECOFS']=merge([{'--fast':'',
                         '-s':'RECO,EI,HLT:@relval,VALIDATION'},
                        steps['RECO']])
-#for phase1
-step3Upgpixphase1Defaults = {'-s':'RAW2DIGI,L1Reco,RECO,EI,VALIDATION,DQM',
-                 '--conditions':'DESIGN61_V10::All', #to be updtaed with autocond
-                 '--datatier':'GEN-SIM-RECO,DQM',
-                 '-n':'10',
-                 '--eventcontent':'FEVTDEBUGHLT,DQM',
-                 '--customise' : 'SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-                 '--geometry' : 'ExtendedPhaseIPixel'
-                 }
-                             
-
-steps['RECOUP']=merge([step3Upgpixphase1Defaults])
-
-#for 2017
-step3Up2017Defaults = {'-s':'RAW2DIGI,L1Reco,RECO,EI,VALIDATION,DQM',
-                 '--conditions':'auto:upgradePLS1', 
-                 '--datatier':'GEN-SIM-RECO,DQM',
-                 '-n':'10',
-                 '--eventcontent':'FEVTDEBUGHLT,DQM',
-                 '--customise' : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-                 '--geometry' : 'Extended2017'
-                 }
-                             
-steps['RECOUP17']=merge([step3Up2017Defaults])
 
 #add this line when testing from an input file that is not strictly GEN-SIM
 #addForAll(step3,{'--hltProcess':'DIGI'})
@@ -1204,10 +987,12 @@ steps['HARVESTCOS']={'-s':'HARVESTING:dqmHarvesting',
                    '--scenario':'cosmics'}
 steps['HARVESTHAL']={'-s'          :'HARVESTING:dqmHarvesting',
                      '--conditions':'auto:upgradePLS1',
-                     #'--magField'  : '38T_PostLS1',    #activate when 6_2_0_patch1 GEN-SIM will be available ( 6_2_0_pre8 GEN-SIM don't have 38T_PostLS1)
+                     '--magField'  : '38T_PostLS1',
                      '--mc'        :'',
                      '--filein'    :'file:step3_inDQM.root',
-                   '--scenario'    :'cosmics'}
+                     #'--filein'    :'file:step3_inAODSIM.root',
+                     '--scenario'  :'cosmics',
+                     '--customise' : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1'}
 steps['HARVESTFS']={'-s':'HARVESTING:validationHarvestingFS',
                    '--conditions':'auto:startup',
                    '--mc':'',
@@ -1217,27 +1002,26 @@ steps['HARVESTHI']={'-s':'HARVESTING:validationHarvesting+dqmHarvesting',
                    '--mc':'',
                    '--scenario':'HeavyIons'}
 
-#for phase1
-steps['HARVESTUP']={'-s':'HARVESTING:validationHarvesting+dqmHarvesting',
-                   '--conditions':'DESIGN61_V10::All', #to be updtaed with autocond
+#fastsim upgrade
+	   
+steps['HARVESTFSP1']={'-s':'HARVESTING:validationHarvestingFS',
+                   '--conditions':'auto:upgradePLS3',
                    '--mc':'',
-                   '--customise' : 'SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-		   '--geometry' : 'ExtendedPhaseIPixel'
-                   }
+		   '--geometry' : 'Extended2017',
+                   '--scenario':'pp'}
 		   
-steps['HARVESTUP15']={'-s':'HARVESTING:validationHarvesting+dqmHarvesting', # todo: remove UP from label
-                   '--conditions':'auto:upgradePLS1', 
-                   #'--magField'    : '38T_PostLS1',    #activate when 6_2_0_patch1 GEN-SIM will be available ( 6_2_0_pre8 GEN-SIM don't have 38T_PostLS1)
+steps['HARVESTFSP2']={'-s':'HARVESTING:validationHarvestingFS',
+                   '--conditions':'auto:upgradePLS3',
                    '--mc':'',
-                   '--customise' : 'SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1',
-		   '--geometry' : 'Extended2015'
-                   }
-steps['HARVESTUP17']={'-s':'HARVESTING:validationHarvesting+dqmHarvesting',
-                   '--conditions':'auto:upgradePLS1', 
+		   '--geometry' : 'ExtendedPhase2TkBE',
+                   '--scenario':'pp'}
+steps['HARVESTFSP2Forw']={'-s':'HARVESTING:validationHarvestingFS',
+                   '--conditions':'auto:upgradePLS3',
                    '--mc':'',
-                   '--customise' : 'SLHCUpgradeSimulations/Configuration/phase1TkCustoms.customise',
-		   '--geometry' : 'Extended2017'
-                   }
+		   '--geometry' : 'ExtendedPhase2TkBEForward',
+                   '--scenario':'pp'}
+		   
+		   
 steps['ALCASPLIT']={'-s':'ALCAOUTPUT:@allForPrompt',
                     '--conditions':'auto:com10',
                     '--scenario':'pp',
@@ -1250,7 +1034,7 @@ steps['SKIMD']={'-s':'SKIM:all',
                 '--data':'',
                 '--scenario':'pp',
                 '--filein':'file:step2.root',
-                '--secondfilein':'filelist:step1_dbsquery.log'}
+                '--secondfilein':'filelist:step1_dasquery.log'}
 
 steps['SKIMDreHLT'] = merge([ {'--conditions':'auto:com10_%s'%menu,'--filein':'file:step3.root'}, steps['SKIMD'] ])
 
@@ -1259,7 +1043,7 @@ steps['SKIMCOSD']={'-s':'SKIM:all',
                    '--data':'',
                    '--scenario':'cosmics',
                    '--filein':'file:step2.root',
-                   '--secondfilein':'filelist:step1_dbsquery.log'}
+                   '--secondfilein':'filelist:step1_dasquery.log'}
                  
 
 #### for special wfs ###
@@ -1291,7 +1075,7 @@ steps['RECODFROMRAWRECO']=merge([{'-s':'RAW2DIGI:RawToDigi_noTk,L1Reco,RECO:reco
                                   '--process':'rereRECO',
                                   '--datatier':'AOD',
                                   '--eventcontent':'AOD',
-                                  '--secondfilein':'filelist:step1_dbsquery.log',
+                                  '--secondfilein':'filelist:step1_dasquery.log',
                                   },
                                  steps['RECOD']])
 
@@ -1300,3 +1084,399 @@ steps['COPYPASTE']={'-s':'NONE',
                     '--conditions':'auto:startup',
                     '--output':'\'[{"t":"RAW","e":"ALL"}]\'',
                     '--customise_commands':'"process.ALLRAWoutput.fastCloning=cms.untracked.bool(False)"'}
+
+
+
+# You will need separate scenarios HERE for full and fast. DON'T CHANGE THE ORDER, only
+# append new keys. Otherwise the numbering for the runTheMatrix tests will change.
+upgradeKeys=['2017',
+             '2019',
+             'BE5D',
+             '2017Fast',
+             'BE5DFast',
+             'BE5DForwardFast',
+             '2019WithGEM',
+             'BE5DPixel10D',
+             '2017Aging',
+             '2019Aging',
+             'Extended2023',
+             'Extended2023HGCalMuon',
+             'Extended2023SHCal',
+             'Extended2023SHCal4Eta',
+             'Extended2023TTI',
+             'Extended2023Muon',
+             'Extended2023CFCal',
+             'Extended2023CFCal4Eta',
+	     'Extended2023Pixel',            
+	     'Extended2023SHCalNoTaper',
+	     'Extended2023SHCalNoTaper4Eta',
+	     'Extended2023HGCal',
+	     'Extended2023HGCalMuon4Eta'
+	     	     
+	     ]
+upgradeGeoms={ '2017' : 'Extended2017',
+               '2019' : 'Extended2019',
+               '2019WithGEM' : 'Extended2019',
+               '2017Aging' : 'Extended2017',
+               '2019Aging' : 'Extended2019',
+               'BE5D' : 'ExtendedPhase2TkBE5D',
+               'BE5DPixel10D' : 'ExtendedPhase2TkBE5DPixel10D',
+               '2017Fast' : 'Extended2017',
+               'BE5DFast' : 'ExtendedPhase2TkBE',
+               'BE5DForwardFast' : 'ExtendedPhase2TkBEForward',
+               'Extended2023' : 'Extended2023,Extended2023Reco',
+               'Extended2023HGCalMuon' : 'Extended2023HGCalMuon,Extended2023HGCalMuonReco',
+               'Extended2023SHCal' : 'Extended2023SHCal,Extended2023SHCalReco',
+               'Extended2023SHCal4Eta' : 'Extended2023SHCal4Eta,Extended2023SHCalReco',
+               'Extended2023TTI' : 'Extended2023TTI,Extended2023TTIReco',
+               'Extended2023Muon' : 'Extended2023Muon,Extended2023MuonReco',
+               'Extended2023CFCal' : 'Extended2023CFCal,Extended2023CFCalReco',
+               'Extended2023CFCal4Eta' : 'Extended2023CFCal4Eta,Extended2023CFCal4EtaReco',
+               'Extended2023Pixel' : 'Extended2023Pixel,Extended2023PixelReco',
+               'Extended2023SHCalNoTaper' : 'Extended2023SHCalNoTaper,Extended2023SHCalNoTaperReco',
+               'Extended2023SHCalNoTaper4Eta' : 'Extended2023SHCalNoTaper4Eta,Extended2023SHCalNoTaper4EtaReco',
+               'Extended2023HGCal' : 'Extended2023HGCal,Extended2023HGCalReco',
+               'Extended2023HGCalMuon4Eta' : 'Extended2023HGCalMuon4Eta,Extended2023HGCalMuon4EtaReco'
+               }
+upgradeGTs={ '2017' : 'auto:upgrade2017',
+             '2019' : 'auto:upgrade2019',
+             '2019WithGEM' : 'auto:upgrade2019',
+             '2017Aging' : 'W17_300_62E2::All',
+             '2019Aging' : 'W19_300_62E2::All',
+             'BE5D' : 'auto:upgradePLS3',
+             'BE5DPixel10D' : 'auto:upgradePLS3',
+             '2017Fast' : 'auto:upgrade2017',
+             'BE5DFast' : 'auto:upgrade2019',
+             'BE5DForwardFast' : 'auto:upgrade2019',
+             'Extended2023' : 'auto:upgradePLS3',
+             'Extended2023HGCalMuon' : 'auto:upgradePLS3',
+             'Extended2023SHCal' : 'auto:upgradePLS3',
+             'Extended2023SHCal4Eta' : 'auto:upgradePLS3',
+             'Extended2023TTI' : 'auto:upgradePLS3',
+             'Extended2023Muon' : 'auto:upgradePLS3',
+             'Extended2023CFCal' : 'auto:upgradePLS3',
+             'Extended2023CFCal4Eta' : 'auto:upgradePLS3',
+             'Extended2023Pixel' : 'auto:upgradePLS3',
+             'Extended2023SHCalNoTaper' : 'auto:upgradePLS3',
+             'Extended2023SHCalNoTaper4Eta' : 'auto:upgradePLS3',
+             'Extended2023HGCal' : 'auto:upgradePLS3',
+             'Extended2023HGCalMuon4Eta' : 'auto:upgradePLS3'
+             }
+upgradeCustoms={ '2017' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2017',
+                 '2019' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2019',
+                 '2019WithGEM' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2019WithGem',
+                 '2017Aging' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2017,SLHCUpgradeSimulations/Configuration/aging.customise_aging_300',
+                 '2019Aging' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2019,SLHCUpgradeSimulations/Configuration/aging.customise_aging_300',
+                 'BE5D' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5D',
+                 'BE5DPixel10D' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D',
+                 '2017Fast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimDefault',
+                 'BE5DFast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
+                 'BE5DForwardFast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
+                 'Extended2023' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023HGCalMuon' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023SHCal' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023SHCal4Eta' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023TTI' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023TTI',
+                 'Extended2023Muon' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023Muon',
+                 'Extended2023CFCal' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023CFCal4Eta' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023Pixel' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023Pixel',
+                 'Extended2023SHCalNoTaper' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023SHCalNoTaper4Eta' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023HGCal' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
+                 'Extended2023HGCalMuon4Eta' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023'
+                 }
+### remember that you need to add a new step for phase 2 to include the track trigger
+### remember that you need to add fastsim
+
+# step1 is normal gen-sim
+# step2 is digi
+# step3 is reco
+# step4 is harvest
+# step5 is digi+l1tracktrigger
+# step6 is fastsim
+# step7 is fastsim harvesting
+
+upgradeSteps=['GenSimFull','GenSimHLBeamSpotFull','DigiFull','RecoFull','HARVESTFull','DigiTrkTrigFull','FastSim','HARVESTFast']
+
+upgradeScenToRun={ '2017':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   '2019':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   '2019WithGEM':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   '2017Aging':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   '2019Aging':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'BE5D':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'BE5DPixel10D':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   '2017Fast':['FastSim','HARVESTFast'],
+                   'BE5DFast':['FastSim','HARVESTFast'],
+                   'BE5DForwardFast':['FastSim','HARVESTFast'],
+                   'Extended2023':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023HGCalMuon':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023SHCal':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023SHCal4Eta':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023TTI':['GenSimHLBeamSpotFull','DigiTrkTrigFull'], ##no need to go beyond local reco
+                   'Extended2023Muon':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023CFCal':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023CFCal4Eta':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+	           'Extended2023Pixel':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],          
+	           'Extended2023SHCalNoTaper':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+	           'Extended2023SHCalNoTaper4Eta':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+	           'Extended2023HGCal':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+	           'Extended2023HGCalMuon4Eta':['GenSimFull','DigiFull','RecoFull','HARVESTFull']
+                   }
+
+upgradeStepDict={}
+for step in upgradeSteps:
+    upgradeStepDict[step]={}
+
+# just make all combinations - yes, some will be nonsense.. but then these are not used unless
+# specified above
+for k in upgradeKeys:
+    upgradeStepDict['GenSimFull'][k]= {'-s' : 'GEN,SIM',
+                                       '-n' : 10,
+                                       '--conditions' : upgradeGTs[k],
+                                       '--beamspot' : 'Gauss',
+                                       '--magField' : '38T_PostLS1',
+                                       '--datatier' : 'GEN-SIM',
+                                       '--eventcontent': 'FEVTDEBUG',
+                                       '--geometry' : upgradeGeoms[k]
+                                       }
+    if upgradeCustoms[k]!=None : upgradeStepDict['GenSimFull'][k]['--customise']=upgradeCustoms[k]
+    
+    upgradeStepDict['GenSimHLBeamSpotFull'][k]= {'-s' : 'GEN,SIM',
+                                       '-n' : 10,
+                                       '--conditions' : upgradeGTs[k],
+                                       '--beamspot' : 'HLLHC',
+                                       '--magField' : '38T_PostLS1',
+                                       '--datatier' : 'GEN-SIM',
+                                       '--eventcontent': 'FEVTDEBUG',
+                                       '--geometry' : upgradeGeoms[k]
+                                       }
+    if upgradeCustoms[k]!=None : upgradeStepDict['GenSimHLBeamSpotFull'][k]['--customise']=upgradeCustoms[k]
+
+    upgradeStepDict['DigiFull'][k] = {'-s':'DIGI:pdigi_valid,L1,DIGI2RAW',
+                                      '--conditions':upgradeGTs[k],
+                                      '--datatier':'GEN-SIM-DIGI-RAW',
+                                      '-n':'10',
+                                      '--magField' : '38T_PostLS1',
+                                      '--eventcontent':'FEVTDEBUGHLT',
+                                      '--geometry' : upgradeGeoms[k]
+                                      }
+    if upgradeCustoms[k]!=None : upgradeStepDict['DigiFull'][k]['--customise']=upgradeCustoms[k]
+
+    upgradeStepDict['DigiTrkTrigFull'][k] = {'-s':'DIGI:pdigi_valid,L1,L1TrackTrigger,DIGI2RAW,RECO:pixeltrackerlocalreco',
+                                             '--conditions':upgradeGTs[k],
+                                             '--datatier':'GEN-SIM-DIGI-RAW',
+                                             '-n':'10',
+                                             '--magField' : '38T_PostLS1',
+                                             '--eventcontent':'FEVTDEBUGHLT',
+                                             '--geometry' : upgradeGeoms[k]
+                                             }
+    if upgradeCustoms[k]!=None : upgradeStepDict['DigiTrkTrigFull'][k]['--customise']=upgradeCustoms[k]
+
+    upgradeStepDict['RecoFull'][k] = {'-s':'RAW2DIGI,L1Reco,RECO,VALIDATION,DQM',
+                                      '--conditions':upgradeGTs[k],
+                                      '--datatier':'GEN-SIM-RECO,DQM',
+                                      '-n':'10',
+                                      '--eventcontent':'FEVTDEBUGHLT,DQM',
+                                      '--magField' : '38T_PostLS1',
+                                      '--geometry' : upgradeGeoms[k]
+                                      }
+    if upgradeCustoms[k]!=None : upgradeStepDict['RecoFull'][k]['--customise']=upgradeCustoms[k]
+    
+    upgradeStepDict['HARVESTFull'][k]={'-s':'HARVESTING:validationHarvesting+dqmHarvesting',
+                                    '--conditions':upgradeGTs[k],
+                                    '--mc':'',
+                                    '--magField' : '38T_PostLS1',
+                                    '--geometry' : upgradeGeoms[k],
+                                    '--scenario' : 'pp'
+                                    }
+    if upgradeCustoms[k]!=None : upgradeStepDict['HARVESTFull'][k]['--customise']=upgradeCustoms[k]
+
+    upgradeStepDict['FastSim'][k]={'-s':'GEN,SIM,RECO,VALIDATION',
+                                   '--eventcontent':'FEVTDEBUGHLT,DQM',
+                                   '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                                   '--conditions':upgradeGTs[k],
+                                   '--fast':'',
+                                   '--geometry' : upgradeGeoms[k],
+                                   '--relval':'27000,3000'}
+    if upgradeCustoms[k]!=None : upgradeStepDict['FastSim'][k]['--customise']=upgradeCustoms[k]
+
+    upgradeStepDict['HARVESTFast'][k]={'-s':'HARVESTING:validationHarvestingFS',
+                                    '--conditions':upgradeGTs[k],
+                                    '--mc':'',
+                                    '--magField' : '38T_PostLS1',
+                                    '--geometry' : upgradeGeoms[k],
+                                    '--scenario' : 'pp'
+                                    }
+    if upgradeCustoms[k]!=None : upgradeStepDict['HARVESTFast'][k]['--customise']=upgradeCustoms[k]
+
+
+upgradeFragments=['FourMuPt_1_200_cfi','SingleElectronPt10_cfi',
+                  'SingleElectronPt35_cfi','SingleElectronPt1000_cfi',
+                  'SingleGammaPt10_cfi','SingleGammaPt35_cfi','SingleMuPt1_cfi','SingleMuPt10_cfi',
+                  'SingleMuPt100_cfi','SingleMuPt1000_cfi','TTbarLepton_Tauola_8TeV_cfi','Wjet_Pt_80_120_8TeV_cfi',
+                  'Wjet_Pt_3000_3500_8TeV_cfi','LM1_sfts_8TeV_cfi','QCD_Pt_3000_3500_8TeV_cfi','QCD_Pt_600_800_8TeV_cfi',
+                  'QCD_Pt_80_120_8TeV_cfi','H200ChargedTaus_Tauola_8TeV_cfi','JpsiMM_8TeV_cfi','TTbar_Tauola_8TeV_cfi',
+                  'WE_8TeV_cfi','ZEE_8TeV_cfi','ZTT_Tauola_All_hadronic_8TeV_cfi','H130GGgluonfusion_8TeV_cfi',
+                  'PhotonJet_Pt_10_8TeV_cfi','QQH1352T_Tauola_8TeV_cfi','MinBias_TuneZ2star_8TeV_pythia6_cff','WM_8TeV_cfi',
+                  'ZMM_8TeV_cfi','ADDMonoJet_8TeV_d3MD3_cfi','ZpMM_8TeV_cfi','WpM_8TeV_cfi',
+                  'Wjet_Pt_80_120_14TeV_cfi','Wjet_Pt_3000_3500_14TeV_cfi','LM1_sfts_14TeV_cfi','QCD_Pt_3000_3500_14TeV_cfi',
+                  'QCD_Pt_80_120_14TeV_cfi','H200ChargedTaus_Tauola_14TeV_cfi','JpsiMM_14TeV_cfi','TTbar_Tauola_14TeV_cfi',
+                  'WE_14TeV_cfi','ZEE_14TeV_cfi','ZTT_Tauola_All_hadronic_14TeV_cfi','H130GGgluonfusion_14TeV_cfi',
+                  'PhotonJet_Pt_10_14TeV_cfi','QQH1352T_Tauola_14TeV_cfi',
+                  'MinBias_TuneZ2star_14TeV_pythia6_cff','WM_14TeV_cfi','ZMM_14TeV_cfi',
+		  'FourMuExtendedPt_1_200_cfi',
+		  'TenMuExtendedE_0_200_cfi',
+		  'SingleElectronPt10Extended_cfi',
+                  'SingleElectronPt35Extended_cfi',
+		  'SingleElectronPt1000Extended_cfi',
+                  'SingleGammaPt10Extended_cfi',
+		  'SingleGammaPt35Extended_cfi',
+		  'SingleMuPt1Extended_cfi',
+		  'SingleMuPt10Extended_cfi',
+                  'SingleMuPt100Extended_cfi',
+		  'SingleMuPt1000Extended_cfi','TenMuE_0_200_cfi']
+
+howMuches={'FourMuPt_1_200_cfi':Kby(10,100),
+           'TenMuE_0_200_cfi':Kby(10,100),
+           'FourMuExtendedPt_1_200_cfi':Kby(10,100),
+           'TenMuExtendedE_0_200_cfi':Kby(10,100),
+           'SingleElectronPt10_cfi':Kby(9,300),
+           'SingleElectronPt35_cfi':Kby(9,500),
+           'SingleElectronPt1000_cfi':Kby(9,50),
+           'SingleGammaPt10_cfi':Kby(9,300),
+           'SingleGammaPt35_cfi':Kby(9,50),
+           'SingleMuPt1_cfi':Kby(25,1000),
+           'SingleMuPt10_cfi':Kby(25,500),
+           'SingleMuPt100_cfi':Kby(9,500),
+           'SingleMuPt1000_cfi':Kby(9,500),
+           'SingleElectronPt10Extended_cfi':Kby(9,300),
+           'SingleElectronPt35Extended_cfi':Kby(9,500),
+           'SingleElectronPt1000Extended_cfi':Kby(9,50),
+           'SingleGammaPt10Extended_cfi':Kby(9,300),
+           'SingleGammaPt35Extended_cfi':Kby(9,50),
+           'SingleMuPt1Extended_cfi':Kby(25,1000),
+           'SingleMuPt10Extended_cfi':Kby(25,500),
+           'SingleMuPt100Extended_cfi':Kby(9,500),
+           'SingleMuPt1000Extended_cfi':Kby(9,500),
+           'TTbarLepton_Tauola_8TeV_cfi':Kby(9,100),
+           'Wjet_Pt_80_120_8TeV_cfi':Kby(9,100),
+           'Wjet_Pt_3000_3500_8TeV_cfi':Kby(9,50),
+           'LM1_sfts_8TeV_cfi':Kby(9,100),
+           'QCD_Pt_3000_3500_8TeV_cfi':Kby(9,25),
+           'QCD_Pt_600_800_8TeV_cfi':Kby(9,50),
+           'QCD_Pt_80_120_8TeV_cfi':Kby(9,100),
+           'H200ChargedTaus_Tauola_8TeV_cfi':Kby(9,100),
+           'JpsiMM_8TeV_cfi':Kby(66,1000),
+           'TTbar_Tauola_8TeV_cfi':Kby(9,100),
+           'WE_8TeV_cfi':Kby(9,100),
+           'ZEE_8TeV_cfi':Kby(9,100),
+           'ZTT_Tauola_All_hadronic_8TeV_cfi':Kby(9,15),
+           'H130GGgluonfusion_8TeV_cfi':Kby(9,100),
+           'PhotonJet_Pt_10_8TeV_cfi':Kby(9,150),
+           'QQH1352T_Tauola_8TeV_cfi':Kby(9,100),
+           'MinBias_TuneZ2star_8TeV_pythia6_cff':Kby(9,30),
+           'WM_8TeV_cfi':Kby(9,200),
+           'ZMM_8TeV_cfi':Kby(18,300),
+           'ADDMonoJet_8TeV_d3MD3_cfi':Kby(9,100),
+           'ZpMM_8TeV_cfi':Kby(9,200),
+           'WpM_8TeV_cfi':Kby(9,200),
+           'Wjet_Pt_80_120_14TeV_cfi':Kby(9,100),
+           'Wjet_Pt_3000_3500_14TeV_cfi':Kby(9,50),
+           'LM1_sfts_14TeV_cfi':Kby(9,100),
+           'QCD_Pt_3000_3500_14TeV_cfi':Kby(9,25),
+           'QCD_Pt_80_120_14TeV_cfi':Kby(9,100),
+           'H200ChargedTaus_Tauola_14TeV_cfi':Kby(9,100),
+           'JpsiMM_14TeV_cfi':Kby(66,1000),
+           'TTbar_Tauola_14TeV_cfi':Kby(9,100),
+           'WE_14TeV_cfi':Kby(9,100),
+           'ZEE_14TeV_cfi':Kby(9,100),
+           'ZTT_Tauola_All_hadronic_14TeV_cfi':Kby(9,150),
+           'H130GGgluonfusion_14TeV_cfi':Kby(9,100),
+           'PhotonJet_Pt_10_14TeV_cfi':Kby(9,150),
+           'QQH1352T_Tauola_14TeV_cfi':Kby(9,100),
+           'MinBias_TuneZ2star_14TeV_pythia6_cff':Kby(9,300),
+           'WM_14TeV_cfi':Kby(9,200),
+           'ZMM_14TeV_cfi':Kby(18,300)
+           }
+
+upgradeDatasetFromFragment={'FourMuPt_1_200_cfi': 'FourMuPt1_200',
+                            'FourMuExtendedPt_1_200_cfi': 'FourMuExtendedPt1_200',
+                            'TenMuE_0_200_cfi': 'TenMuE_0_200',
+                            'TenMuExtendedE_0_200_cfi': 'TenMuExtendedE_0_200',
+                            'SingleElectronPt10_cfi' : 'SingleElectronPt10',
+                            'SingleElectronPt35_cfi' : 'SingleElectronPt35',
+                            'SingleElectronPt1000_cfi' : 'SingleElectronPt1000',
+                            'SingleGammaPt10_cfi' : 'SingleGammaPt10',
+                            'SingleGammaPt35_cfi' : 'SingleGammaPt35',
+                            'SingleMuPt1_cfi' : 'SingleMuPt1',
+                            'SingleMuPt10_cfi' : 'SingleMuPt10',
+                            'SingleMuPt100_cfi' : 'SingleMuPt100',
+                            'SingleMuPt1000_cfi' : 'SingleMuPt1000',
+                            'SingleElectronPt10Extended_cfi' : 'SingleElectronPt10Extended',
+                            'SingleElectronPt35Extended_cfi' : 'SingleElectronPt35Extended',
+                            'SingleElectronPt1000Extended_cfi' : 'SingleElectronPt1000Extended',
+                            'SingleGammaPt10Extended_cfi' : 'SingleGammaPt10Extended',
+                            'SingleGammaPt35Extended_cfi' : 'SingleGammaPt35Extended',
+                            'SingleMuPt1Extended_cfi' : 'SingleMuPt1Extended',
+                            'SingleMuPt10Extended_cfi' : 'SingleMuPt10Extended',
+                            'SingleMuPt100Extended_cfi' : 'SingleMuPt100Extended',
+                            'SingleMuPt1000Extended_cfi' : 'SingleMuPt1000Extended',
+                            'TTbarLepton_Tauola_8TeV_cfi' : 'TTbarLepton_8TeV',
+                            'Wjet_Pt_80_120_8TeV_cfi' : 'Wjet_Pt_80_120_8TeV',
+                            'Wjet_Pt_3000_3500_8TeV_cfi' : 'Wjet_Pt_3000_3500_8TeV',
+                            'LM1_sfts_8TeV_cfi' : 'LM1_sfts_8TeV',
+                            'QCD_Pt_3000_3500_8TeV_cfi' : 'QCD_Pt_3000_3500_8TeV',
+                            'QCD_Pt_600_800_8TeV_cfi' : 'QCD_Pt_600_800_8TeV',
+                            'QCD_Pt_80_120_8TeV_cfi' : 'QCD_Pt_80_120_8TeV',
+                            'H200ChargedTaus_Tauola_8TeV_cfi' : 'Higgs200ChargedTaus_8TeV',
+                            'JpsiMM_8TeV_cfi' : 'JpsiMM_8TeV',
+                            'TTbar_Tauola_8TeV_cfi' : 'TTbar_8TeV',
+                            'WE_8TeV_cfi' : 'WE_8TeV',
+                            'ZEE_8TeV_cfi' : 'ZEE_8TeV',
+                            'ZTT_Tauola_All_hadronic_8TeV_cfi' : 'ZTT_8TeV',
+                            'H130GGgluonfusion_8TeV_cfi' : 'H130GGgluonfusion_8TeV',
+                            'PhotonJet_Pt_10_8TeV_cfi' : 'PhotonJets_Pt_10_8TeV',
+                            'QQH1352T_Tauola_8TeV_cfi' : 'QQH1352T_Tauola_8TeV',
+                            'MinBias_TuneZ2star_8TeV_pythia6_cff': 'MinBias_TuneZ2star_8TeV',
+                            'WM_8TeV_cfi' : 'WM_8TeV',
+                            'ZMM_8TeV_cfi' : 'ZMM_8TeV',
+                            'ADDMonoJet_8TeV_d3MD3_cfi' : 'ADDMonoJet_d3MD3_8TeV',
+                            'ZpMM_8TeV_cfi' : 'ZpMM_8TeV',
+                            'WpM_8TeV_cfi' : 'WpM_8TeV',
+                            'Wjet_Pt_80_120_14TeV_cfi' : 'Wjet_Pt_80_120_14TeV',
+                            'Wjet_Pt_3000_3500_14TeV_cfi' : 'Wjet_Pt_3000_3500_14TeV',
+                            'LM1_sfts_14TeV_cfi' : 'LM1_sfts_14TeV',
+                            'QCD_Pt_3000_3500_14TeV_cfi' : 'QCD_Pt_3000_3500_14TeV',
+                            'QCD_Pt_80_120_14TeV_cfi' : 'QCD_Pt_80_120_14TeV',
+                            'H200ChargedTaus_Tauola_14TeV_cfi' : 'Higgs200ChargedTaus_14TeV',
+                            'JpsiMM_14TeV_cfi' : 'JpsiMM_14TeV',
+                            'TTbar_Tauola_14TeV_cfi' : 'TTbar_14TeV',
+                            'WE_14TeV_cfi' : 'WE_14TeV',
+                            'ZEE_14TeV_cfi' : 'ZEE_14TeV',
+                            'ZTT_Tauola_All_hadronic_14TeV_cfi' : 'ZTT_14TeV',
+                            'H130GGgluonfusion_14TeV_cfi' : 'H130GGgluonfusion_14TeV',
+                            'PhotonJet_Pt_10_14TeV_cfi' : 'PhotonJets_Pt_10_14TeV',
+                            'QQH1352T_Tauola_14TeV_cfi' : 'QQH1352T_Tauola_14TeV',
+                            'MinBias_TuneZ2star_14TeV_pythia6_cff' : 'MinBias_TuneZ2star_14TeV',
+                            'WM_14TeV_cfi' : 'WM_14TeV',
+                            'ZMM_14TeV_cfi' : 'ZMM_14TeV'
+                            }
+
+
+
+#just do everything...
+
+for step in upgradeSteps:
+    # we need to do this for each fragment
+   if 'Sim' in step:
+        for frag in upgradeFragments:
+            howMuch=howMuches[frag]
+            for key in upgradeKeys:
+                k=frag[:-4]+'_'+key+'_'+step
+                steps[k]=merge([ {'cfg':frag},howMuch,upgradeStepDict[step][key]])
+   else:
+        for key in upgradeKeys:
+            k=step+'_'+key
+            steps[k]=merge([upgradeStepDict[step][key]])
+            

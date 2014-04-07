@@ -28,7 +28,7 @@ def customise(process):
     if hasattr(process,'dqmHarvesting'):
         process=customise_harvesting(process)
     if hasattr(process,'validation_step'):
-        process=customise_Validation(process,float(n))
+        process=customise_Validation(process)
     process=customise_condOverRides(process)
     
     return process
@@ -69,16 +69,8 @@ def customise_Digi(process):
 # DQM steps change
 def customise_DQM(process,pileup):
     # We cut down the number of iterative tracking steps
-#    process.dqmoffline_step.remove(process.TrackMonStep3)
-#    process.dqmoffline_step.remove(process.TrackMonStep4)
-#    process.dqmoffline_step.remove(process.TrackMonStep5)
-#    process.dqmoffline_step.remove(process.TrackMonStep6)
-    #
     process.dqmoffline_step.remove(process.muonAnalyzer)
     process.dqmoffline_step.remove(process.jetMETAnalyzer)
-#    process.dqmoffline_step.remove(process.TrackMonStep9)
-#    process.dqmoffline_step.remove(process.TrackMonStep10)
-#    process.dqmoffline_step.remove(process.PixelTrackingRecHitsValid)
 
     #put isUpgrade flag==true
     process.SiPixelRawDataErrorSource.isUpgrade = cms.untracked.bool(True)
@@ -97,43 +89,46 @@ def customise_DQM(process,pileup):
         process=customise_trackMon_IterativeTracking_PHASE1PU70(process)
     return process
 
-def customise_Validation(process,pileup):
+def customise_Validation(process):
     process.validation_step.remove(process.PixelTrackingRecHitsValid)
     # We don't run the HLT
     process.validation_step.remove(process.HLTSusyExoVal)
     process.validation_step.remove(process.hltHiggsValidator)
     process.validation_step.remove(process.relvalMuonBits)
-    if pileup>30:
-        process.trackValidator.label=cms.VInputTag(cms.InputTag("cutsRecoTracksHp"))
-        process.tracksValidationSelectors = cms.Sequence(process.cutsRecoTracksHp)
-        process.globalValidation.remove(process.recoMuonValidation)
-        process.validation.remove(process.recoMuonValidation)
-        process.validation_preprod.remove(process.recoMuonValidation)
-        process.validation_step.remove(process.recoMuonValidation)
-        process.validation.remove(process.globalrechitsanalyze)
-        process.validation_prod.remove(process.globalrechitsanalyze)
-        process.validation_step.remove(process.globalrechitsanalyze)
-        process.validation.remove(process.stripRecHitsValid)
-        process.validation_step.remove(process.stripRecHitsValid)
-        process.validation_step.remove(process.StripTrackingRecHitsValid)
-        process.globalValidation.remove(process.vertexValidation)
-        process.validation.remove(process.vertexValidation)
-        process.validation_step.remove(process.vertexValidation)
-        process.mix.input.nbPileupEvents.averageNumber = cms.double(0.0)
-        process.mix.minBunch = cms.int32(0)
-        process.mix.maxBunch = cms.int32(0)
+    return process
 
+def customise_Validation_Trackingonly(process):
+
+    #To allow Tracking to perform special tracking only validation 
+    process.trackValidator.label=cms.VInputTag(cms.InputTag("cutsRecoTracksHp"))
+    process.tracksValidationSelectors = cms.Sequence(process.cutsRecoTracksHp)
+    process.globalValidation.remove(process.recoMuonValidation)
+    process.validation.remove(process.recoMuonValidation)
+    process.validation_preprod.remove(process.recoMuonValidation)
+    process.validation_step.remove(process.recoMuonValidation)
+    process.validation.remove(process.globalrechitsanalyze)
+    process.validation_prod.remove(process.globalrechitsanalyze)
+    process.validation_step.remove(process.globalrechitsanalyze)
+    process.validation.remove(process.stripRecHitsValid)
+    process.validation_step.remove(process.stripRecHitsValid)
+    process.validation_step.remove(process.StripTrackingRecHitsValid)
+    process.globalValidation.remove(process.vertexValidation)
+    process.validation.remove(process.vertexValidation)
+    process.validation_step.remove(process.vertexValidation)
+    process.mix.input.nbPileupEvents.averageNumber = cms.double(0.0)
+    process.mix.minBunch = cms.int32(0)
+    process.mix.maxBunch = cms.int32(0)
     return process
 
 def customise_harvesting(process):
     process.dqmHarvesting.remove(process.jetMETDQMOfflineClient)
     process.dqmHarvesting.remove(process.dataCertificationJetMET)
-    process.dqmHarvesting.remove(process.sipixelEDAClient)
+    #######process.dqmHarvesting.remove(process.sipixelEDAClient)
+    process.sipixelEDAClient.isUpgrade = cms.untracked.bool(True)
     process.dqmHarvesting.remove(process.sipixelCertification)
     return (process)        
 
 def customise_condOverRides(process):
-#    process.load('SLHCUpgradeSimulations.Geometry.fakeConditions_Phase1_R30F12_cff')
     process.trackerTopologyConstants.pxb_layerStartBit = cms.uint32(20)
     process.trackerTopologyConstants.pxb_ladderStartBit = cms.uint32(12)
     process.trackerTopologyConstants.pxb_moduleStartBit = cms.uint32(2)

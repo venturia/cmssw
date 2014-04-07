@@ -5,20 +5,8 @@ def customise_HcalPhase0(process):
 
     if hasattr(process,'mix') and hasattr(process.mix,'digitizers') and hasattr(process.mix.digitizers,'hcal'):    
         process.mix.digitizers.hcal.HcalReLabel.RelabelHits=cms.untracked.bool(True)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta1  = cms.untracked.vint32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta16 = cms.untracked.vint32(1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta17 = cms.untracked.vint32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta18 = cms.untracked.vint32(1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta19 = cms.untracked.vint32(1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2)
-        process.mix.digitizers.hcal.HcalReLabel.RelabelRules.Eta27 = cms.untracked.vint32(1,1,1,1,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3)	
 	
     process.es_hardcode.HcalReLabel.RelabelHits = cms.untracked.bool(True)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta1  = cms.untracked.vint32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta16 = cms.untracked.vint32(1,1,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta17 = cms.untracked.vint32(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta18 = cms.untracked.vint32(1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta19 = cms.untracked.vint32(1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2)
-    process.es_hardcode.HcalReLabel.RelabelRules.Eta27 = cms.untracked.vint32(1,1,1,1,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3)
     process.es_hardcode.HEreCalibCutoff = cms.double(20.) #for aging
 
     process.es_hardcode.toGet = cms.untracked.vstring(
@@ -26,11 +14,10 @@ def customise_HcalPhase0(process):
         'RespCorrs'
         )
 
-
     if hasattr(process,'g4SimHits'):
         process=customise_Sim(process)
     if hasattr(process,'validation_step'):
-        process=customise_Validation(process)
+        process=customise_ValidationPhase0(process)
 		
     return process
 
@@ -58,20 +45,11 @@ def customise_HcalPhase1(process):
                 'CovarianceMatrices'
                 )
     
-    process.es_hardcode.hcalTopologyConstants.mode=cms.string('HcalTopologyMode::SLHC')
-    process.es_hardcode.hcalTopologyConstants.maxDepthHB=cms.int32(3)
-    process.es_hardcode.hcalTopologyConstants.maxDepthHB=cms.int32(3)
-    process.es_hardcode.hcalTopologyConstants.maxDepthHE=cms.int32(5)
     process.es_hardcode.HcalReLabel.RelabelHits=cms.untracked.bool(True)
     # Special Upgrade trick (if absent - regular case assumed)
     process.es_hardcode.GainWidthsForTrigPrims = cms.bool(True)
     process.es_hardcode.HEreCalibCutoff = cms.double(100.) #for aging
     
-    process.hcalTopologyIdeal.hcalTopologyConstants.mode=cms.string('HcalTopologyMode::SLHC')
-    process.hcalTopologyIdeal.hcalTopologyConstants.maxDepthHB=cms.int32(3)
-    process.hcalTopologyIdeal.hcalTopologyConstants.maxDepthHE=cms.int32(5)
-    
-
     if hasattr(process,'g4SimHits'):
         process=customise_Sim(process)
     if hasattr(process,'DigiToRaw'):
@@ -87,10 +65,35 @@ def customise_HcalPhase1(process):
     if hasattr(process,'dqmHarvesting'):
         process=customise_harvesting(process)
     if hasattr(process,'validation_step'):
-        process=customise_Validation(process)
+        process=customise_ValidationPhase1(process)
     process=customise_condOverRides(process)
     return process
 
+def customise_HcalPhase2(process):
+    process = customise_HcalPhase1(process)
+    if hasattr(process,'digitisation_step') and hasattr(process, 'mix'):
+
+        # these are the new sampling factors,  they reuse the old ones for
+        # ieta < 21.  For ieta greater than 21 it is using the function
+        # samplingFraction = 188.441 + 0.834*eta
+        # eta is the highest eta broundary of the ieta.  This is currently
+        # taken for HE from ieta 16 to 33 inclusive.  Which would extend to
+        # an eta of 3.0.  For the option going to 4.0 it is unclear how many
+        # ieta's there will be from 3 to 4, but this vector would need to be
+        # extended.
+        newFactors = cms.vdouble(
+            210.55, 197.93, 186.12, 189.64, 189.63,
+            189.96, 190.03, 190.11, 190.18, 190.25,
+            190.32, 190.40, 190.47, 190.54, 190.61,
+            190.69, 190.83, 190.94, 190.94, 190.94,
+            190.94, 190.94, 190.94, 190.94, 190.94,
+            190.94, 190.94, 190.94, 190.94, 190.94,
+            190.94, 190.94, 190.94, 190.94, 190.94,
+            190.94, 190.94, 190.94, 190.94, 190.94)
+        process.mix.digitizers.hcal.he.samplingFactors = newFactors
+        process.mix.digitizers.hcal.he.photoelectronsToAnalog = cms.vdouble([10.]*len(newFactors))
+
+    return process
 
 def customise_Sim(process):
     process.g4SimHits.HCalSD.TestNumberingScheme = True
@@ -117,18 +120,13 @@ def customise_Digi(process):
         process.mix.digitizers.hcal.he.pixels = cms.int32(4500*4*2)
         process.mix.digitizers.hcal.HFUpgradeQIE = True
         process.mix.digitizers.hcal.HcalReLabel.RelabelHits=cms.untracked.bool(True)
-
-    if hasattr(process,'HcalTPGCoderULUT'):
-        process.HcalTPGCoderULUT.hcalTopologyConstants.mode=cms.string('HcalTopologyMode::SLHC')
-        process.HcalTPGCoderULUT.hcalTopologyConstants.maxDepthHB=cms.int32(3)
-        process.HcalTPGCoderULUT.hcalTopologyConstants.maxDepthHE=cms.int32(5)
-
+        process.mix.digitizers.hcal.doTimeSlew = False
     if hasattr(process,'simHcalDigis'):
         process.simHcalDigis.useConfigZSvalues=cms.int32(1)
         process.simHcalDigis.HBlevel=cms.int32(16)
         process.simHcalDigis.HElevel=cms.int32(16)
-        process.simHcalDigis.HOlevel=cms.int32(16)
-        process.simHcalDigis.HFlevel=cms.int32(16)
+        process.simHcalDigis.HOlevel=cms.int32(8)
+        process.simHcalDigis.HFlevel=cms.int32(10)
 
     process.digitisation_step.remove(process.simHcalTriggerPrimitiveDigis)
     process.digitisation_step.remove(process.simHcalTTPDigis)
@@ -170,8 +168,6 @@ def customise_Reco(process):
     process.sc7JetID.hfRecHitsColl = cms.InputTag("hfUpgradeReco")
     process.sc7JetID.hbheRecHitsColl = cms.InputTag("hbheUpgradeReco")
     process.hfEMClusters.hits = cms.InputTag("hfUpgradeReco")
-    process.caloRecoTauProducer.TrackAssociatorParameters.HBHERecHitCollectionLabel = cms.InputTag("hbheUpgradeReco")
-    process.caloRecoTauProducer.HFRecHitCollection=cms.InputTag("hfUpgradeReco")
     
     process.muons1stStep.TrackAssociatorParameters.HBHERecHitCollectionLabel=cms.InputTag("hbheUpgradeReco")
     process.muons1stStep.CaloExtractorPSet.TrackAssociatorParameters.HBHERecHitCollectionLabel=cms.InputTag("hbheUpgradeReco")
@@ -190,29 +186,31 @@ def customise_Reco(process):
     process.reducedHcalRecHits.hfTag=cms.InputTag("hfUpgradeReco")
     process.reducedHcalRecHits.hbheTag=cms.InputTag("hbheUpgradeReco")
 
-    process.caloRecoTauProducer.HBHERecHitCollection=cms.InputTag("hbheUpgradeReco")
-    process.caloRecoTauProducer.HFRecHitCollection=cms.InputTag("hfUpgradeReco")
-    
     process.load("RecoLocalCalo.HcalRecProducers.HBHEUpgradeReconstructor_cfi")
     process.load("RecoLocalCalo.HcalRecProducers.HFUpgradeReconstructor_cfi")
-###    process.load("RecoLocalCalo.HcalRecProducers.HcalSimpleReconstructor_ho_cfi") 
 
     process.reconstruction_step.replace(process.hfreco,process.hfUpgradeReco)
     process.reconstruction_step.remove(process.hbhereco)
     process.reconstruction_step.replace(process.hbheprereco,process.hbheUpgradeReco)
 
     process.horeco.digiLabel = "simHcalDigis" 
-    process.hbhereco.digiLabel = cms.InputTag("simHcalDigis","HBHEUpgradeDigiCollection")
-    process.hfreco.digiLabel = cms.InputTag("simHcalDigis","HBHEUpgradeDigiCollection")
+    process.hbheUpgradeReco.digiLabel = cms.InputTag("simHcalDigis","HBHEUpgradeDigiCollection")
+    process.hfUpgradeReco.digiLabel = cms.InputTag("simHcalDigis","HFUpgradeDigiCollection")
+    process.hbheUpgradeReco.correctForTimeslew = False
 
     process.zdcreco.digiLabel = "simHcalUnsuppressedDigis"
     process.hcalnoise.digiCollName=cms.string('simHcalDigis')
+    if hasattr(process, 'hcalnoise'):
+        process.reconstruction_step.remove(process.hcalnoise)
+        # process.reconstruction_step.highlevelreco.metrecoPlusHCALNoise.remove(process.hcalnoise)
+        
 
     # not sure why these are missing - but need to investigate later
     process.reconstruction_step.remove(process.castorreco)
     process.reconstruction_step.remove(process.CastorTowerReco)
     process.reconstruction_step.remove(process.ak7BasicJets)
     process.reconstruction_step.remove(process.ak7CastorJetID)
+
     return process
 
 def customise_DQM(process):
@@ -229,15 +227,39 @@ def customise_DQM(process):
     process.dqmoffline_step.remove(process.hcalRawDataMonitor)
     process.ExoticaDQM.JetIDParams.hbheRecHitsColl=cms.InputTag("hbheUpgradeReco")
     process.ExoticaDQM.JetIDParams.hfRecHitsColl=cms.InputTag("hfUpgradeReco")
+
+    if hasattr(process, 'NoiseRatesDQMOffline'):
+        process.dqmoffline_step.remove(process.NoiseRatesDQMOffline)
+    if hasattr(process, 'HBHENoiseFilterResultProducer'):
+        process.dqmoffline_step.remove(process.HBHENoiseFilterResultProducer)
+    if hasattr(process, 'towerSchemeBAnalyzer'):
+        process.dqmoffline_step.remove(process.towerSchemeBAnalyzer)
+        
     return process
 
 def customise_harvesting(process):
+    process.hcaldigisClient.doSLHC    = cms.untracked.bool(True)
+    process.hcalrechitsClient.doSLHC  = cms.untracked.bool(True)
     return process
 
-def customise_Validation(process):
-    process.validation_step.remove(process.AllHcalDigisValidation)
-    process.validation_step.remove(process.RecHitsValidation)
+def customise_ValidationPhase0(process):
+#    process.AllHcalDigisValidation.doSLHC = cms.untracked.bool(True)
+    process.AllHcalDigisValidation.digiLabel = cms.InputTag("simHcalDigis")
     process.validation_step.remove(process.globalhitsanalyze)
+    return process
+
+def customise_ValidationPhase1(process):
+    process.AllHcalDigisValidation.doSLHC = cms.untracked.bool(True)
+    process.AllHcalDigisValidation.digiLabel = cms.InputTag("simHcalDigis")
+    process.RecHitsValidation.doSLHC = cms.untracked.bool(True)
+    process.RecHitsValidation.HBHERecHitCollectionLabel = cms.untracked.InputTag("hbheUpgradeReco")
+    process.RecHitsValidation.HFRecHitCollectionLabel = cms.untracked.InputTag("hfUpgradeReco") 
+    process.validation_step.remove(process.globalhitsanalyze)
+
+    if hasattr(process, 'NoiseRatesValidation'):
+        # process.validation_step.hcalRecHitsValidationSequence.remove(process.NoiseRatesValidation)
+        process.validation_step.remove(process.NoiseRatesValidation)
+
     return process
 
 def customise_condOverRides(process):

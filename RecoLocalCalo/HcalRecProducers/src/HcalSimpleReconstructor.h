@@ -15,8 +15,8 @@
 
     /** \class HcalSimpleReconstructor
 	
-    $Date: 2013/04/26 15:50:15 $
-    $Revision: 1.10 $
+    $Date: 2013/05/08 23:22:39 $
+    $Revision: 1.12 $
     \author J. Mans - Minnesota
     */
 class HcalTopology;
@@ -44,6 +44,7 @@ class HcalTopology;
       int firstSample_;
       int samplesToAdd_;
       bool tsFromDB_;
+      double firstDepthWeight_;
       bool upgradeHBHE_;
       bool upgradeHF_;
 

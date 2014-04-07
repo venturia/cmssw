@@ -60,7 +60,7 @@ class MatrixInjector(object):
             self.dqmgui="https://cmsweb.cern.ch/dqm/relval"
         #couch stuff
         self.couch = 'https://'+self.wmagent+'/couchdb'
-#        self.couchDB = 'reqmgr_config_cache'
+# self.couchDB = 'reqmgr_config_cache'
         self.couchCache={} # so that we do not upload like crazy, and recyle cfgs
         self.user = os.getenv('USER')
         self.group = 'ppd'
@@ -88,10 +88,8 @@ class MatrixInjector(object):
             "ProcessingVersion": self.version,                #Processing Version (used for all tasks in chain)
             "GlobalTag": None,                                #Global Tag (overridden per task)
             "CouchURL": self.couch,                           #URL of CouchDB containing Config Cache
-            "ConfigCacheURL": self.couch,                           #URL of CouchDB containing Config Cache
-            "DbsUrl": "http://cmsdbsprod.cern.ch/cms_dbs_prod_global/servlet/DBSServlet",
-            #"CouchDBName": self.couchDB,                      #Name of Couch Database containing config cache
-            #- Will contain all configs for all Tasks
+            "ConfigCacheURL": self.couch,                     #URL of CouchDB containing Config Cache
+            "DbsUrl": "https://cmsweb.cern.ch/dbs/prod/global/DBSReader",
             #"SiteWhitelist" : ["T2_CH_CERN", "T1_US_FNAL"],   #Site whitelist
             "TaskChain" : None,                                  #Define number of tasks in chain.
             "nowmTasklist" : [],  #a list of tasks as we put them in
@@ -110,8 +108,8 @@ class MatrixInjector(object):
             }
         
         self.defaultScratch={
-            "TaskName" : None,                            #Task Name
-            "ConfigCacheID" : None,                   #Generator Config id
+            "TaskName" : None, #Task Name
+            "ConfigCacheID" : None, #Generator Config id
             "GlobalTag": None,
             "SplittingAlgo"  : "EventBased",             #Splitting Algorithm
             "EventsPerJob" : None,                       #Size of jobs in terms of splitting algorithm
@@ -122,8 +120,8 @@ class MatrixInjector(object):
             "KeepOutput" : False
             }
         self.defaultInput={
-            "TaskName" : "DigiHLT",                                      #Task Name
-            "ConfigCacheID" : None,                                      #Processing Config id
+            "TaskName" : "DigiHLT", #Task Name
+            "ConfigCacheID" : None, #Processing Config id
             "GlobalTag": None,
             "InputDataset" : None,                                       #Input Dataset to be processed
             "SplittingAlgo"  : "LumiBased",                        #Splitting Algorithm
@@ -132,10 +130,10 @@ class MatrixInjector(object):
             "KeepOutput" : False
             }
         self.defaultTask={
-            "TaskName" : None,                                 #Task Name
-            "InputTask" : None,                                #Input Task Name (Task Name field of a previous Task entry)
-            "InputFromOutputModule" : None,                    #OutputModule name in the input task that will provide files to process
-            "ConfigCacheID" : None,                            #Processing Config id
+            "TaskName" : None, #Task Name
+            "InputTask" : None, #Input Task Name (Task Name field of a previous Task entry)
+            "InputFromOutputModule" : None, #OutputModule name in the input task that will provide files to process
+            "ConfigCacheID" : None, #Processing Config id
             "GlobalTag": None,
             "SplittingAlgo"  : "LumiBased",                        #Splitting Algorithm
             "LumisPerJob" : 10,               #Size of jobs in terms of splitting algorithm
@@ -153,7 +151,7 @@ class MatrixInjector(object):
             wmsplit['DIGIHI']=5
             wmsplit['RECOHI']=5
             wmsplit['HLTD']=5
-            wmsplit['RECODreHLT']=2  
+            wmsplit['RECODreHLT']=2
             wmsplit['DIGIPU']=4
             wmsplit['DIGIPU1']=4
             wmsplit['RECOPU1']=1
@@ -167,7 +165,7 @@ class MatrixInjector(object):
             wmsplit['TTbarFS_ID']=1
                                     
             #import pprint
-            #pprint.pprint(wmsplit)            
+            #pprint.pprint(wmsplit)
         except:
             print "Not set up for step splitting"
             wmsplit={}
@@ -312,7 +310,7 @@ class MatrixInjector(object):
 
             ## there is in fact only one acquisition era
             #if len(set(chainDict['AcquisitionEra'].values()))==1:
-            #    print "setting only one acq"
+            # print "setting only one acq"
             if acqEra:
                 chainDict['AcquisitionEra'] = chainDict['AcquisitionEra'].values()[0]
                 
@@ -334,7 +332,7 @@ class MatrixInjector(object):
                 chainDict['Task%d'%(itask)]=t
 
 
-            ## 
+            ##
 
 
             ## provide the number of tasks
@@ -419,5 +417,3 @@ class MatrixInjector(object):
                 print "...........",n,"submitted"
                 random_sleep()
             
-
-        

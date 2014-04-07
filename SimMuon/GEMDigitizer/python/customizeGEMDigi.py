@@ -24,7 +24,7 @@ mixObjects_dt_csc_rpc =  cms.PSet(
             'MuonCSCHits',
             'MuonDTHits',
             'MuonRPCHits'
-            ),
+        ),
         input = cms.VInputTag(
             cms.InputTag("g4SimHits","MuonCSCHits"),
             cms.InputTag("g4SimHits","MuonDTHits"),
@@ -34,7 +34,7 @@ mixObjects_dt_csc_rpc =  cms.PSet(
             'MuonCSCHits',
             'MuonDTHits',
             'MuonRPCHits'
-            )
+        )
     ),
     mixTracks = cms.PSet(
         input = cms.VInputTag(cms.InputTag("g4SimHits")),
@@ -88,42 +88,85 @@ def customize_random_GEMDigi(process):
     return process
 
 
+## load the digitizer and pad producer
+def load_GEM_digitizers(process):
+    process.load('SimMuon.GEMDigitizer.muonGEMDigis_cfi')
+    process.load('SimMuon.GEMDigitizer.muonGEMCSCPadDigis_cfi')
+    return process
+
 # customize the full digitization sequence pdigi by adding GEMs
 def customize_digi_addGEM(process):
+    process = load_GEM_digitizers(process)
     process = customize_random_GEMDigi(process)
     process = customize_mix_addGEM(process)
-    process.muonDigi = cms.Sequence(process.simMuonCSCDigis + process.simMuonDTDigis + process.simMuonRPCDigis + process.simMuonGEMDigis + process.simMuonGEMCSCPadDigis)
-    process.doAllDigi = cms.Sequence(process.trDigi + process.calDigi + process.muonDigi)
+    process.muonDigi = cms.Sequence(
+        process.simMuonCSCDigis +
+        process.simMuonDTDigis +
+        process.simMuonRPCDigis +
+        process.simMuonGEMDigis +
+        process.simMuonGEMCSCPadDigis
+    )
+    process.doAllDigi = cms.Sequence(
+        process.calDigi +
+        process.muonDigi
+    )
     process.pdigi = cms.Sequence(
         cms.SequencePlaceholder("randomEngineStateProducer")*
         cms.SequencePlaceholder("mix")*
         process.doAllDigi*
-        process.trackingParticles*
-        process.addPileupInfo )
+        process.addPileupInfo
+    )
+    append_GEMDigi_event(process)
     return process
 
 
 # customize the digitization sequence pdigi to only digitize DT+CSC+RPC+GEM
 def customize_digi_addGEM_muon_only(process):
+    process = load_GEM_digitizers(process)
     process = customize_random_GEMDigi(process)
     process = customize_mix_addGEM_muon_only(process)
-    process.muonDigi = cms.Sequence(process.simMuonCSCDigis + process.simMuonDTDigis + process.simMuonRPCDigis + process.simMuonGEMDigis + process.simMuonGEMCSCPadDigis)
+    process.muonDigi = cms.Sequence(
+        process.simMuonCSCDigis +
+        process.simMuonDTDigis +
+        process.simMuonRPCDigis +
+        process.simMuonGEMDigis +
+        process.simMuonGEMCSCPadDigis
+    )
     process.pdigi = cms.Sequence(
         cms.SequencePlaceholder("randomEngineStateProducer")*
         cms.SequencePlaceholder("mix")*
-        process.muonDigi )
+        process.muonDigi
+    )
+    append_GEMDigi_event(process)
     return process
 
 
 # customize the digitization sequence pdigi to only digitize GEM
 def customize_digi_addGEM_gem_only(process):
+    process = load_GEM_digitizers(process)
     process = customize_random_GEMDigi(process)
     process = customize_mix_addGEM_muon_only(process)
-    process.muonDigi = cms.Sequence(process.simMuonCSCDigis + process.simMuonDTDigis + process.simMuonRPCDigis + process.simMuonGEMDigis + process.simMuonGEMCSCPadDigis)
+    process.muonDigi = cms.Sequence(
+        process.simMuonCSCDigis +
+        process.simMuonDTDigis +
+        process.simMuonRPCDigis +
+        process.simMuonGEMDigis +
+        process.simMuonGEMCSCPadDigis
+    )
     process.pdigi = cms.Sequence(
         cms.SequencePlaceholder("randomEngineStateProducer")*
         cms.SequencePlaceholder("mix")*
         process.simMuonGEMDigis*
-        process.simMuonGEMCSCPadDigis )
+        process.simMuonGEMCSCPadDigis
+    )
+    append_GEMDigi_event(process)
     return process
-
+    
+# insert the GEMDigi and GEMCSCPadDigi collection to the event
+def append_GEMDigi_event(process):
+    alist=['AODSIM','RECOSIM','FEVTSIM','FEVTDEBUG','FEVTDEBUGHLT','RECODEBUG','RAWRECOSIMHLT','RAWRECODEBUGHLT']
+    for a in alist:
+        b=a+'output'
+        if hasattr(process,b):
+            getattr(process,b).outputCommands.append('keep *_simMuonGEMDigis_*_*')
+            getattr(process,b).outputCommands.append('keep *_simMuonGEMCSCPadDigis_*_*')

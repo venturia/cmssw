@@ -395,5 +395,43 @@ NominalCollision4VtxSmearingParameters = cms.PSet(
     X0 = cms.double(0.2),
     Z0 = cms.double(0.0)
 )
+# Paramters for HL-LHC operation
+HLLHCVtxSmearingParameters = cms.PSet(
+    MeanXIncm = cms.double(0.),
+    MeanYIncm = cms.double(0.),
+    MeanZIncm = cms.double(0.),
+    TimeOffsetInns = cms.double(0.0),
+    EprotonInGeV = cms.double(6500.0),
+    HalfCrossingAngleInurad = cms.double(295.0),
+    CrabAngleCrossingPlaneInurad = cms.double(295.0),
+    CrabFrequencyCrossingPlaneInMHz = cms.double(400.0),
+    NormalizedEmittanceCrossingPlaneInum = cms.double(2.5),
+    BetaStarCrossingPlaneInm = cms.double(0.15),
+    CrabAngleParallelPlaneInurad = cms.double(0.0),
+    CrabFrequencyParallelPlaneInMHz = cms.double(400.0),
+    NormalizedEmittanceParallelPlaneInum = cms.double(2.5),
+    BetaStarParallelPlaneInm = cms.double(0.15),
+    ZsizeInm = cms.double(0.075),
+    BeamProfile=cms.string("Gauss")
+)
+# Paramters for HL-LHC operation
+HLLHCCrabKissingVtxSmearingParameters = cms.PSet(
+    MeanXInmm = cms.double(0.),
+    MeanYInmm = cms.double(0.),
+    MeanZInmm = cms.double(0.),
+    TimeOffsetInns = cms.double(0.0),
+    EprotoninGeV = cms.double(6500.0),
+    HalfCrossingAngleinurad = cms.double(200.0),
+    CrabAngleCrossingPlaneInurad = cms.double(200.0),
+    CrabFrequencyCrossingPlaneInMHz = cms.double(400.0),
+    NormalizedEmittanceCrossingPlaneInum = cms.double(2.5),
+    BetaStarCrossingPlaneInm = cms.double(0.30),
+    CrabAngleParallelPlaneInurad = cms.double(100.0),
+    CrabFrequencyParallelPlaneInMHz = cms.double(400.0),
+    NormalizedEmittanceParallelPlaneInum = cms.double(2.5),
+    BetaStarParallelPlaneInm = cms.double(0.075),
+    ZsizeInm = cms.double(0.15),
+    BeamProfile=cms.string("Flat")
+)
 
 
