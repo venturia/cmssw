@@ -622,7 +622,6 @@ void PlotOccupancyMapPhase2(TFile* ff, const char* module, const float min, cons
       // eta boundaries lines
       TList etalines;
       TList etalabels;
-      TList paperlabels;
       for(int i=0;i<8;++i) {
 	double eta = 3.0-i*0.2;
 	TLine* lin = new TLine(295,2*295/(exp(eta)-exp(-eta)),305,2*305/(exp(eta)-exp(-eta)));
@@ -656,34 +655,12 @@ void PlotOccupancyMapPhase2(TFile* ff, const char* module, const float min, cons
 	label->SetTextAlign(22);
 	etalabels.Add(label);
       }
-      TLatex* etalab = new  TLatex(0,115,"#eta");
-      etalab->SetTextSize(.03);
-      etalab->SetTextAlign(22);
-      etalabels.Add(etalab);
 
-      // CMS label
-      TLatex *cmslab = new TLatex(0.15,0.965,"CMS");
-      cmslab->SetNDC();
-      cmslab->SetTextSize(0.04);
-      cmslab->SetTextAlign(31);
-      paperlabels.Add(cmslab);
-      TLatex *enelab = new TLatex(0.92,0.965,"#sqrt{s} = 7 TeV");
-      enelab->SetNDC();
-      enelab->SetTextSize(0.04);
-      enelab->SetTextAlign(31);
-      paperlabels.Add(enelab);
-      /*
-      TLatex *lumilab = new TLatex(0.6,0.965,Form("L = %.1f  fb^{-1}",19.7));
-      lumilab->SetNDC();
-      lumilab->SetTextSize(0.04);
-      lumilab->SetTextAlign(31);
-      paperlabels.Add(lumilab);
-      */
 
       TGaxis *raxis = new TGaxis(-310,0,-310,140,0,140,10,"S");
       TGaxis *zaxis = new TGaxis(-310,0,310,0,-310,310,10,"S");
       raxis->SetTickSize(.01);      zaxis->SetTickSize(.01);
-      raxis->SetTitle("r (cm)"); zaxis->SetTitle("z (cm)");
+      raxis->SetTitle("R (cm)"); zaxis->SetTitle("Z (cm)");
 
       TList palette;
       TList mpalette;
@@ -700,7 +677,6 @@ void PlotOccupancyMapPhase2(TFile* ff, const char* module, const float min, cons
       TGaxis *paxis = new TGaxis(330,0,330,140,min,max,510,"SLG+");
       paxis->SetTickSize(.02);
       paxis->SetLabelOffset(paxis->GetLabelOffset()*0.5);
-      paxis->SetTitle("channel occupancy");
       palette.Add(paxis);
 
       TGaxis *mpaxis = new TGaxis(330,0,330,140,mmin,mmax,510,"SLG+");
@@ -717,7 +693,6 @@ void PlotOccupancyMapPhase2(TFile* ff, const char* module, const float min, cons
       std::cout << modulesoccu.GetSize() << std::endl;
       etalines.Draw();
       etalabels.Draw();
-      paperlabels.Draw();
       palette.Draw();
       modulesoccu.Draw();
 
