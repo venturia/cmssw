@@ -8,9 +8,7 @@
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/Common/interface/OwnVector.h"
 #include "DataFormats/TrackerRecHit2D/interface/SiTrackerGSRecHit2DCollection.h" 
-#include "DataFormats/TrackerRecHit2D/interface/SiTrackerGSMatchedRecHit2DCollection.h" 
 #include "DataFormats/TrajectorySeed/interface/TrajectorySeedCollection.h"
-#include "DataFormats/BeamSpot/interface/BeamSpot.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "Geometry/TrackerGeometryBuilder/interface/TrackerGeometry.h"
@@ -21,8 +19,6 @@
 #include "FastSimulation/Tracking/plugins/TrajectorySeedProducer.h"
 #include "FastSimulation/Tracking/interface/TrackerRecHit.h"
 
-#include "SimDataFormats/Track/interface/SimTrackContainer.h"
-#include "SimDataFormats/Vertex/interface/SimVertexContainer.h"
 
 #include "TrackingTools/TrajectoryParametrization/interface/CurvilinearTrajectoryError.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateOnSurface.h"
@@ -148,10 +144,10 @@ TrajectorySeedProducer::TrajectorySeedProducer(const edm::ParameterSet& conf) :t
           }
         }
         // TIB(1-4)
-        else if (layerSpec.name.substr(0,3)=="TIB" ) {
+        else if (layerSpec.name.substr(0,3)=="TIB" || layerSpec.name.substr(0,4)=="MTIB") {
           layerSpec.subDet=TIB;
           layerSpec.side=BARREL;
-          layerSpec.idLayer = std::atoi(layerSpec.name.substr(3,1).c_str());
+          layerSpec.idLayer = std::atoi(layerSpec.name.substr(layerSpec.name.find('B')+1,1).c_str());
           if (layerSpec.idLayer>4 || layerSpec.idLayer==0) {
             throw cms::Exception("FastSimulation/Tracking/python")
               << "Bad data naming in IterativeInitialStep_cff.py  iterativeInitialSeeds.layerList" << std::endl
@@ -159,13 +155,13 @@ TrajectorySeedProducer::TrajectorySeedProducer(const edm::ParameterSet& conf) :t
           }
         }
         // TID(1-3)(pos, neg)
-        else if (layerSpec.name.substr(0,3)=="TID" ) {
+        else if (layerSpec.name.substr(0,3)=="TID" || layerSpec.name.substr(0,4)=="MTID") {
           layerSpec.subDet=TID;
           if(layerSpec.name.substr(layerSpec.name.size()-3)=="pos")
             layerSpec.side = POS_ENDCAP;
           else
             layerSpec.side = NEG_ENDCAP;
-          layerSpec.idLayer = std::atoi(layerSpec.name.substr(3,1).c_str());
+          layerSpec.idLayer = std::atoi(layerSpec.name.substr(layerSpec.name.find('D')+1,1).c_str());
           if (layerSpec.idLayer>3 || layerSpec.idLayer==0) {
             throw cms::Exception("FastSimulation/Tracking/python")
               << "Bad data naming in IterativeInitialStep_cff.py  iterativeInitialSeeds.layerList" << std::endl
@@ -184,13 +180,13 @@ TrajectorySeedProducer::TrajectorySeedProducer(const edm::ParameterSet& conf) :t
           }
         }
         // TEC(1-9)(pos, neg)
-        else if (layerSpec.name.substr(0,3)=="TEC" ) {
+        else if (layerSpec.name.substr(0,3)=="TEC" || layerSpec.name.substr(0,4)=="MTEC") {
           layerSpec.subDet=TEC;
           if(layerSpec.name.substr(layerSpec.name.size()-3)=="pos")
             layerSpec.side = POS_ENDCAP;
           else
             layerSpec.side = NEG_ENDCAP;
-          layerSpec.idLayer = std::atoi(layerSpec.name.substr(3,1).c_str());
+          layerSpec.idLayer = std::atoi(layerSpec.name.substr(layerSpec.name.find('C')+1,1).c_str());
           if (layerSpec.idLayer>9 || layerSpec.idLayer==0) {
             throw cms::Exception("FastSimulation/Tracking/python")
               << "Bad data naming in IterativeInitialStep_cff.py  iterativeInitialSeeds.layerList" << std::endl
@@ -201,7 +197,7 @@ TrajectorySeedProducer::TrajectorySeedProducer(const edm::ParameterSet& conf) :t
           throw cms::Exception("FastSimulation/Tracking/python")
             << "Bad data naming in IterativeInitialStep_cff.py  iterativeInitialSeeds.layerList" << std::endl
             << "Layer: " << layerSpec.name << ", shouldn't exist" << std::endl
-            << "Case sensitive names: BPix FPix TIB TID TOB TEC" << std::endl;
+            << "Case sensitive names: BPix FPix TIB MTIB TID MTID TOB TEC MTEC" << std::endl;
         }
         //
         tempResult.push_back(layerSpec);
@@ -320,6 +316,17 @@ TrajectorySeedProducer::TrajectorySeedProducer(const edm::ParameterSet& conf) :t
 	<< " WARNING : zVertexConstraint does not have the proper size "
 	<< std::endl;
   //removed - }
+
+    // consumes
+    beamSpotToken = consumes<reco::BeamSpot>(theBeamSpot);
+    edm::InputTag _label("famosSimHits");
+    simTrackToken = consumes<edm::SimTrackContainer>(_label);
+    simVertexToken = consumes<edm::SimVertexContainer>(_label);
+    recHitToken = consumes<SiTrackerGSMatchedRecHit2DCollection>(hitProducer);
+    for ( unsigned ialgo=0; ialgo<seedingAlgo.size(); ++ialgo ) {
+      _label = edm::InputTag(primaryVertices[ialgo]);
+      recoVertexToken.push_back(consumes<reco::VertexCollection>(_label));
+    }
 }
   
 // Virtual destructor needed.
@@ -394,7 +401,7 @@ TrajectorySeedProducer::produce(edm::Event& e, const edm::EventSetup& es) {
   
   // Beam spot
   edm::Handle<reco::BeamSpot> recoBeamSpotHandle;
-  e.getByLabel(theBeamSpot,recoBeamSpotHandle); 
+  e.getByToken(beamSpotToken,recoBeamSpotHandle); 
   math::XYZPoint BSPosition_ = recoBeamSpotHandle->position();
 
   //not used anymore. take the value from the py
@@ -408,10 +415,10 @@ TrajectorySeedProducer::produce(edm::Event& e, const edm::EventSetup& es) {
 
   // SimTracks and SimVertices
   edm::Handle<edm::SimTrackContainer> theSimTracks;
-  e.getByLabel("famosSimHits",theSimTracks);
+  e.getByToken(simTrackToken,theSimTracks);
   
   edm::Handle<edm::SimVertexContainer> theSimVtx;
-  e.getByLabel("famosSimHits",theSimVtx);
+  e.getByToken(simVertexToken,theSimVtx);
 
 #ifdef FAMOS_DEBUG
   std::cout << " Step A: SimTracks found " << theSimTracks->size() << std::endl;
@@ -419,7 +426,7 @@ TrajectorySeedProducer::produce(edm::Event& e, const edm::EventSetup& es) {
   
   //  edm::Handle<SiTrackerGSRecHit2DCollection> theGSRecHits;
   edm::Handle<SiTrackerGSMatchedRecHit2DCollection> theGSRecHits;
-  e.getByLabel(hitProducer, theGSRecHits);
+  e.getByToken(recHitToken, theGSRecHits);
   
   // No tracking attempted if no hits (but put an empty collection in the event)!
 #ifdef FAMOS_DEBUG
@@ -440,7 +447,7 @@ TrajectorySeedProducer::produce(edm::Event& e, const edm::EventSetup& es) {
     //PAT Attempt!!!! 
    //originHalfLength[ialgo] = 3.*sigmaz0; // Overrides the configuration
     edm::Handle<reco::VertexCollection> aHandle;
-    bool isVertexCollection = e.getByLabel(primaryVertices[ialgo],aHandle);
+    bool isVertexCollection = e.getByToken(recoVertexToken[ialgo],aHandle);
     if (!isVertexCollection ) continue;
     vertices[ialgo] = &(*aHandle);
   }

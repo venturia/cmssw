@@ -1,17 +1,21 @@
 #include "SimG4Core/Application/interface/RunManager.h"
 #include "SimG4Core/Application/interface/PrimaryTransformer.h"
+#include "SimG4Core/Application/interface/SimRunInterface.h"
 #include "SimG4Core/Application/interface/RunAction.h"
 #include "SimG4Core/Application/interface/EventAction.h"
 #include "SimG4Core/Application/interface/StackingAction.h"
 #include "SimG4Core/Application/interface/TrackingAction.h"
 #include "SimG4Core/Application/interface/SteppingAction.h"
+#include "SimG4Core/Application/interface/SimTrackManager.h"
 #include "SimG4Core/Application/interface/G4SimEvent.h"
 #include "SimG4Core/Application/interface/ParametrisedEMPhysics.h"
 
 #include "SimG4Core/Geometry/interface/DDDWorld.h"
 #include "SimG4Core/Geometry/interface/G4LogicalVolumeToDDLogicalPartMap.h"
 #include "SimG4Core/Geometry/interface/SensitiveDetectorCatalog.h"
+
 #include "SimG4Core/SensitiveDetector/interface/AttachSD.h"
+
 #include "SimG4Core/Generators/interface/Generator.h"
 #include "SimG4Core/Physics/interface/PhysicsListFactory.h"
 #include "SimG4Core/Watcher/interface/SimWatcherFactory.h"
@@ -34,7 +38,6 @@
 
 #include "FWCore/ServiceRegistry/interface/Service.h"
 
-#include "SimDataFormats/GeneratorProducts/interface/HepMCProduct.h"
 #include "SimDataFormats/Forward/interface/LHCTransportLinkContainer.h"
 
 #include "HepPDT/defs.h"
@@ -100,27 +103,11 @@ void createWatchers(const edm::ParameterSet& iP,
   }
 }
 
-// RunManager * RunManager::me = 0;
-/*
-RunManager * RunManager::init(edm::ParameterSet const & p)
-{
-    if (me != 0) abort();
-    me = new RunManager(p);
-    return me;
-}
-
-RunManager * RunManager::instance() 
-{
-    if (me==0) abort();
-    return me;
-}
-*/
-
+//RunManager::RunManager(edm::ParameterSet const & p, edm::ConsumesCollector && iC) 
 RunManager::RunManager(edm::ParameterSet const & p) 
   :   m_generator(0), m_nonBeam(p.getParameter<bool>("NonBeamEvent")), 
       m_primaryTransformer(0), 
       m_managerInitialized(false), 
-      //m_geometryInitialized(true), m_physicsInitialized(true),
       m_runInitialized(false), m_runTerminated(false), m_runAborted(false),
       firstRun(true),
       m_pUseMagneticField(p.getParameter<bool>("UseMagneticField")),
@@ -129,7 +116,6 @@ RunManager::RunManager(edm::ParameterSet const & p)
       m_StorePhysicsTables(p.getParameter<bool>("StorePhysicsTables")),
       m_RestorePhysicsTables(p.getParameter<bool>("RestorePhysicsTables")),
       m_EvtMgrVerbosity(p.getUntrackedParameter<int>("G4EventManagerVerbosity",0)),
-      //m_Override(p.getParameter<bool>("OverrideUserStackingAction")),
       m_pField(p.getParameter<edm::ParameterSet>("MagneticField")),
       m_pGenerator(p.getParameter<edm::ParameterSet>("Generator")),
       m_pPhysics(p.getParameter<edm::ParameterSet>("Physics")),
@@ -142,13 +128,21 @@ RunManager::RunManager(edm::ParameterSet const & p)
       m_p(p), m_fieldBuilder(0),
       m_theLHCTlinkTag(p.getParameter<edm::InputTag>("theLHCTlinkTag"))
 {    
+  //m_HepMC = iC.consumes<edm::HepMCProduct>(p.getParameter<edm::InputTag>("HepMCProduct"));
+
   m_kernel = G4RunManagerKernel::GetRunManagerKernel();
   if (m_kernel==0) m_kernel = new G4RunManagerKernel();
-    
+
   m_CustomExceptionHandler = new ExceptionHandler(this) ;
     
   m_check = p.getUntrackedParameter<bool>("CheckOverlap",false);
   m_WriteFile = p.getUntrackedParameter<std::string>("FileNameGDML","");
+
+  m_currentRun = 0;
+  m_currentEvent = 0;
+  m_simEvent = 0;
+  m_userRunAction = 0;
+  m_runInterface = 0;
 
   //Look for an outside SimActivityRegistry
   // this is used by the visualization code
@@ -158,11 +152,16 @@ RunManager::RunManager(edm::ParameterSet const & p)
   }
 
   createWatchers(m_p, m_registry, m_watchers, m_producers);
+
+  m_generator = new Generator(m_pGenerator);
+  m_InTag = m_pGenerator.getParameter<std::string>("HepMCProductLabel") ;
+
 }
 
 RunManager::~RunManager() 
 { 
-    if (m_kernel!=0) delete m_kernel; 
+  //   if (m_kernel!=0) delete m_kernel; 
+  delete m_runInterface;
 }
 
 void RunManager::initG4(const edm::EventSetup & es)
@@ -225,9 +224,7 @@ void RunManager::initG4(const edm::EventSetup & es)
       
   m_sensTkDets.swap(sensDets.first);
   m_sensCaloDets.swap(sensDets.second);
- 
-
-    
+     
   edm::LogInfo("SimG4CoreApplication") << " RunManager: Sensitive Detector "
 				       << "building finished; found " 
 				       << m_sensTkDets.size()
@@ -239,8 +236,6 @@ void RunManager::initG4(const edm::EventSetup & es)
   es.get<PDTRecord>().get(fTable);
   const HepPDT::ParticleDataTable *fPDGTable = &(*fTable);
 
-  m_generator = new Generator(m_pGenerator);
-  m_InTag = m_pGenerator.getParameter<std::string>("HepMCProductLabel") ;
   m_primaryTransformer = new PrimaryTransformer();
 
   std::auto_ptr<PhysicsListMakerBase> 
@@ -400,32 +395,31 @@ void RunManager::abortEvent()
 
 void RunManager::initializeUserActions()
 {
-  RunAction* userRunAction = new RunAction(m_pRunAction,this);
-  m_userRunAction = userRunAction;
-  userRunAction->m_beginOfRunSignal.connect(m_registry.beginOfRunSignal_);
-  userRunAction->m_endOfRunSignal.connect(m_registry.endOfRunSignal_);
+  m_runInterface = new SimRunInterface(this, false);
+
+  m_userRunAction = new RunAction(m_pRunAction, m_runInterface);
+  Connect(m_userRunAction);
 
   G4EventManager * eventManager = m_kernel->GetEventManager();
   eventManager->SetVerboseLevel(m_EvtMgrVerbosity);
 
   if (m_generator!=0) {
     EventAction * userEventAction = 
-      new EventAction(m_pEventAction,this,m_trackManager.get());
-    userEventAction->m_beginOfEventSignal.connect(m_registry.beginOfEventSignal_);
-    userEventAction->m_endOfEventSignal.connect(m_registry.endOfEventSignal_);
+      new EventAction(m_pEventAction, m_runInterface, m_trackManager.get());
+    Connect(userEventAction);
     eventManager->SetUserAction(userEventAction);
 
     TrackingAction* userTrackingAction = 
       new TrackingAction(userEventAction,m_pTrackingAction);
-    userTrackingAction->m_beginOfTrackSignal.connect(m_registry.beginOfTrackSignal_);
-    userTrackingAction->m_endOfTrackSignal.connect(m_registry.endOfTrackSignal_);
+    Connect(userTrackingAction);
     eventManager->SetUserAction(userTrackingAction);
 	
     SteppingAction* userSteppingAction = 
       new SteppingAction(userEventAction,m_pSteppingAction); 
-    userSteppingAction->m_g4StepSignal.connect(m_registry.g4StepSignal_);
+    Connect(userSteppingAction);
     eventManager->SetUserAction(userSteppingAction);
-    eventManager->SetUserAction(new StackingAction(userEventAction,m_pStackingAction));
+
+    eventManager->SetUserAction(new StackingAction(m_pStackingAction));
 
   } else {
     edm::LogWarning("SimG4CoreApplication") << " RunManager: WARNING : "
@@ -484,4 +478,32 @@ void RunManager::resetGenParticleId( edm::Event& inpevt )
     m_trackManager->setLHCTransportLink( theLHCTlink.product() );
   }
   return;
+}
+
+SimTrackManager* RunManager::GetSimTrackManager()
+{
+  return m_trackManager.get();
+}
+
+void  RunManager::Connect(RunAction* runAction)
+{
+  runAction->m_beginOfRunSignal.connect(m_registry.beginOfRunSignal_);
+  runAction->m_endOfRunSignal.connect(m_registry.endOfRunSignal_);
+}
+
+void  RunManager::Connect(EventAction* eventAction)
+{
+  eventAction->m_beginOfEventSignal.connect(m_registry.beginOfEventSignal_);
+  eventAction->m_endOfEventSignal.connect(m_registry.endOfEventSignal_);
+}
+
+void  RunManager::Connect(TrackingAction* trackingAction)
+{
+  trackingAction->m_beginOfTrackSignal.connect(m_registry.beginOfTrackSignal_);
+  trackingAction->m_endOfTrackSignal.connect(m_registry.endOfTrackSignal_);
+}
+
+void  RunManager::Connect(SteppingAction* steppingAction)
+{
+  steppingAction->m_g4StepSignal.connect(m_registry.g4StepSignal_);
 }

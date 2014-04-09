@@ -5,7 +5,6 @@
 #include "TrackingTools/TransientTrackingRecHit/interface/TValidTrackingRecHit.h"
 #include "RecoLocalTracker/ClusterParameterEstimator/interface/StripClusterParameterEstimator.h"
 #include "TrackingTools/TransientTrackingRecHit/interface/HelpertRecHit2DLocalPos.h"
-#include "DataFormats/Common/interface/RefGetter.h"
 #include "Geometry/CommonDetUnit/interface/GeomDetUnit.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -13,8 +12,6 @@ class TSiStripRecHit2DLocalPos GCC11_FINAL : public TValidTrackingRecHit {
 public:
   
   typedef SiStripRecHit2D::ClusterRef SiStripClusterRef;
-  
-  typedef edm::LazyGetter<SiStripCluster>::value_ref  SiStripRegionalClusterRef;
   
   virtual ~TSiStripRecHit2DLocalPos() {}
   
@@ -77,15 +74,7 @@ public:
     return RecHitPointer( new TSiStripRecHit2DLocalPos( pos, err, det, OmniClusterRef(clust), cpe));
   }
   
-  static RecHitPointer build( const LocalPoint& pos, const LocalError& err,
-			      const GeomDet* det,
-			      const SiStripRegionalClusterRef & clust,
-			      const StripClusterParameterEstimator* cpe) {
-    return RecHitPointer( new TSiStripRecHit2DLocalPos( pos, err, det, OmniClusterRef(clust), cpe));
-  }
   
-  
-
   static float sigmaPitch(LocalPoint const& pos, LocalError err, 
 			  GeomDetUnit const & stripdet) {
 
@@ -126,18 +115,17 @@ private:
     LogDebug("TSiStripRecHit2DLocalPos")<<"calculating coarse position/error.";
 
     StripClusterParameterEstimator::LocalValues lval= theCPE->localParameters(rh->stripCluster(), *gdu);
-    auto sPitch = sigmaPitch(lval.first, lval.second, *gdu);
-    theHitData = SiStripRecHit2D(lval.first, lval.second, sPitch,geom->geographicalId(),rh->omniCluster());
+    theHitData = SiStripRecHit2D(lval.first, lval.second, *geom, rh->omniCluster());
 
   }
   
   /// Creates the TrackingRecHit internally, avoids redundent cloning
   TSiStripRecHit2DLocalPos( const LocalPoint& pos, const LocalError& err,
-			    const GeomDet* det,
+			    const GeomDet* idet,
 			    const OmniClusterRef & clust,
 			    const StripClusterParameterEstimator* cpe) :
-    TValidTrackingRecHit(det), 
-    theCPE(cpe), theHitData(pos, err, sigmaPitch(pos, err, *static_cast<const GeomDetUnit*>(det)), det->geographicalId(), clust) {} 
+    TValidTrackingRecHit(idet), 
+    theCPE(cpe), theHitData(pos, err, *idet, clust) {} 
     
   virtual TSiStripRecHit2DLocalPos* clone() const {
     return new TSiStripRecHit2DLocalPos(*this);

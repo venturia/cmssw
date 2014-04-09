@@ -20,6 +20,7 @@
 #include "TFile.h"
 #include "TTree.h"
 #include "TString.h"
+#include "THashList.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TProfile.h"
@@ -65,6 +66,33 @@
 #include "format.h"
 
 namespace {
+  //utility function to check the consistency of the axis labels
+  //taken from TH1::CheckBinLabels
+  bool CheckBinLabels(const TAxis* a1, const TAxis * a2)
+  {
+    // check that axis have same labels
+    THashList *l1 = (const_cast<TAxis*>(a1))->GetLabels();
+    THashList *l2 = (const_cast<TAxis*>(a2))->GetLabels();
+    
+    if (!l1 && !l2 )
+      return true;
+    if (!l1 ||  !l2 ) {
+      return false;
+    }
+    // check now labels sizes  are the same
+    if (l1->GetSize() != l2->GetSize() ) {
+      return false;
+    }
+    for (int i = 1; i <= a1->GetNbins(); ++i) {
+      TString label1 = a1->GetBinLabel(i);
+      TString label2 = a2->GetBinLabel(i);
+      if (label1 != label2) {
+	return false;
+      }
+    }
+    return true;
+  }
+      
   //adapter functions
   MonitorElement* createElement(DQMStore& iStore, const char* iName, TH1F* iHist) {
     //std::cout <<"create: hist size "<<iName <<" "<<iHist->GetEffectiveEntries()<<std::endl;
@@ -87,13 +115,17 @@ namespace {
           iOriginal->GetYaxis()->GetXmax() == iToAdd->GetYaxis()->GetXmax() &&
           iOriginal->GetNbinsZ() == iToAdd->GetNbinsZ() &&
           iOriginal->GetZaxis()->GetXmin() == iToAdd->GetZaxis()->GetXmin() &&
-          iOriginal->GetZaxis()->GetXmax() == iToAdd->GetZaxis()->GetXmax()) {
-        iOriginal->Add(iToAdd);
+          iOriginal->GetZaxis()->GetXmax() == iToAdd->GetZaxis()->GetXmax() &&
+	  CheckBinLabels(iOriginal->GetXaxis(),iToAdd->GetXaxis()) &&
+	  CheckBinLabels(iOriginal->GetYaxis(),iToAdd->GetYaxis()) &&
+	  CheckBinLabels(iOriginal->GetZaxis(),iToAdd->GetZaxis())) {
+	iOriginal->Add(iToAdd);
       } else {
-        edm::LogError("MergeFailure")<<"Found histograms with different axis limits '"<<iOriginal->GetName()<<"' not merged.";
-      }
-    } 
+	edm::LogError("MergeFailure")<<"Found histograms with different axis limits or different labels'"<<iOriginal->GetName()<<"' not merged.";
+      } 
+    }
   }
+  
   void mergeWithElement(MonitorElement* iElement, TH1F* iHist) {
     //std::cout <<"merge: hist size "<<iElement->getName() <<" "<<iHist->GetEffectiveEntries()<<std::endl;
     mergeTogether(iElement->getTH1F(),iHist);

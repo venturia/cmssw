@@ -10,6 +10,7 @@ public:
   typedef TrackingRecHit::Type Type;
 
   InvalidTrackingRecHit(DetId id, Type type ) : TrackingRecHit(id, type) {}
+  InvalidTrackingRecHit(DetId id, GeomDet const * idet, Type type ) : TrackingRecHit(id, idet, type) {}
   InvalidTrackingRecHit() : TrackingRecHit(0, TrackingRecHit::missing) {}
 
   virtual ~InvalidTrackingRecHit() {}
@@ -22,7 +23,7 @@ public:
 
   virtual AlgebraicMatrix projectionMatrix() const;
 
-  virtual int dimension() const;
+  virtual int dimension() const { return 0;}
 
   virtual LocalPoint localPosition() const;
 
