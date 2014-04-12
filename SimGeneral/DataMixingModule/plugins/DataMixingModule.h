@@ -31,6 +31,7 @@
 #include "SimGeneral/DataMixingModule/plugins/DataMixingHcalDigiWorkerProd.h"
 #include "SimGeneral/DataMixingModule/plugins/DataMixingMuonWorker.h"
 #include "SimGeneral/DataMixingModule/plugins/DataMixingSiStripWorker.h"
+#include "SimGeneral/DataMixingModule/plugins/DataMixingSiStripMCDigiWorker.h"
 #include "SimGeneral/DataMixingModule/plugins/DataMixingSiStripRawWorker.h"
 #include "SimGeneral/DataMixingModule/plugins/DataMixingSiPixelWorker.h"
 #include "SimGeneral/DataMixingModule/plugins/DataMixingGeneralTrackWorker.h"
@@ -59,8 +60,10 @@ namespace edm {
       virtual void checkSignal(const edm::Event &e) {}
       virtual void createnewEDProduct() {}
       virtual void addSignals(const edm::Event &e, const edm::EventSetup& ES); 
-      virtual void doPileUp(edm::Event &e,const edm::EventSetup& ES, edm::ModuleCallingContext const* mcc);
+      virtual void doPileUp(edm::Event &e,const edm::EventSetup& ES) override;
       virtual void put(edm::Event &e,const edm::EventSetup& ES) ;
+
+      virtual void initializeEvent(edm::Event const& e, edm::EventSetup const& eventSetup);
 
       void pileWorker(const edm::EventPrincipal&, int bcr, int EventId,const edm::EventSetup& ES, ModuleCallingContext const*);
 
@@ -149,8 +152,10 @@ namespace edm {
       // Si-Strips
 
       DataMixingSiStripWorker *SiStripWorker_ ;
+      DataMixingSiStripMCDigiWorker *SiStripMCDigiWorker_ ;
       DataMixingSiStripRawWorker *SiStripRawWorker_ ;
       bool useSiStripRawDigi_;
+      bool addMCDigiNoise_;
       std::string siStripRawDigiSource_;
 
       // Pixels
