@@ -85,7 +85,7 @@ private:
 // constructors and destructor
 //
 BXLumiAnalyzer::BXLumiAnalyzer(const edm::ParameterSet& iConfig):
-  m_rhm(),m_maxLS(iConfig.getParameter<unsigned int>("maxLSBeforeRebin")),
+  m_rhm(consumesCollector()),m_maxLS(iConfig.getParameter<unsigned int>("maxLSBeforeRebin")),
   m_runHisto(iConfig.getParameter<bool>("runHisto")),
   m_lumicollection(iConfig.getParameter<edm::InputTag>("lumiCollection"))
 

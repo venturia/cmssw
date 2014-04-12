@@ -130,7 +130,7 @@ private:
 // constructors and destructor
 //
 TrackCount::TrackCount(const edm::ParameterSet& iConfig):
-  m_rhm(),
+  m_rhm(consumesCollector()),
   m_runHisto(iConfig.getUntrackedParameter<bool>("runHisto",false)),
   m_dump(iConfig.getUntrackedParameter<bool>("dumpTracks",false)),
   m_trkcollection(iConfig.getParameter<edm::InputTag>("trackCollection")),
