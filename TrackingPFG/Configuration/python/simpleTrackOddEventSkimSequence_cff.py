@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 
-from trackCount.TrackCount.trackcount_cfi import *
+from DPGAnalysis.SiStripTools.trackcount_cfi import *
 
 trackcount.trackCollection = cms.InputTag("generalTracks")
 trackcountoffdiag = trackcount.clone()

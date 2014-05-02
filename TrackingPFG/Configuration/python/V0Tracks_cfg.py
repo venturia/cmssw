@@ -42,7 +42,7 @@ process.tracksFromOtobV0.minMass = cms.double(0.5126)
 process.load("TrackingPFG.Configuration.bitSelectionSequence_cff")
 process.load("TrackingPFG.Configuration.hltSelectionSequence_cff")
 
-process.load("trackCount.TrackCount.trackcount_cfi")
+process.load("DPGAnalysis.SiStripTools.trackcount_cfi")
 process.trackcount.trackCollection = cms.InputTag("generalTracks")
 process.trackFromOtobV0count = process.trackcount.clone(trackCollection = cms.InputTag("tracksFromOtobV0"))
 

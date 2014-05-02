@@ -79,7 +79,7 @@ process.pixelvertexanalyzerRECO= process.pixelvertexanalyzer.clone(pvCollection=
 process.load("TrackingPFG.Configuration.hpSelectionSequence_cff")
 process.highPurityTracksRECO = process.highPurityTracks.clone(src=cms.InputTag("generalTracks","","RECO"))
 
-#process.load("trackCount.TrackCount.trackcount_cfi")
+#process.load("DPGAnalysis.SiStripTools.trackcount_cfi")
 #process.trackcount.trackCollection = cms.InputTag("generalTracks")
 process.trackcountRECO = process.trackcount.clone(trackCollection = cms.InputTag("generalTracks","","RECO"))
 #process.trackcounthp = process.trackcount.clone(trackCollection=cms.InputTag("highPurityTracks"))
@@ -100,8 +100,8 @@ process.pxllessCentralFilterRECO = process.pxllessFilterRECO.clone(vtxzMax=cms.d
 process.pxllesshpCentralFilterRECO = process.pxllesshpFilterRECO.clone(vtxzMax=cms.double(12))
 
 
-process.load("tracking.TrackRecoMonitoring.seedmultiplicitymonitor_newtracking_cfi")
-#process.load("tracking.TrackRecoMonitoring.seedmultiplicitymonitor_cfi")
+process.load("DPGAnalysis.SiStripTools.seedmultiplicitymonitor_newtracking_cfi")
+#process.load("DPGAnalysis.SiStripTools.seedmultiplicitymonitor_cfi")
 #process.seedmultiplicitymonitor.seedCollections = cms.VPSet(
 #   cms.PSet(src=cms.InputTag("newSeedFromTriplets")),
 #   cms.PSet(src=cms.InputTag("newSeedFromPairs"),maxValue=cms.untracked.double(500000),nBins=cms.untracked.uint32(2000)),

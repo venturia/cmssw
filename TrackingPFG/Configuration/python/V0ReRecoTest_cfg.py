@@ -43,7 +43,7 @@ process.load("TrackingPFG.Configuration.v0TrackSelectionSequence_cff")
 process.load("TrackingPFG.Configuration.bitSelectionSequence_cff")
 process.load("TrackingPFG.Configuration.hltSelectionSequence_cff")
 
-process.load("trackCount.TrackCount.trackcount_cfi")
+process.load("DPGAnalysis.SiStripTools.trackcount_cfi")
 process.trackcount.trackCollection = cms.InputTag("generalTracks")
 process.trackFromV0count = process.trackcount.clone(trackCollection = cms.InputTag("tracksFromV0"))
 process.trackFromNewV0count = process.trackcount.clone(trackCollection = cms.InputTag("newTracksFromV0"))

@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 # seed multiplicity monitoring
 
-from tracking.TrackRecoMonitoring.seedmultiplicitymonitor_cfi import *
+from DPGAnalysis.SiStripTools.seedmultiplicitymonitor_cfi import *
 seedmultmonitortracking = seedmultiplicitymonitor.clone()
 seedmultmonitortoomanyclusters = seedmultiplicitymonitor.clone()
 seedmultmonitortoomanyseeds = seedmultiplicitymonitor.clone()
