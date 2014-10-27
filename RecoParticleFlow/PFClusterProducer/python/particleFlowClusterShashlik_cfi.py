@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 #### PF CLUSTER SHASHLIK ####
 
-from particleFlowClusterECALTimeResolutionParameters_cfi import _timeResolutionECALBarrel, _timeResolutionECALEndcap
+from particleFlowClusterECALTimeResolutionParameters_cfi import _timeResolutionECALBarrel, _timeResolutionShashlikEndcap
 
 #cleaning
 ## no cleaning for Shashlik yet
@@ -25,7 +25,7 @@ _topoClusterizer_EK = cms.PSet(
     thresholdsByDetector = cms.VPSet(   
     cms.PSet( detector = cms.string("ECAL_ENDCAP"),
               gatheringThreshold = cms.double(0.08),
-              gatheringThresholdPt = cms.double(0.0)
+              gatheringThresholdPt = cms.double(0.03)
               )
     ),
     useCornerCells = cms.bool(True)
@@ -58,7 +58,7 @@ _positionCalcEK_all_withdepth = cms.PSet(
 
 # pf clustering
 _pfClusterizer_EK = cms.PSet(
-    algoName = cms.string("PFlow2DClusterizerWithTime"),
+    algoName = cms.string("Basic2DGenericPFlowClusterizer"),
     #pf clustering parameters
     minFractionToKeep = cms.double(1e-7),
     positionCalc = _positionCalcECAL_3x3_nodepth,
@@ -83,7 +83,7 @@ _pfClusterizer_EK = cms.PSet(
     ),
     #can use ECAL timing here since Shashlik is forced to be the same as EE
     timeResolutionCalcBarrel = _timeResolutionECALBarrel,
-    timeResolutionCalcEndcap = _timeResolutionECALEndcap
+    timeResolutionCalcEndcap = _timeResolutionShashlikEndcap
 )
 
 particleFlowClusterEKUncorrected = cms.EDProducer(

@@ -9,11 +9,10 @@
 #include "CLHEP/Units/GlobalSystemOfUnits.h"
 #include <iostream>
 
-//#define DebugLog
-
 HGCNumberingScheme::HGCNumberingScheme(const DDCompactView & cpv, 
-				       std::string & name, bool check) :
-  CaloNumberingScheme(0), check_(check), 
+				       std::string & name, bool check,
+				       int verbose) :
+  CaloNumberingScheme(0), check_(check), verbosity(verbose),
   hgcons(new HGCalDDDConstants(cpv,name)) {
   edm::LogInfo("HGCSim") << "Creating HGCNumberingScheme for " << name;
 }
@@ -23,7 +22,7 @@ HGCNumberingScheme::~HGCNumberingScheme() {
 }
 
 //
-uint32_t HGCNumberingScheme::getUnitID(ForwardSubdetector &subdet, int &layer, int &sector, int &iz, G4ThreeVector &pos) {
+uint32_t HGCNumberingScheme::getUnitID(ForwardSubdetector subdet, int layer, int sector, int iz, const G4ThreeVector &pos) {
   
   std::pair<int,int> phicell = hgcons->assignCell(pos.x(),pos.y(),layer,0,false);
   int phiSector = phicell.first;
@@ -36,7 +35,7 @@ uint32_t HGCNumberingScheme::getUnitID(ForwardSubdetector &subdet, int &layer, i
   if ((!HGCalDetId::isValid(subdet,iz,layer,sector,phiSector,icell)) ||
       (!hgcons->isValid(layer,sector,icell,false))) {
     index = 0;
-    if (check_) {
+    if (check_ && icell != -1) {
       edm::LogError("HGCSim") << "[HGCNumberingScheme] ID out of bounds :"
 			      << " Subdet= " << subdet << " Zside= " << iz
 			      << " Layer= " << layer << " Sector= " << sector
@@ -45,11 +44,11 @@ uint32_t HGCNumberingScheme::getUnitID(ForwardSubdetector &subdet, int &layer, i
 			      << "," << pos.y() << "," << pos.z() << ")";
     }
   }    
-#ifdef DebugLog
-  std::cout << "HGCNumberingScheme::i/p " << subdet << ":" << layer << ":" 
-	    << sector << ":" << iz << ":" << pos << " o/p " << phiSector << ":"
-	    << icell << ":" << std::hex << index << std::dec << std::endl;
-#endif
+  if (verbosity > 0)
+    std::cout << "HGCNumberingScheme::i/p " << subdet << ":" << layer << ":" 
+	      << sector << ":" << iz << ":" << pos << " o/p " << phiSector 
+	      << ":" << icell << ":" << std::hex << index << std::dec << " " 
+	      << HGCalDetId(index) << std::endl;
   return index;
 }
 

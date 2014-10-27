@@ -121,7 +121,7 @@ HGCalGeometry::CornersVec HGCalGeometry::getCorners( const DetId& id ) const {
     HGCalTopology::DecodedDetId id_ = topology().decode(id);
     std::pair<float,float> xy = topology().dddConstants().locateCell(id_.iCell,id_.iLay,id_.iSubSec,true);
     float dz = m_cellVec[cellIndex].param()[0];
-    float dx = m_cellVec[cellIndex].param()[11];
+    float dx = 0.5*m_cellVec[cellIndex].param()[11];
     static const int signx[] = {-1,-1,1,1,-1,-1,1,1};
     static const int signy[] = {-1,1,1,-1,-1,1,1,-1};
     static const int signz[] = {-1,-1,-1,-1,1,1,1,1};
@@ -148,10 +148,13 @@ DetId HGCalGeometry::getClosestCell( const GlobalPoint& r ) const {
 	      << ":" << id_.iLay << ":" << id_.iSec << ":" << id_.iSubSec
 	      << ":" << id_.iCell << " Cell " << m_cellVec[cellIndex];
 #endif
-    return topology().encode(id_);
-  } else {
-    return DetId();
+
+    //check if returned cell is valid
+    if(id_.iCell>=0) return topology().encode(id_);
   }
+
+  //if not valid or out of bounds return a null DetId
+  return DetId();
 }
 
 HGCalGeometry::DetIdSet HGCalGeometry::getCells( const GlobalPoint& r, double dR ) const {

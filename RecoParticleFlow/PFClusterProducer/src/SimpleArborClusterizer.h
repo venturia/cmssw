@@ -10,7 +10,11 @@ class SimpleArborClusterizer : public InitialClusteringStepBase {
   SimpleArborClusterizer(const edm::ParameterSet& conf) :
     InitialClusteringStepBase(conf),
       _cellSize(conf.getParameter<double>("cellSize")),
-      _layerThickness(conf.getParameter<double>("layerThickness")) { }
+      _layerThickness(conf.getParameter<double>("layerThickness")),
+      _distSeedForMerge(conf.getParameter<double>("distSeedForMerge")),      
+      _killNoiseClusters(conf.getParameter<bool>("killNoiseClusters")),
+      _allowSameLayerSeedMerge(conf.getParameter<bool>("allowSameLayerSeedMerge")),
+      _maxNoiseClusterSize(conf.getParameter<unsigned>("maxNoiseClusterSize")) { }
   virtual ~SimpleArborClusterizer() {}
   SimpleArborClusterizer(const B2DGT&) = delete;
   B2DGT& operator=(const B2DGT&) = delete;
@@ -21,7 +25,9 @@ class SimpleArborClusterizer : public InitialClusteringStepBase {
 		     reco::PFClusterCollection&);
   
  private:  
-  double _cellSize,_layerThickness;
+  double _cellSize,_layerThickness,_distSeedForMerge;
+  bool _killNoiseClusters,_allowSameLayerSeedMerge;
+  unsigned _maxNoiseClusterSize;
 };
 
 DEFINE_EDM_PLUGIN(InitialClusteringStepFactory,

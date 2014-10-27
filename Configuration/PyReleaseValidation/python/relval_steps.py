@@ -561,7 +561,7 @@ def addForAll(steps,d):
 step1FastDefaults =merge([{'-s':'GEN,SIM,RECO,EI,HLT:@relval,VALIDATION',
                            '--fast':'',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
                            '--relval':'27000,3000'},
                           step1Defaults])
 
@@ -652,7 +652,7 @@ steps['TTbarFSPU2']=merge([PUFS2,Kby(100,500),steps['TTbarFS']])
 ##no forseen to do things in two steps GEN-SIM then FASTIM->end: maybe later
 step1FastDefaultsP1 =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
                            '--conditions':'auto:upgradePLS3', 
 			   '--fast':'',
 			   '--geometry' : 'Extended2017',
@@ -670,7 +670,7 @@ steps['MinBias_TuneZ2star8FSP1']=merge([{'cfg':'MinBias_TuneZ2star_8TeV_pythia6_
 
 step1FastDefaultsP1PU =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
                            '--conditions':'auto:upgradePLS3', 
 			   '--fast':'',
 			   '--pileup':'default',
@@ -683,7 +683,7 @@ steps['TTbar8FSPUP1']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1
 
 step1FastDefaultsP2 =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
 			   '--fast':'',
                            '--conditions':'auto:upgradePLS3', 
 			   '--geometry' : 'ExtendedPhase2TkBE',
@@ -702,7 +702,7 @@ steps['MinBias_TuneZ2star8FSP2']=merge([{'cfg':'MinBias_TuneZ2star_8TeV_pythia6_
 
 step1FastDefaultsP2PU =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
 			   '--fast':'',
 			   '--pileup':'default',
                            '--conditions':'auto:upgradePLS3', 
@@ -714,7 +714,7 @@ steps['TTbar8FSPUP2']=merge([{'cfg':'TTbar_Tauola_8TeV_cfi'},Kby(100,1000),step1
 
 step1FastDefaultsP2Forw =merge([{'-s':'GEN,SIM,RECO,VALIDATION',
                            '--eventcontent':'FEVTDEBUGHLT,DQM',
-                           '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                           '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
                            '--conditions':'auto:upgradePLS3', 
 			   '--geometry' : 'ExtendedPhase2TkBEForward',
 			   '--fast':'',
@@ -774,8 +774,8 @@ steps['DIGIHI']=merge([{'--conditions':'auto:starthi_HIon', '-s':'DIGI:pdigi_val
 
 dataReco={'--conditions':'auto:com10',
           '-s':'RAW2DIGI,L1Reco,RECO,ALCA:SiStripCalZeroBias+SiStripCalMinBias+TkAlMinBias,DQM',
-          '--datatier':'RECO,DQMROOT',
-          '--eventcontent':'RECO,DQMROOT',
+          '--datatier':'RECO,DQMIO',
+          '--eventcontent':'RECO,DQM',
           '--data':'',
           '--process':'reRECO',
           '--scenario':'pp',
@@ -784,8 +784,8 @@ dataReco={'--conditions':'auto:com10',
 
 dataReco={'--conditions':'auto:com10',
           '-s':'RAW2DIGI,L1Reco,RECO,EI,ALCA:SiStripCalZeroBias+SiStripCalMinBias+TkAlMinBias,DQM',
-          '--datatier':'RECO,DQMROOT',
-          '--eventcontent':'RECO,DQMROOT',
+          '--datatier':'RECO,DQMIO',
+          '--eventcontent':'RECO,DQM',
           '--data':'',
           '--process':'reRECO',
           '--scenario':'pp',
@@ -815,8 +815,8 @@ steps['REPACKHID']=merge([{'--scenario':'HeavyIons',
                         steps['RECOD']])
 steps['RECOHID10']=merge([{'--scenario':'HeavyIons',
                          '-s':'RAW2DIGI,L1Reco,RECO,ALCA:SiStripCalZeroBias+SiStripCalMinBias+TkAlMinBiasHI+HcalCalMinBias,DQM',
-                         '--datatier':'RECO,DQMROOT',
-                         '--eventcontent':'RECO,DQMROOT'},
+                         '--datatier':'RECO,DQMIO',
+                         '--eventcontent':'RECO,DQM'},
                         steps['RECOD']])
 steps['RECOHID11']=merge([{'--repacked':''},
                         steps['RECOHID10']])
@@ -826,12 +826,12 @@ steps['RECOHID10']['--eventcontent']+=',REPACKRAW'
 
 steps['TIER0']=merge([{'--customise':'Configuration/DataProcessing/RecoTLR.customisePrompt',
                        '-s':'RAW2DIGI,L1Reco,RECO,EI,ALCAPRODUCER:@allForPrompt,DQM,ENDJOB',
-                       '--datatier':'RECO,AOD,ALCARECO,DQMROOT',
-                       '--eventcontent':'RECO,AOD,ALCARECO,DQMROOT',
+                       '--datatier':'RECO,AOD,ALCARECO,DQMIO',
+                       '--eventcontent':'RECO,AOD,ALCARECO,DQM',
                        '--process':'RECO'
                        },dataReco])
 steps['TIER0EXP']=merge([{'-s':'RAW2DIGI,L1Reco,RECO,EI,ALCAPRODUCER:@allForExpress,DQM,ENDJOB',
-                          '--datatier':'ALCARECO,DQM',
+                          '--datatier':'ALCARECO,DQMIO',
                           '--eventcontent':'ALCARECO,DQM',
                           '--customise':'Configuration/DataProcessing/RecoTLR.customiseExpress',
                           },steps['TIER0']])
@@ -855,7 +855,7 @@ step3Defaults = {
                   '-s'            : 'RAW2DIGI,L1Reco,RECO,EI,VALIDATION,DQM',
                   '--conditions'  : 'auto:startup',
                   '--no_exec'     : '',
-                  '--datatier'    : 'GEN-SIM-RECO,DQM',
+                  '--datatier'    : 'GEN-SIM-RECO,DQMIO',
                   '--eventcontent': 'RECOSIM,DQM'
                   }
 
@@ -1098,8 +1098,8 @@ steps['COPYPASTE']={'-s':'NONE',
 upgradeKeys=['2017',
              '2019',
              'BE5D',
-             '2017Fast',
-             'BE5DFast',
+             '2017dev',
+             'Extended2023Muondev',
              'BE5DForwardFast',
              '2019WithGEM',
              'BE5DPixel10D',
@@ -1128,8 +1128,8 @@ upgradeGeoms={ '2017' : 'Extended2017',
                '2019Aging' : 'Extended2019',
                'BE5D' : 'ExtendedPhase2TkBE5D',
                'BE5DPixel10D' : 'ExtendedPhase2TkBE5DPixel10D',
-               '2017Fast' : 'Extended2017',
-               'BE5DFast' : 'ExtendedPhase2TkBE',
+               '2017dev' : 'Extended2017dev,Extended2017devReco',
+               'Extended2023Muondev' : 'Extended2023Muondev,Extended2023MuondevReco',
                'BE5DForwardFast' : 'ExtendedPhase2TkBEForward',
                'Extended2023' : 'Extended2023,Extended2023Reco',
                'Extended2023HGCalMuon' : 'Extended2023HGCalMuon,Extended2023HGCalMuonReco',
@@ -1145,7 +1145,7 @@ upgradeGeoms={ '2017' : 'Extended2017',
                'Extended2023SHCalNoTaper4Eta' : 'Extended2023SHCalNoTaper4Eta,Extended2023SHCalNoTaper4EtaReco',
                'Extended2023HGCal' : 'Extended2023HGCal,Extended2023HGCalReco',
                'Extended2023HGCalMuon4Eta' : 'Extended2023HGCalMuon4Eta,Extended2023HGCalMuon4EtaReco',
-               'Extended2023HGCalV4' : 'Extended2023HGCalV4,Extended2023HGCalMuonReco'
+               'Extended2023HGCalV4' : 'Extended2023HGCalV4Muon,Extended2023HGCalV4MuonReco'
                }
 upgradeGTs={ '2017' : 'auto:upgrade2017',
              '2019' : 'auto:upgrade2019',
@@ -1154,8 +1154,8 @@ upgradeGTs={ '2017' : 'auto:upgrade2017',
              '2019Aging' : 'W19_300_62E2::All',
              'BE5D' : 'auto:upgradePLS3',
              'BE5DPixel10D' : 'auto:upgradePLS3',
-             '2017Fast' : 'auto:upgrade2017',
-             'BE5DFast' : 'auto:upgrade2019',
+             '2017dev' : 'auto:upgrade2017',
+             'Extended2023Muondev' : 'auto:upgradePLS3',
              'BE5DForwardFast' : 'auto:upgrade2019',
              'Extended2023' : 'auto:upgradePLS3',
              'Extended2023HGCalMuon' : 'auto:upgradePLS3',
@@ -1180,8 +1180,8 @@ upgradeCustoms={ '2017' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.
                  '2019Aging' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2019,SLHCUpgradeSimulations/Configuration/aging.customise_aging_300',
                  'BE5D' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5D',
                  'BE5DPixel10D' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_phase2_BE5DPixel10D',
-                 '2017Fast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimDefault',
-                 'BE5DFast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
+                 '2017dev' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2017dev',
+                 'Extended2023Muondev' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023Muondev',
                  'BE5DForwardFast' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.fastsimPhase2',
                  'Extended2023' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023',
                  'Extended2023HGCalMuon' : 'SLHCUpgradeSimulations/Configuration/combinedCustoms.cust_2023HGCalMuon',
@@ -1219,8 +1219,8 @@ upgradeScenToRun={ '2017':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
                    '2019Aging':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
                    'BE5D':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
                    'BE5DPixel10D':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
-                   '2017Fast':['FastSim','HARVESTFast'],
-                   'BE5DFast':['FastSim','HARVESTFast'],
+                   '2017dev':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
+                   'Extended2023Muondev':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
                    'BE5DForwardFast':['FastSim','HARVESTFast'],
                    'Extended2023':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
                    'Extended2023HGCalMuon':['GenSimFull','DigiFull','RecoFull','HARVESTFull'],
@@ -1290,7 +1290,7 @@ for k in upgradeKeys:
 
     upgradeStepDict['RecoFull'][k] = {'-s':'RAW2DIGI,L1Reco,RECO,VALIDATION,DQM',
                                       '--conditions':upgradeGTs[k],
-                                      '--datatier':'GEN-SIM-RECO,DQM',
+                                      '--datatier':'GEN-SIM-RECO,DQMIO',
                                       '-n':'10',
                                       '--eventcontent':'FEVTDEBUGHLT,DQM',
                                       '--magField' : '38T_PostLS1',
@@ -1303,13 +1303,14 @@ for k in upgradeKeys:
                                     '--mc':'',
                                     '--magField' : '38T_PostLS1',
                                     '--geometry' : upgradeGeoms[k],
-                                    '--scenario' : 'pp'
+                                    '--scenario' : 'pp',
+                                    '--filetype':'DQM'
                                     }
     if upgradeCustoms[k]!=None : upgradeStepDict['HARVESTFull'][k]['--customise']=upgradeCustoms[k]
 
     upgradeStepDict['FastSim'][k]={'-s':'GEN,SIM,RECO,VALIDATION',
                                    '--eventcontent':'FEVTDEBUGHLT,DQM',
-                                   '--datatier':'GEN-SIM-DIGI-RECO,DQM',
+                                   '--datatier':'GEN-SIM-DIGI-RECO,DQMIO',
                                    '--conditions':upgradeGTs[k],
                                    '--fast':'',
                                    '--geometry' : upgradeGeoms[k],
