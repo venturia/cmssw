@@ -12,6 +12,7 @@ namespace edm {
 }
 class TH2F;
 class TProfile;
+class TProfile2D;
 class TFileDirectory;
 
 class DigiPileupCorrHistogramMaker {
@@ -41,7 +42,11 @@ class DigiPileupCorrHistogramMaker {
   std::map<unsigned int,TProfile*> m_nmultvsmclumiprof;
   std::map<unsigned int,TH2F*> m_nmultvsmcnvtx;
   std::map<unsigned int,TProfile*> m_nmultvsmcnvtxprof;
+  std::map<unsigned int,TProfile2D*> m_nmultvsmcnvtxprof2d;
   std::map<unsigned int,TFileDirectory*> m_subdirs;
+
+  const bool m_2dhisto;
+  const int m_ootBX;
 
 };
 

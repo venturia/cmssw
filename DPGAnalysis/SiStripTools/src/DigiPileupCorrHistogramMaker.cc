@@ -8,6 +8,7 @@
 #include "DataFormats/Luminosity/interface/LumiDetails.h"
 #include "TH2F.h"
 #include "TProfile.h"
+#include "TProfile2D.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "DPGAnalysis/SiStripTools/interface/SiStripTKNumbers.h"
@@ -15,7 +16,8 @@
 
 DigiPileupCorrHistogramMaker::DigiPileupCorrHistogramMaker():
   m_pileupcollection("addPileupInfo"), m_useVisibleVertices(false), m_hitname(), m_nbins(500), m_scalefact(), m_binmax(), m_labels(), 
-  m_nmultvsmclumi(), m_nmultvsmclumiprof(), m_nmultvsmcnvtx(), m_nmultvsmcnvtxprof(), m_subdirs() { }
+  m_nmultvsmclumi(), m_nmultvsmclumiprof(), m_nmultvsmcnvtx(), m_nmultvsmcnvtxprof(), m_nmultvsmcnvtxprof2d(), m_subdirs(), 
+  m_2dhisto(), m_ootBX(-1) { }
 
 DigiPileupCorrHistogramMaker::DigiPileupCorrHistogramMaker(const edm::ParameterSet& iConfig):
   m_pileupcollection(iConfig.getParameter<edm::InputTag>("pileupSummaryCollection")),
@@ -23,7 +25,9 @@ DigiPileupCorrHistogramMaker::DigiPileupCorrHistogramMaker(const edm::ParameterS
   m_hitname(iConfig.getUntrackedParameter<std::string>("hitName","digi")),
   m_nbins(iConfig.getUntrackedParameter<int>("numberOfBins",500)),
   m_scalefact(iConfig.getUntrackedParameter<int>("scaleFactor",5)),
-  m_labels(), m_nmultvsmclumi(), m_nmultvsmclumiprof(), m_nmultvsmcnvtx(), m_nmultvsmcnvtxprof(), m_subdirs()
+  m_labels(), m_nmultvsmclumi(), m_nmultvsmclumiprof(), m_nmultvsmcnvtx(), m_nmultvsmcnvtxprof(), m_nmultvsmcnvtxprof2d(), m_subdirs(),
+  m_2dhisto(iConfig.getUntrackedParameter<bool>("wanted2DHisto",false)),
+  m_ootBX(iConfig.getUntrackedParameter<int>("ootBX",-1))
 { 
 
   std::vector<edm::ParameterSet> 
@@ -108,7 +112,13 @@ void DigiPileupCorrHistogramMaker::book(const std::string dirname) {
       sprintf(name,"n%sdigivsmcnvtxprof",slab.c_str());
       m_nmultvsmcnvtxprof[i] = m_subdirs[i]->make<TProfile>(name,title,60,-0.5,59.5);
       m_nmultvsmcnvtxprof[i]->GetXaxis()->SetTitle("Pileup Interactions");    m_nmultvsmcnvtxprof[i]->GetYaxis()->SetTitle("Number of Hits");
-      
+      if(m_2dhisto) {
+	sprintf(name,"n%sdigivsmcnvtxprof2d",slab.c_str());
+	m_nmultvsmcnvtxprof2d[i] = m_subdirs[i]->make<TProfile2D>(name,title,60,-0.5,59.5,60,-0.5,59.5);
+	m_nmultvsmcnvtxprof2d[i]->GetXaxis()->SetTitle("Pileup Interactions");    
+	m_nmultvsmcnvtxprof2d[i]->GetYaxis()->SetTitle("Pileup Interactions OOT");    
+	m_nmultvsmcnvtxprof2d[i]->GetZaxis()->SetTitle("Number of Hits");
+      }
     }
 
   }
@@ -128,32 +138,41 @@ void DigiPileupCorrHistogramMaker::fill(const edm::Event& iEvent, const std::map
   
   // look for the intime PileupSummaryInfo
   
-  std::vector<PileupSummaryInfo>::const_iterator pileupinfo;
+  std::vector<PileupSummaryInfo>::const_iterator pileupinfoInTime = pileupinfos->end();
+  std::vector<PileupSummaryInfo>::const_iterator pileupinfoMinusOne = pileupinfos->end();
   
-  for(pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
+  for(std::vector<PileupSummaryInfo>::const_iterator pileupinfo = pileupinfos->begin(); pileupinfo != pileupinfos->end() ; ++pileupinfo) {
     
-    if(pileupinfo->getBunchCrossing()==0) break;
+    if(pileupinfo->getBunchCrossing()==0) pileupinfoInTime = pileupinfo;
+    if(pileupinfo->getBunchCrossing()==m_ootBX) pileupinfoMinusOne = pileupinfo;
     
   }
   
-  if(pileupinfo->getBunchCrossing()!=0) {
+  if(pileupinfoInTime == pileupinfos->end()) {
     
-    edm::LogError("NoInTimePileUpInfo") << "Cannot find the in-time pileup info " << pileupinfo->getBunchCrossing();
+    edm::LogError("NoInTimePileUpInfo") << "Cannot find the in-time pileup info ";
     
   }
   else {
     
-    int npileup = pileupinfo->getPU_NumInteractions();
+    int npileup = pileupinfoInTime->getPU_NumInteractions();
 
-    if(m_useVisibleVertices) npileup = pileupinfo->getPU_zpositions().size();
+    if(m_useVisibleVertices) npileup = pileupinfoInTime->getPU_zpositions().size();
 
     for(std::map<unsigned int,int>::const_iterator digi=ndigi.begin();digi!=ndigi.end();digi++) {
       if(m_labels.find(digi->first) != m_labels.end()) {
 	const unsigned int i=digi->first;
 	m_nmultvsmcnvtx[i]->Fill(npileup,digi->second);
 	m_nmultvsmcnvtxprof[i]->Fill(npileup,digi->second);
-	m_nmultvsmclumi[i]->Fill(pileupinfo->getTrueNumInteractions(),digi->second);
-	m_nmultvsmclumiprof[i]->Fill(pileupinfo->getTrueNumInteractions(),digi->second);
+	m_nmultvsmclumi[i]->Fill(pileupinfoInTime->getTrueNumInteractions(),digi->second);
+	m_nmultvsmclumiprof[i]->Fill(pileupinfoInTime->getTrueNumInteractions(),digi->second);
+	if(m_2dhisto) {
+	  if(pileupinfoMinusOne != pileupinfos->end()) {
+	    int npileupminusone = pileupinfoMinusOne->getPU_NumInteractions();
+	    if(m_useVisibleVertices) npileupminusone = pileupinfoMinusOne->getPU_zpositions().size();
+	    m_nmultvsmcnvtxprof2d[i]->Fill(npileup,npileupminusone,digi->second);
+	  }
+	}
       }
     }
   }
