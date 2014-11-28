@@ -36,10 +36,16 @@ CmsTrackerBuilder::buildComponent( DDFilteredView& fv, GeometricDet* g, std::str
   case GeometricDet::PixelPhase2EndCap:
     theCmsTrackerPixelPhase2EndcapBuilder.build( fv, subdet, s );      
     break;
+  case GeometricDet::OTPhase2EndCap:
+    theCmsTrackerPixelPhase2EndcapBuilder.build( fv, subdet, s );      
+    break;
   case GeometricDet::TIB:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );      
     break;
   case GeometricDet::TOB:
+    theCmsTrackerSubStrctBuilder.build( fv, subdet, s );    
+    break;
+  case GeometricDet::OTPhase2Barrel:
     theCmsTrackerSubStrctBuilder.build( fv, subdet, s );    
     break;
   case GeometricDet::TEC:

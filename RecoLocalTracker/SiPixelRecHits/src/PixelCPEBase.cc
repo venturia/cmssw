@@ -111,8 +111,9 @@ PixelCPEBase::setTheDet( const GeomDetUnit & det, const SiPixelCluster & cluster
       // A forward!  A forward!
       break;
     default:
-      throw cms::Exception("PixelCPEBase::setTheDet :")
-      	<< "PixelCPEBase: A non-pixel detector type in here?" ;
+      if(!(theDet->type().isTrackerPixel()))  // last chance: check if it is a pixel-like detector (in case of upgrade geometry)
+	throw cms::Exception("PixelCPEBase::setTheDet :")
+	  << "PixelCPEBase: A non-pixel detector type in here?" ;
     }
 
   //--- The location in of this DetUnit in a cyllindrical coord system (R,Z)
@@ -163,7 +164,7 @@ PixelCPEBase::setTheDet( const GeomDetUnit & det, const SiPixelCluster & cluster
   theLShiftY = lorentzShiftY();
 
   // testing 
-  if(thePart == GeomDetEnumerators::PixelBarrel) {
+  if((theDet->type().isTrackerPixel()) && (theDet->type().isBarrel())) {
     //cout<<" lorentz shift "<<theLShiftX<<" "<<theLShiftY<<endl;
     theLShiftY=0.;
   }
