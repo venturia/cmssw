@@ -111,6 +111,14 @@ GeometricSearchTrackerBuilder::build(const GeometricDet* theGeometricTracker,
       vector<const GeometricDet*> thePxlBarGeometricDetLayers = (*it)->components();
       for(vector<const GeometricDet*>::const_iterator it2=thePxlBarGeometricDetLayers.begin();
 	  it2!=thePxlBarGeometricDetLayers.end(); it2++){
+	thePxlBarLayers.push_back( aPixelBarrelLayerBuilder.build(*it2,theGeomDetGeometry) );
+      }
+    }
+
+    if( (*it)->type() == GeometricDet::PixelPhase1Barrel) {
+      vector<const GeometricDet*> thePxlBarGeometricDetLayers = (*it)->components();
+      for(vector<const GeometricDet*>::const_iterator it2=thePxlBarGeometricDetLayers.begin();
+	  it2!=thePxlBarGeometricDetLayers.end(); it2++){
 	std::string layer_name = (*it2)->name();
 	if((*it2)->type() ==GeometricDet::layer) {
 	  LogDebug("BuildingPixelBarrelLayer") << "I got  " << (*it2)->name() << " type " << (*it2)->type();

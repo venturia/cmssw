@@ -22,6 +22,9 @@ std::ostream& operator<<( std::ostream& s, SubDetector m){
   else if ( m == ME0 ) return s << "ME0";
   else if ( m == P2OTB ) return s << "Phase2OTBarrel";
   else if ( m == P2OTEC ) return s << "Phase2OTEndcap";
+  else if ( m == P1PXB ) return s << "Phase1PixelBarrel";
+  else if ( m == P1PXEC ) return s << "Phase1PixelEndcap";
+  else if ( m == P2PXEC ) return s << "Phase2PixelEndcap";
   else return s << "?";
 }
 

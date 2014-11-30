@@ -456,7 +456,7 @@ generic_position_formula( int size,                //!< Size of this projection.
 
   //--- Debugging output
   if (theVerboseLevel > 20) {
-    if ( thePart == GeomDetEnumerators::PixelBarrel ) {
+    if ( thePart == GeomDetEnumerators::PixelBarrel || thePart == GeomDetEnumerators::P1PXB ) {
       cout << "\t >>> We are in the Barrel." ;
     } else {
       cout << "\t >>> We are in the Forward." ;
@@ -611,7 +611,7 @@ PixelCPEGeneric::localError( const SiPixelCluster& cluster,
       //cout << "Default angle estimation which assumes track from PV (0,0,0) does not work." << endl;
       //cout << "Use an error parameterization which only depends on cluster size (by Vincenzo Chiochia)." << endl; 
       
-      if ( thePart == GeomDetEnumerators::PixelBarrel ) 
+      if ( thePart == GeomDetEnumerators::PixelBarrel || thePart == GeomDetEnumerators::P1PXB ) 
 	{
 	  DetId id = (det.geographicalId());
 	  int layer=PXBDetId(id).layer();
