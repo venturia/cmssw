@@ -15,6 +15,19 @@ namespace GeomDetEnumerators {
   constexpr SubDetector tkDetEnum[8]={invalidDet, PixelBarrel, PixelEndcap, TIB, TID, TOB, TEC, invalidDet}; // don't ask, don't ask, simply do not ask!
   //to convert a physical subdetector (it could be larger than 5) into a geometry subdetector (between 0 and 5). ONLY for tracker
   constexpr SubDetector subDetGeom[18]={PixelBarrel, PixelEndcap, TIB, TOB, TID, TEC, invalidDet, invalidDet, invalidDet, invalidDet, invalidDet, invalidDet, TOB, TID, PixelBarrel, PixelEndcap, PixelEndcap, invalidDet};
+
+bool isBarrel(GeomDetEnumerators::SubDetector m);
+bool isEndcap(GeomDetEnumerators::SubDetector m);
+
+bool isTrackerPixel(const GeomDetEnumerators::SubDetector m);
+bool isTrackerStrip(const GeomDetEnumerators::SubDetector m);
+bool isTracker(const GeomDetEnumerators::SubDetector m);
+bool isDT(const GeomDetEnumerators::SubDetector m);
+bool isCSC(const GeomDetEnumerators::SubDetector m);
+bool isRPC(const GeomDetEnumerators::SubDetector m);
+bool isGEM(const GeomDetEnumerators::SubDetector m);
+bool isME0(const GeomDetEnumerators::SubDetector m);
+bool isMuon(const GeomDetEnumerators::SubDetector m);
  
 }
 

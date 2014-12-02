@@ -29,3 +29,64 @@ std::ostream& operator<<( std::ostream& s, SubDetector m){
 }
 
 
+bool GeomDetEnumerators::isBarrel(const GeomDetEnumerators::SubDetector subdet)
+{
+  return (subdet == PixelBarrel || subdet == TIB || subdet == TOB || subdet == P1PXB || subdet == P2OTB || isDT(subdet) || subdet == RPCBarrel);
+}
+
+bool GeomDetEnumerators::isEndcap(const GeomDetEnumerators::SubDetector subdet)
+{
+  return (!isBarrel(subdet));
+}
+
+
+bool GeomDetEnumerators::isTrackerStrip(const GeomDetEnumerators::SubDetector subdet)
+{
+  return (subdet == TIB || subdet == TOB ||
+	  subdet == TID || subdet == TEC);
+}
+
+bool GeomDetEnumerators::isTrackerPixel(const GeomDetEnumerators::SubDetector subdet)
+{
+  return (subdet == PixelBarrel || subdet == PixelEndcap || 
+	  subdet == P1PXB || subdet == P1PXEC || subdet == P2PXEC ||
+	  subdet == P2OTB || subdet == P2OTEC); 
+}
+
+bool GeomDetEnumerators::isTracker(const GeomDetEnumerators::SubDetector subdet)
+{
+  return ( isTrackerStrip(subdet) || isTrackerPixel(subdet) );
+}
+
+
+bool GeomDetEnumerators::isDT(const GeomDetEnumerators::SubDetector subdet)
+{   
+  return (subdet == DT) ;
+}
+
+bool GeomDetEnumerators::isCSC(const GeomDetEnumerators::SubDetector subdet)
+{   
+  return (subdet == CSC) ;
+}
+
+
+bool GeomDetEnumerators::isRPC(const GeomDetEnumerators::SubDetector subdet)
+{   
+  return (subdet == RPCBarrel || subdet == RPCEndcap) ;
+}
+
+bool GeomDetEnumerators::isGEM(const GeomDetEnumerators::SubDetector subdet)
+{   
+  return (subdet == GEM ) ;
+}
+
+bool GeomDetEnumerators::isME0(const GeomDetEnumerators::SubDetector subdet)
+{   
+  return (subdet == ME0 ) ;
+}
+
+
+bool GeomDetEnumerators::isMuon(const GeomDetEnumerators::SubDetector subdet)
+{
+  return (subdet == DT || subdet == CSC || isRPC(subdet) || subdet == GEM || subdet == ME0) ;
+}

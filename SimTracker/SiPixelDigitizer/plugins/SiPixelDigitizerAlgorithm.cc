@@ -547,12 +547,11 @@ void SiPixelDigitizerAlgorithm::digitize(const PixelGeomDetUnit* pixdet,
     //thePixelThresholdInE = thePixelThreshold * theNoiseInElectrons ;
     // Find the threshold in noise units, needed for the noiser.
 
-  unsigned int Sub_detid=DetId(detID).subdetId();
 
   float thePixelThresholdInE = 0.;
 
   if(theNoiseInElectrons>0.){
-    if(Sub_detid == PixelSubdetector::PixelBarrel){ // Barrel modules
+    if(pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){ // Barrel modules
       int lay = tTopo->pxbLayer(detID);
       if(addThresholdSmearing) {
 	if(lay==1) {
@@ -567,13 +566,14 @@ void SiPixelDigitizerAlgorithm::digitize(const PixelGeomDetUnit* pixdet,
 	  thePixelThresholdInE = theThresholdInE_BPix; // no smearing
 	}
       }
-    } else { // Forward disks modules
+    } else if(pixdet->type().isTrackerPixel()) { // Forward disks modules
       if(addThresholdSmearing) {
 	thePixelThresholdInE = smearedThreshold_FPix_->fire(); // gaussian smearing
       } else {
 	thePixelThresholdInE = theThresholdInE_FPix; // no smearing
       }
     }
+    else {throw cms::Exception("NotAPixelGeomDetUnit") << "Not a pixel geomdet unit" << detID;}
   }
 
 
@@ -608,7 +608,7 @@ void SiPixelDigitizerAlgorithm::digitize(const PixelGeomDetUnit* pixdet,
       }
     }
 
-    make_digis(thePixelThresholdInE, detID, digis, simlinks, tTopo);
+    make_digis(thePixelThresholdInE, detID, pixdet, digis, simlinks, tTopo);
 
 #ifdef TP_DEBUG
   LogDebug ("PixelDigitizer") << "[SiPixelDigitizerAlgorithm] converted " << digis.size() << " PixelDigis in DetUnit" << detID;
@@ -1117,6 +1117,7 @@ void SiPixelDigitizerAlgorithm::induce_signal(const PSimHit& hit,
 // Build pixels, check threshold, add misscalibration, ...
 void SiPixelDigitizerAlgorithm::make_digis(float thePixelThresholdInE,
                                            uint32_t detID,
+					   const PixelGeomDetUnit* pixdet, 
                                            std::vector<PixelDigi>& digis,
                                            std::vector<PixelDigiSimLink>& simlinks,
 					   const TrackerTopology *tTopo) const  {
@@ -1149,7 +1150,7 @@ void SiPixelDigitizerAlgorithm::make_digis(float thePixelThresholdInE,
 
     if( signalInElectrons >= thePixelThresholdInE) { // check threshold
 
-      if(DetId(detID).subdetId() == PixelSubdetector::PixelBarrel){ // Barrel modules
+      if(pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){ // Barrel modules
 	if (tTopo->pxbLayer(detID) > 4) signalInElectrons = theThresholdInE_BPix*6.0;
       } else {
 	if (tTopo->pxfDisk(detID) > 10) signalInElectrons = theThresholdInE_FPix*6.0;
@@ -1163,15 +1164,14 @@ void SiPixelDigitizerAlgorithm::make_digis(float thePixelThresholdInE,
       if(doMissCalibrate) {
 	int row = ip.first;  // X in row
 	int col = ip.second; // Y is in col
-	adc = int(missCalibrate(detID, col, row, signalInElectrons)); //full misscalib.
+	adc = int(missCalibrate(detID, pixdet, col, row, signalInElectrons)); //full misscalib.
       } else { // Just do a simple electron->adc conversion
 	adc = int( signalInElectrons / theElectronPerADC ); // calibrate gain
       }
       adc = std::min(adc, theAdcFullScale); // Check maximum value
 // Calculate layerIndex
      if (theAdcFullScale!=theAdcFullScaleStack){
-        unsigned int Sub_detid=DetId(detID).subdetId();
-        if(Sub_detid == PixelSubdetector::PixelBarrel){ // Barrel modules
+        if(pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){ // Barrel modules
           int lay = tTopo->pxbLayer(detID);
           if (lay>=theFirstStackLayer) {
             // Set to 1 if over the threshold
@@ -1352,8 +1352,7 @@ void SiPixelDigitizerAlgorithm::pixel_inefficiency(const PixelEfficiencies& eff,
   float chipEfficiency   = 1.0;
 
   // setup the chip indices conversion
-  unsigned int Subid=DetId(detID).subdetId();
-  if    (Subid==  PixelSubdetector::PixelBarrel){// barrel layers
+  if    (pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){// barrel layers
     int layerIndex=tTopo->pxbLayer(detID);
     pixelEfficiency  = eff.thePixelEfficiency[layerIndex-1];
     columnEfficiency = eff.thePixelColEfficiency[layerIndex-1];
@@ -1473,8 +1472,7 @@ float SiPixelDigitizerAlgorithm::pixel_aging(const PixelAging& aging,
 
 
   // setup the chip indices conversion
-  unsigned int Subid=DetId(detID).subdetId();
-  if    (Subid==  PixelSubdetector::PixelBarrel){// barrel layers
+  if    (pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){// barrel layers
     int layerIndex=tTopo->pxbLayer(detID);
  
      pseudoRadDamage  = aging.thePixelPseudoRadDamage[layerIndex-1];
@@ -1511,7 +1509,7 @@ float SiPixelDigitizerAlgorithm::pixel_aging(const PixelAging& aging,
   //float offset  = RandGaussQ::shoot(0.,theOffsetSmearing);
   //float newAmp = amp * gain + offset;
   // More complex misscalibration
-float SiPixelDigitizerAlgorithm::missCalibrate(uint32_t detID, int col,int row,
+float SiPixelDigitizerAlgorithm::missCalibrate(uint32_t detID, const PixelGeomDetUnit* pixdet, int col,int row,
 				 const float signalInElectrons) const {
   // Central values
   //const float p0=0.00352, p1=0.868, p2=112., p3=113.; // pix(0,0,0)
@@ -1528,19 +1526,20 @@ float SiPixelDigitizerAlgorithm::missCalibrate(uint32_t detID, int col,int row,
   float p2=0.0;
   float p3=0.0;
 
-  unsigned int Sub_detid=DetId(detID).subdetId();
 
-    if(Sub_detid == PixelSubdetector::PixelBarrel){// barrel layers
+  if(pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){// barrel layers
       p0 = BPix_p0;
       p1 = BPix_p1;
       p2 = BPix_p2;
       p3 = BPix_p3;
-    } else {// forward disks
+  } else if(pixdet->type().isTrackerPixel()) {// forward disks
       p0 = FPix_p0;
       p1 = FPix_p1;
       p2 = FPix_p2;
       p3 = FPix_p3;
-    }
+  } else {
+    throw cms::Exception("NotAPixelGeomDetUnit") << "Not a pixel geomdet unit" << detID;
+  }
 
   //  const float electronsPerVCAL = 65.5; // our present VCAL calibration (feb 2009)
   //  const float electronsPerVCAL_Offset = -414.0; // our present VCAL calibration (feb 2009)
@@ -1616,7 +1615,6 @@ LocalVector SiPixelDigitizerAlgorithm::DriftDirection(const PixelGeomDetUnit* pi
 
   uint32_t detID= pixdet->geographicalId().rawId();
 
-  unsigned int Sub_detid=DetId(detID).subdetId();
 
   // Read Lorentz angle from cfg file:**************************************************************
 
@@ -1630,17 +1628,19 @@ LocalVector SiPixelDigitizerAlgorithm::DriftDirection(const PixelGeomDetUnit* pi
       alpha2_BPix = 0.0;
     }
     
-    if(Sub_detid == PixelSubdetector::PixelBarrel){// barrel layers
+    if(pixdet->type().isTrackerPixel() && pixdet->type().isBarrel()){// barrel layers
       dir_x = -( tanLorentzAnglePerTesla_BPix * Bfield.y() + alpha2_BPix* Bfield.z()* Bfield.x() );
       dir_y = +( tanLorentzAnglePerTesla_BPix * Bfield.x() - alpha2_BPix* Bfield.z()* Bfield.y() );
       dir_z = -(1 + alpha2_BPix* Bfield.z()*Bfield.z() );
       scale = (1 + alpha2_BPix* Bfield.z()*Bfield.z() );
 
-    } else {// forward disks
+    } else if (pixdet->type().isTrackerPixel()) {// forward disks
       dir_x = -( tanLorentzAnglePerTesla_FPix * Bfield.y() + alpha2_FPix* Bfield.z()* Bfield.x() );
       dir_y = +( tanLorentzAnglePerTesla_FPix * Bfield.x() - alpha2_FPix* Bfield.z()* Bfield.y() );
       dir_z = -(1 + alpha2_FPix* Bfield.z()*Bfield.z() );
       scale = (1 + alpha2_FPix* Bfield.z()*Bfield.z() );
+    } else {
+      throw cms::Exception("NotAPixelGeomDetUnit") << "Not a pixel geomdet unit" << detID;
     }
   } // end: Read LA from cfg file.
 

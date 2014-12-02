@@ -390,6 +390,7 @@ class SiPixelDigitizerAlgorithm  {
                    float thePixelThreshold);
     void make_digis(float thePixelThresholdInE,
                     uint32_t detID,
+		    const PixelGeomDetUnit* pixdet,
                     std::vector<PixelDigi>& digis,
                     std::vector<PixelDigiSimLink>& simlinks,
 		    const TrackerTopology *tTopo) const;
@@ -405,7 +406,7 @@ class SiPixelDigitizerAlgorithm  {
 
     // access to the gain calibration payloads in the db. Only gets initialized if check_dead_pixels_ is set to true.
     const std::unique_ptr<SiPixelGainCalibrationOfflineSimService> theSiPixelGainCalibrationService_;    
-    float missCalibrate(uint32_t detID, int col, int row, float amp) const;  
+    float missCalibrate(uint32_t detID, const PixelGeomDetUnit* pixdet, int col, int row, float amp) const;  
     LocalVector DriftDirection(const PixelGeomDetUnit* pixdet,
                                const GlobalVector& bfield,
                                const DetId& detId) const;
