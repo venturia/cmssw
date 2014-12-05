@@ -42,6 +42,7 @@ public:
   virtual const GeomDet*           idToDet(DetId)     const;
 
   const GeomDetEnumerators::SubDetector geomDetSubDetector(int subdet) const;
+  unsigned int numberOfLayers(int subdet) const;
 
   void addType(GeomDetType* p);
   void addDetUnit(GeomDetUnit* p);
@@ -90,6 +91,7 @@ private:
   DetContainer      theTECDets; // not owned: they're also in 'theDets'
 
   GeomDetEnumerators::SubDetector theSubDetTypeMap[6];
+  unsigned int theNumberOfLayers[6];
 
   static const  GeomDetEnumerators::SubDetector geometricDetToGeomDet(GeometricDet::GDEnumType gdenum);
 

@@ -18,6 +18,7 @@ TrackerGeometry::TrackerGeometry(GeometricDet const* gd) :  theTrackerDet(gd)
 {
   for(unsigned int i=0;i<6;++i) {
     theSubDetTypeMap[i] = GeomDetEnumerators::invalidDet;
+    theNumberOfLayers[i] = 0;
   }
   GeometricDet::ConstGeometricDetContainer subdetgd = gd->components();
   
@@ -25,15 +26,21 @@ TrackerGeometry::TrackerGeometry(GeometricDet const* gd) :  theTrackerDet(gd)
   for(unsigned int i=0;i<subdetgd.size();++i) {
     assert(subdetgd[i]->geographicalId().subdetId()>0 && subdetgd[i]->geographicalId().subdetId()<7);
     theSubDetTypeMap[subdetgd[i]->geographicalId().subdetId()-1]= geometricDetToGeomDet(subdetgd[i]->type());
+    theNumberOfLayers[subdetgd[i]->geographicalId().subdetId()-1]= subdetgd[i]->components().size();
     LogTrace("BuildingSubDetTypeMap") << "subdet " << i 
 				      << " Geometric Det type " << subdetgd[i]->type()
 				      << " Geom Det type " << theSubDetTypeMap[subdetgd[i]->geographicalId().subdetId()-1]
 				      << " detid " <<  subdetgd[i]->geographicalId()
-				      << " subdetid " <<  subdetgd[i]->geographicalId().subdetId();
+				      << " subdetid " <<  subdetgd[i]->geographicalId().subdetId()
+				      << " number of layers " << subdetgd[i]->components().size();
   }
   LogDebug("SubDetTypeMapContent") << "Content of theSubDetTypeMap";
   for(unsigned int i=1;i<7;++i) {
     LogTrace("SubDetTypeMapContent") << " detid subdet "<< i << " Geom Det type " << geomDetSubDetector(i); 
+  }
+  LogDebug("NumberOfLayers") << "Content of theNumberOfLayers";
+  for(unsigned int i=1;i<7;++i) {
+    LogTrace("NumberOfLayers") << " detid subdet "<< i << " number of layers " << numberOfLayers(i); 
   }
 
 }
@@ -171,6 +178,15 @@ const GeomDetEnumerators::SubDetector
 TrackerGeometry::geomDetSubDetector(int subdet) const {
   if(subdet>=1 && subdet<=6) {
     return theSubDetTypeMap[subdet-1];
+  } else {
+    throw cms::Exception("WrongTrackerSubDet") << "Subdetector " << subdet;
+  }
+}
+
+unsigned int
+TrackerGeometry::numberOfLayers(int subdet) const {
+  if(subdet>=1 && subdet<=6) {
+    return theNumberOfLayers[subdet-1];
   } else {
     throw cms::Exception("WrongTrackerSubDet") << "Subdetector " << subdet;
   }
