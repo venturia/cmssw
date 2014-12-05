@@ -648,8 +648,8 @@ void TrackerTrackHitFilter::produceFromTrajectory(const edm::EventSetup &iSetup,
 		     side != sideFromId(compareId,tTopo) ||
 		     layer  != layerFromId(compareId,tTopo)) break;
 		if (!itmCompare->recHit()->isValid()) continue;	
-		if(GeomDetEnumerators::isTrackerPixel(theGeometry->idToDet(detid)->subDetector()) ||
-		   (GeomDetEnumerators::isTrackerStrip(theGeometry->idToDet(detid)->subDetector()) &&
+		if(GeomDetEnumerators::isTrackerPixel(theGeometry->geomDetSubDetector(detid.subdetId())) ||
+		   (GeomDetEnumerators::isTrackerStrip(theGeometry->geomDetSubDetector(detid.subdetId())) &&
 		    SiStripDetId(detid).stereo()==SiStripDetId(compareId).stereo()))
 		  {//if either pixel or strip stereo module
 		    //  overlapHits.push_back(std::make_pair(&(*itmCompare),&(*itm)));
@@ -745,7 +745,7 @@ bool TrackerTrackHitFilter::checkStoN(const edm::EventSetup &iSetup, const DetId
  
   //  if( subdetStoN_[subdet_cnt-1]&& (id.subdetId()==subdet_cnt)  ){//check that hit is in a det belonging to a subdet where we decided to apply a S/N cut
 
-  if(GeomDetEnumerators::isTrackerStrip(theGeometry->idToDet(id)->subDetector())) {
+  if(GeomDetEnumerators::isTrackerStrip(theGeometry->geomDetSubDetector(id.subdetId()))) {
       if( subdetStoN_[subdet_cnt-1]){//check that hit is in a det belonging to a subdet where we decided to apply a S/N cut
 	const std::type_info &type = typeid(*therechit);
 	const SiStripCluster* cluster;
@@ -783,7 +783,7 @@ bool TrackerTrackHitFilter::checkStoN(const edm::EventSetup &iSetup, const DetId
       }//end if  subdetStoN_[subdet_cnt]&&...
     
   }//end if subdet_cnt >2
-    else if (GeomDetEnumerators::isTrackerPixel(theGeometry->idToDet(id)->subDetector())){//pixel 
+  else if (GeomDetEnumerators::isTrackerPixel(theGeometry->geomDetSubDetector(id.subdetId()))){//pixel 
       //pixels have naturally a very low noise (because of their low capacitance). So the S/N cut is 
       //irrelevant in this case. Leave it dummy
       keepthishit = true;
@@ -854,7 +854,7 @@ bool TrackerTrackHitFilter::checkHitAngle(const TrajectoryMeasurement &meas){
       TransientTrackingRecHit::ConstRecHitPointer hitpointer = meas.recHit();
       if(hitpointer->isValid()){
       const TrackingRecHit *hit=(*hitpointer).hit();
-      if(GeomDetEnumerators::isTrackerPixel(theGeometry->idToDet(hit->geographicalId())->subDetector())) {//do it only for pixel hits
+      if(GeomDetEnumerators::isTrackerPixel(theGeometry->geomDetSubDetector(hit->geographicalId().subdetId()))) {//do it only for pixel hits
 	corrcharge_ok=false;
 	float clust_alpha= atan2( mom_z, mom_x );
 	float clust_beta=  atan2( mom_z, mom_y );
@@ -895,7 +895,7 @@ bool TrackerTrackHitFilter::checkPXLCorrClustCharge(const TrajectoryMeasurement 
   TransientTrackingRecHit::ConstRecHitPointer hitpointer = meas.recHit();
   if(!hitpointer->isValid()) return corrcharge_ok;
   const TrackingRecHit *hit=(*hitpointer).hit();
-  if(GeomDetEnumerators::isTrackerStrip(theGeometry->idToDet(hit->geographicalId())->subDetector())) {//SiStrip hit, skip
+  if(GeomDetEnumerators::isTrackerStrip(theGeometry->geomDetSubDetector(hit->geographicalId().subdetId()))) {//SiStrip hit, skip
      return corrcharge_ok;
   }
 

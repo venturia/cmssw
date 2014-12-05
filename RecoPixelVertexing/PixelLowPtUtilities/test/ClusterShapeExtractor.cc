@@ -481,7 +481,7 @@ void ClusterShapeExtractor::analyzeRecTracks
     {
       LocalVector ldir = meas->updatedState().localDirection();
 
-      if(GeomDetEnumerators::isTrackerPixel(theTracker->idToDet(id)->subDetector()))
+      if(GeomDetEnumerators::isTrackerPixel(theTracker->geomDetSubDetector(id.subdetId())))
       {
         // Pixel
         const SiPixelRecHit* pixelRecHit =
@@ -490,7 +490,7 @@ void ClusterShapeExtractor::analyzeRecTracks
         if(pixelRecHit != 0)
           processRec(*pixelRecHit, ldir, hrpc);
       }
-      else if(GeomDetEnumerators::isTrackerStrip(theTracker->idToDet(id)->subDetector()))
+      else if(GeomDetEnumerators::isTrackerStrip(theTracker->geomDetSubDetector(id.subdetId())))
       {
         // Strip
         const SiStripMatchedRecHit2D* stripMatchedRecHit =
