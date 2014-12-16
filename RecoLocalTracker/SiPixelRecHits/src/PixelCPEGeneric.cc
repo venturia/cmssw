@@ -647,7 +647,7 @@ PixelCPEGeneric::localError( const SiPixelCluster& cluster,
       else // EndCap
 	{ 
           DetId id = (det.geographicalId());
-          int disk = PXFDetId(id).disk();
+          int disk = ttopo_.layer(id);
 	  if ( !edgex && disk<Phase2FPixStart_)
 	    {
 	      if ( sizex<=xerr_endcap_.size() ) xerr=xerr_endcap_[sizex-1];
