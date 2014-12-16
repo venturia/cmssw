@@ -25,8 +25,8 @@ enumerators and the returned values of the above methods are summarized in the t
 | `PixelPhase1Barrel` | `P1PXB` | `PixelBarrel` | `true` | `false` | `true` | `false` |
 | `PixelPhase1EndCap` | `P1PXEC` | `PixelEndcap` | `true` | `false` | `false` | `true` |
 | `PixelPhase2EndCap` | `P2PXEC` | `PixelEndcap` | `true` | `false` | `false` | `true` |
-| `OTPhase2Barrel` | `P2OTB` | `TOB` | `true` | `false` | `true` | `false` |
-| `OTPhase2EndCap` | `P2OTEC` | `TID` | `true` | `false` | `false` | `true` |
+| ~~`OTPhase2Barrel`~~ | ~~`P2OTB`~~ | ~~`TOB`~~ | ~~`true`~~ | ~~`false`~~ | ~~`true`~~ | ~~`false`~~ |
+| ~~`OTPhase2EndCap`~~ | ~~`P2OTEC`~~ | ~~`TID`~~ | ~~`true`~~ | ~~`false`~~ | ~~`false`~~ | ~~`true`~~ |
 
 ### `TrackerGeometry` useful methods
 
@@ -62,10 +62,10 @@ of these methods for the three scenarios available so far are described in the t
  
 | `DetId::subDetId()` | `TrackerGeometry::geomDetSubDetector(subdet)` | `TrackerGeometry::numberOfLayers(subdet)` |
 |--------|--------|-------|
-| 1 | `GeomDetEnumerators::P1PXB` | 4 |
-| 2 | `GeomDetEnumerators::P1PXEC` | 3 |
+| 1 | `GeomDetEnumerators::P1PXB` | 10 |
+| 2 | `GeomDetEnumerators::P2PXEC` | 15 |
 | 3 | `GeomDetEnumerators::invalidDet` | 0 |
-| 4 | `GeomDetEnumerators::P2OTEC` | 5 |
-| 5 | `GeomDetEnumerators::P2OTB` | 6 |
+| 4 | `GeomDetEnumerators::invalidDet` | 0 |
+| 5 | `GeomDetEnumerators::invalidDet` | 0 |
 | 6 | `GeomDetEnumerators::invalidDet` | 0 |
  
