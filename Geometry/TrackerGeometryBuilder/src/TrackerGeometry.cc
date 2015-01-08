@@ -43,6 +43,16 @@ TrackerGeometry::TrackerGeometry(GeometricDet const* gd) :  theTrackerDet(gd)
     LogTrace("NumberOfLayers") << " detid subdet "<< i << " number of layers " << numberOfLayers(i); 
   }
 
+  // checking GeometricDet tree leaves name and bounds
+
+  std::vector<const GeometricDet*> deepcomp;
+  gd->deepComponents(deepcomp);
+
+  LogDebug("ThicknessAndType") << "Dump of sensors names and bounds";
+  for(auto det : deepcomp) {
+    LogTrace("ThicknessAndType") << det->geographicalId() << " " << det->name().fullname() << " " << det->bounds()->thickness();
+  }
+  
 }
 
 TrackerGeometry::~TrackerGeometry() {

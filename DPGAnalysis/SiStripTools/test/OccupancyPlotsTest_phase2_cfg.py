@@ -37,7 +37,7 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.destinations.extend(cms.vstring("detids"))
 process.MessageLogger.categories.extend(cms.vstring("GeometricDetBuilding","DuplicateHitFinder","BuildingTrackerDetId",
                                                     "SubDetectorGeometricDetType","BuildingGeomDetUnits","LookingForFirstStrip",
-                                                    "BuildingSubDetTypeMap","SubDetTypeMapContent","NumberOfLayers","IsThereTest"))
+                                                    "BuildingSubDetTypeMap","SubDetTypeMapContent","NumberOfLayers","IsThereTest","ThicknessAndType"))
 process.MessageLogger.cout.placeholder = cms.untracked.bool(False)
 process.MessageLogger.cout.threshold = cms.untracked.string("INFO")
 process.MessageLogger.debugModules = cms.untracked.vstring("*")
@@ -73,6 +73,9 @@ process.MessageLogger.detids = cms.untracked.PSet(
         limit = cms.untracked.int32(100000000)
         ),
     IsThereTest = cms.untracked.PSet(
+        limit = cms.untracked.int32(100000000)
+        ),
+    ThicknessAndType = cms.untracked.PSet(
         limit = cms.untracked.int32(100000000)
         ),
     threshold = cms.untracked.string("DEBUG")
