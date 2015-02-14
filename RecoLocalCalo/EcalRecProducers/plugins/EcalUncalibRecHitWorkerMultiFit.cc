@@ -2,6 +2,7 @@
 
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/Framework/interface/Run.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
@@ -36,7 +37,18 @@ EcalUncalibRecHitWorkerMultiFit::EcalUncalibRecHitWorkerMultiFit(const edm::Para
 
   // uncertainty calculation (CPU intensive)
   ampErrorCalculation_ = ps.getParameter<bool>("ampErrorCalculation");
+  useLumiInfoRunHeader_ = ps.getParameter<bool>("useLumiInfoRunHeader");
+  
+  if (useLumiInfoRunHeader_) {
+    bunchSpacing_ = c.consumes<int>(edm::InputTag("addPileupInfo","bunchSpacing"));
+  }
+  
+  doPrefitEB_ = ps.getParameter<bool>("doPrefitEB");
+  doPrefitEE_ = ps.getParameter<bool>("doPrefitEE");
 
+  prefitMaxChiSqEB_ = ps.getParameter<double>("prefitMaxChiSqEB");
+  prefitMaxChiSqEE_ = ps.getParameter<double>("prefitMaxChiSqEE");
+  
   // algorithm to be used for timing
   timealgo_ = ps.getParameter<std::string>("timealgo");
   
@@ -127,6 +139,49 @@ EcalUncalibRecHitWorkerMultiFit::set(const edm::EventSetup& es)
         es.get<EcalTimeBiasCorrectionsRcd>().get(timeCorrBias_);
 }
 
+void
+EcalUncalibRecHitWorkerMultiFit::set(const edm::Event& evt)
+{
+
+  if (useLumiInfoRunHeader_) {
+
+    int bunchspacing = 450;
+    
+    if (evt.isRealData()) {
+      edm::RunNumber_t run = evt.run();
+      if (run == 178003 ||
+          run == 178004 ||
+          run == 209089 ||
+          run == 209106 ||
+          run == 209109 ||
+          run == 209146 ||
+          run == 209148 ||
+          run == 209151) {
+        bunchspacing = 25;
+      }
+      else {
+        bunchspacing = 50;
+      }
+    }
+    else {
+      edm::Handle<int> bunchSpacingH;
+      evt.getByToken(bunchSpacing_,bunchSpacingH);
+      bunchspacing = *bunchSpacingH;
+    }
+    
+    if (bunchspacing == 25) {
+      activeBX.resize(10);
+      activeBX << -5,-4,-3,-2,-1,0,1,2,3,4;
+    }
+    else {
+      //50ns configuration otherwise (also for no pileup)
+      activeBX.resize(5);
+      activeBX << -4,-2,0,2,4;
+    }
+  }
+ 
+}
+
 /**
  * Amplitude-dependent time corrections; EE and EB have separate corrections:
  * EXtimeCorrAmplitudes (ADC) and EXtimeCorrShifts (ns) need to have the same number of elements
@@ -214,11 +269,15 @@ EcalUncalibRecHitWorkerMultiFit::run( const edm::Event & evt,
                 aped  = &peds->endcap(hashedIndex);
                 aGain = &gains->endcap(hashedIndex);
                 gid   = &grps->endcap(hashedIndex);
+                multiFitMethod_.setDoPrefit(doPrefitEE_);
+		multiFitMethod_.setPrefitMaxChiSq(prefitMaxChiSqEE_);
         } else {
                 unsigned int hashedIndex = EBDetId(detid).hashedIndex();
                 aped  = &peds->barrel(hashedIndex);
                 aGain = &gains->barrel(hashedIndex);
                 gid   = &grps->barrel(hashedIndex);
+                multiFitMethod_.setDoPrefit(doPrefitEB_);
+		multiFitMethod_.setPrefitMaxChiSq(prefitMaxChiSqEB_);
         }
 
         pedVec[0] = aped->mean_x12;
@@ -287,7 +346,7 @@ EcalUncalibRecHitWorkerMultiFit::run( const edm::Event & evt,
                 const SampleMatrix &noisecormat = noisecor(barrel,gain);
                 const FullSampleVector &fullpulse = barrel ? fullpulseEB : fullpulseEE;
                 const FullSampleMatrix &fullpulsecov = barrel ? fullpulsecovEB : fullpulsecovEE;
-                                
+
                 uncalibRecHit = multiFitMethod_.makeRecHit(*itdg, aped, aGain, noisecormat,fullpulse,fullpulsecov,activeBX);
                 
                 // === time computation ===
