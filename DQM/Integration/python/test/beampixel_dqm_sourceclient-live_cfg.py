@@ -27,7 +27,7 @@ process.dqmEnv.subSystemFolder = "BeamPixel"
 #----------------------------
 # Sub-system Configuration
 #----------------------------
-process.load("Configuration.StandardSequences.Geometry_cff")
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
 process.load("DQM.Integration.test.FrontierCondition_GT_cfi")
@@ -40,6 +40,9 @@ process.dqmmodules  = cms.Sequence(process.dqmEnv + process.dqmSaver)
 process.phystrigger = cms.Sequence(process.hltTriggerTypeFilter)
 
 
+### process customizations included here
+from DQM.Integration.test.online_customizations_cfi import *
+process = customise(process)
 
 
 #----------------------------
@@ -191,3 +194,4 @@ if (process.runType.getRunType() == process.runType.hi_run):
     # Define Path
     #----------------------------
     process.p = cms.Path(process.phystrigger*process.reconstruction_step*process.pixelVertexDQM*process.dqmmodules)
+    
