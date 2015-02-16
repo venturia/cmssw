@@ -35,29 +35,6 @@ void SiStripThresholdDQM::getActiveDetIds(const edm::EventSetup & eSetup){
 
 //=====================================================================================
 
-
-// -----
-void SiStripThresholdDQM::fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-   
-  //Retrieve tracker topology from geometry
-  edm::ESHandle<TrackerTopology> tTopoHandle;
-  es.get<IdealGeometryRecord>().get(tTopoHandle);
-  const TrackerTopology* const tTopo = tTopoHandle.product();
-
-  ModMEs CondObj_ME;
-  
-    
-  for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
-      detIter_!= selectedDetIds.end();detIter_++){
-      
-    fillMEsForDet(CondObj_ME,*detIter_,tTopo);
-      
-  }
-}    
-// -----
-
-
-
 //======================================================================================
 // -----
 
@@ -96,22 +73,6 @@ void SiStripThresholdDQM::fillMEsForDet(const ModMEs& _selModME_, uint32_t selDe
 
 //=======================================================================================
 // -----
-void SiStripThresholdDQM::fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-   
-   //Retrieve tracker topology from geometry
-   edm::ESHandle<TrackerTopology> tTopoHandle;
-   es.get<IdealGeometryRecord>().get(tTopoHandle);
-   const TrackerTopology* const tTopo = tTopoHandle.product();
-
-   for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
-       detIter_!= selectedDetIds.end();detIter_++){
-     fillMEsForLayer(/*SummaryMEsMap_,*/ *detIter_,tTopo);
-
-   }
-  
-}    
-// -----
-
 
 //=======================================================================================
 // -----

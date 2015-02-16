@@ -21,10 +21,11 @@ class SiStripNoisesDQM : public SiStripBaseCondObjDQM{
   
   void getActiveDetIds(const edm::EventSetup & eSetup);
 
-  void fillMEsForDet(const ModMEs& selModME_,uint32_t selDetId_, const TrackerTopology* tTopo);
-  void fillMEsForLayer( /*std::map<uint32_t, ModMEs> selModMEsMap_, */ uint32_t selDetId_, const TrackerTopology* tTopo);
+  virtual void fillMEsForDet(const ModMEs& selModME_,uint32_t selDetId_, const TrackerTopology* tTopo);
+  virtual void fillMEsForLayer( /*std::map<uint32_t, ModMEs> selModMEsMap_, */ uint32_t selDetId_, const TrackerTopology* tTopo);
+  virtual void fillMEsForAll(uint32_t selDetId_, const TrackerTopology* tTopo);
 
-  unsigned long long getCache(const edm::EventSetup & eSetup){ return eSetup.get<SiStripNoisesRcd>().cacheIdentifier();}
+  unsigned long long getCache(const edm::EventSetup & eSetup){return eSetup.get<SiStripNoisesRcd>().cacheIdentifier();}
   
   void getConditionObject(const edm::EventSetup & eSetup){
     eSetup.get<SiStripNoisesRcd>().get(noiseHandle_);
@@ -35,7 +36,7 @@ class SiStripNoisesDQM : public SiStripBaseCondObjDQM{
     bool gainRenormalisation_;
     edm::ESHandle<SiStripNoises> noiseHandle_; 
     edm::ESHandle<SiStripApvGain> gainHandle_;
-    
+    MonitorElement *noise_vs_dettype,  *legth_vs_dettype;
 };
 
 #endif

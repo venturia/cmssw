@@ -28,29 +28,6 @@ void SiStripPedestalsDQM::getActiveDetIds(const edm::EventSetup & eSetup){
 }
 // -----
 
-
-// -----
-void SiStripPedestalsDQM::fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-   
-  //Retrieve tracker topology from geometry
-  edm::ESHandle<TrackerTopology> tTopoHandle;
-  es.get<IdealGeometryRecord>().get(tTopoHandle);
-  const TrackerTopology* const tTopo = tTopoHandle.product();
-
-  ModMEs CondObj_ME;
-  
-  for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
-      detIter_!= selectedDetIds.end();detIter_++){
-      
-    fillMEsForDet(CondObj_ME,*detIter_,tTopo);
-      
-  }
-}    
-// -----
-
-
-
-
 // -----
 void SiStripPedestalsDQM::fillMEsForDet(const ModMEs& _selModME_, uint32_t selDetId_, const TrackerTopology* tTopo){
   ModMEs selModME_ = _selModME_;
@@ -70,46 +47,21 @@ void SiStripPedestalsDQM::fillMEsForDet(const ModMEs& _selModME_, uint32_t selDe
 
 
 
-// -----
-void SiStripPedestalsDQM::fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-   
-  //Retrieve tracker topology from geometry
-  edm::ESHandle<TrackerTopology> tTopoHandle;
-  es.get<IdealGeometryRecord>().get(tTopoHandle);
-  const TrackerTopology* const tTopo = tTopoHandle.product();
-
-  for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
-      detIter_!= selectedDetIds.end();detIter_++){
-    fillMEsForLayer(/*SummaryMEsMap_,*/ *detIter_,tTopo);
-  }
-
+void SiStripPedestalsDQM::saveSummaryMEs(){
   for (std::map<uint32_t, ModMEs>::iterator iter=SummaryMEsMap_.begin(); iter!=SummaryMEsMap_.end(); iter++){
 
     ModMEs selME;
     selME = iter->second;
 
     if(hPSet_.getParameter<bool>("FillSummaryProfileAtLayerLevel") && fPSet_.getParameter<bool>("OutputSummaryProfileAtLayerLevelAsImage")){
-
       if( CondObj_fillId_ =="onlyProfile" || CondObj_fillId_ =="ProfileAndCumul"){
-
-	TCanvas c1("c1");
-	selME.SummaryOfProfileDistr->getTProfile()->Draw();
-	std::string name (selME.SummaryOfProfileDistr->getTProfile()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfProfileDistr);
       }
     }
     if(hPSet_.getParameter<bool>("FillSummaryAtLayerLevel") && fPSet_.getParameter<bool>("OutputSummaryAtLayerLevelAsImage")){
-
-      TCanvas c1("c1");
-      selME.SummaryDistr->getTH1()->Draw();
-      std::string name (selME.SummaryDistr->getTH1()->GetTitle());
-      name+=".png";
-      c1.Print(name.c_str());
+      savePNG(selME.SummaryDistr);
     }
-
   }
-
 }           
   
 // -----

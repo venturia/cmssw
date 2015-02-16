@@ -89,6 +89,8 @@ class SiStripBaseCondObjDQM {
     }; 
 
 
+    const TrackerTopology* const topo(const edm::EventSetup& es);
+    void savePNG(MonitorElement* me); 
     void getModMEs(ModMEs& CondObj_ME, const uint32_t& detId_, const TrackerTopology* tTopo);
     void getSummaryMEs(ModMEs& CondObj_ME, const uint32_t& detId_, const TrackerTopology* tTopo);
     std::pair<std::string,uint32_t> getLayerNameAndId(const uint32_t& detId_, const TrackerTopology* tTopo);
@@ -96,11 +98,12 @@ class SiStripBaseCondObjDQM {
     std::vector<uint32_t> GetSameLayerDetId(const std::vector<uint32_t>& activeDetIds, uint32_t selDetId, const TrackerTopology* tTopo);
 
 
-    virtual void fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es);
-    virtual void fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es);
+    void fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es);
+    void fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es);
+    virtual void saveSummaryMEs(); //allow different plots to be saved, but provide default system
     virtual void fillMEsForDet(const ModMEs& selModME_,uint32_t selDetId_, const TrackerTopology* tTopo)=0;
     virtual void fillMEsForLayer( /*std::map<uint32_t, ModMEs> selModMEsMap_, */ uint32_t selDetId_, const TrackerTopology* tTopo)=0;
-
+    virtual void fillMEsForAll(uint32_t selDetId_, const TrackerTopology* tTopo) {};
 
     void fillTkMap(const uint32_t& detid, const float& value);
     
@@ -115,6 +118,8 @@ class SiStripBaseCondObjDQM {
     bool SummaryOnLayerLevel_On_;
     bool SummaryOnStringLevel_On_;
     bool GrandSummary_On_;
+  
+    bool GlobalPlots_;
     double minValue, maxValue;
     std::vector<int> tkMapScaler;
 
@@ -136,6 +141,9 @@ class SiStripBaseCondObjDQM {
     TkHistoMap* Tk_HM_L;
     TrackerMap * tkMap;
   
+    SiStripFolderOrganizer folder_organizer;         
+    DQMStore* dqmStore_;
+
  private:
   
     void bookProfileMEs(SiStripBaseCondObjDQM::ModMEs& CondObj_ME, const uint32_t& detId_, const TrackerTopology* tTopo);
@@ -157,9 +165,6 @@ class SiStripBaseCondObjDQM {
     std::string condDataMonitoringMode_;
      
     SiStripHistoId hidmanager;                        
-    SiStripFolderOrganizer folder_organizer;         
-    DQMStore* dqmStore_;
-
 };
 
 

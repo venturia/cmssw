@@ -23,7 +23,7 @@ SiStripBaseCondObjDQM::SiStripBaseCondObjDQM(const edm::EventSetup & eSetup,
   SummaryOnStringLevel_On_ = fPSet_.getParameter<bool>("SummaryOnStringLevel_On");
 
   GrandSummary_On_         = fPSet_.getParameter<bool>("GrandSummary_On");
-
+  GlobalPlots_ = fPSet_.existsAs<bool>("GlobalPlots") ? fPSet_.getParameter<bool>("GlobalPlots") : false;
   CondObj_fillId_    = hPSet_.getParameter<std::string>("CondObj_fillId");
   CondObj_name_      = hPSet_.getParameter<std::string>("CondObj_name");
  
@@ -64,8 +64,16 @@ void SiStripBaseCondObjDQM::analysis(const edm::EventSetup & eSetup_){
 
   selectModules(activeDetIds);
 
-  if(Mod_On_ )                                            { fillModMEs    (activeDetIds, eSetup_); }
-  if(SummaryOnLayerLevel_On_ || SummaryOnStringLevel_On_ ){ fillSummaryMEs(activeDetIds, eSetup_); }
+  const TrackerTopology* const tTopo = topo(eSetup_);
+  ModMEs CondObj_ME;
+ 
+  for(std::vector<uint32_t>::const_iterator detIter = activeDetIds.begin();
+      detIter != activeDetIds.end(); ++detIter){
+    if(Mod_On_ )                                            {fillMEsForDet(CondObj_ME, *detIter, tTopo);}
+    if(SummaryOnLayerLevel_On_ || SummaryOnStringLevel_On_ ){fillMEsForLayer(/*SummaryMEsMap_,*/ *detIter, tTopo);}
+    if(GlobalPlots_ )                                       {fillMEsForAll(*detIter, tTopo);}
+  }
+  saveSummaryMEs();
 
   if(fPSet_.getParameter<bool>("TkMap_On") || hPSet_.getParameter<bool>("TkMap_On")) {
     std::string filename = hPSet_.getParameter<std::string>("TkMapName");
@@ -166,7 +174,6 @@ std::vector<uint32_t> SiStripBaseCondObjDQM::getCabledModules() {
 //#FIXME : very long method. please factorize it
  
 void SiStripBaseCondObjDQM::selectModules(std::vector<uint32_t> & detIds_){
-  
   edm::LogInfo("SiStripBaseCondObjDQM") << "[SiStripBaseCondObjDQM::selectModules] input detIds_: " << detIds_.size() << std::endl;
   
   if( fPSet_.getParameter<bool>("restrictModules")){
@@ -1246,13 +1253,37 @@ void SiStripBaseCondObjDQM::end(){
 }
 
 //==========================
-void SiStripBaseCondObjDQM::fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
+void SiStripBaseCondObjDQM::savePNG(MonitorElement* me){
+  TCanvas c1("ItDoesNotMatter");
+  switch(me->kind()){
+  case MonitorElement::Kind::DQM_KIND_TPROFILE : me->getTProfile()->Draw(); break;
+  case MonitorElement::Kind::DQM_KIND_TH1F : me->getTH1()->Draw(); break;
+  case MonitorElement::Kind::DQM_KIND_TH1S : me->getTH1()->Draw(); break;
+  case MonitorElement::Kind::DQM_KIND_TH1D : me->getTH1()->Draw(); break;
+    //case MonitorElement::Kind:: : ; break;
+  default : throw edm::Exception(edm::errors::Configuration)
+      << "DQM Type is not recognised by SiStripBaseCondObjDQM::savePNG for "
+      << "PNG image printout, plase add the appropriate information to "
+      << "the code";
+  }
+  std::string name (me->getTitle());
+  name+=".png";
+  c1.Print(name.c_str());
+}
 
-  //Retrieve tracker topology from geometry
+//==========================
+const TrackerTopology* const SiStripBaseCondObjDQM::topo(const edm::EventSetup& es){
+  //Retrieve tracker topology from geometry                                                                                                                                                                       
   edm::ESHandle<TrackerTopology> tTopoHandle;
   es.get<IdealGeometryRecord>().get(tTopoHandle);
   const TrackerTopology* const tTopo = tTopoHandle.product();
+  return tTopo;
+}
 
+
+//==========================
+void SiStripBaseCondObjDQM::fillModMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
+  const TrackerTopology* const tTopo = topo(es);
   ModMEs CondObj_ME;
  
   for(std::vector<uint32_t>::const_iterator detIter_=selectedDetIds.begin();
@@ -1261,19 +1292,8 @@ void SiStripBaseCondObjDQM::fillModMEs(const std::vector<uint32_t> & selectedDet
   }
 }
 
-//==========================
-void SiStripBaseCondObjDQM::fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-
-  //Retrieve tracker topology from geometry
-  edm::ESHandle<TrackerTopology> tTopoHandle;
-  es.get<IdealGeometryRecord>().get(tTopoHandle);
-  const TrackerTopology* const tTopo = tTopoHandle.product();
-  
-  for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
-      detIter_!= selectedDetIds.end();detIter_++){
-    fillMEsForLayer(/*SummaryMEsMap_,*/ *detIter_,tTopo);    
-  }
-
+//==========================    
+void SiStripBaseCondObjDQM::saveSummaryMEs(){
   for (std::map<uint32_t, ModMEs>::iterator iter=SummaryMEsMap_.begin();
        iter!=SummaryMEsMap_.end(); iter++){
 
@@ -1284,35 +1304,30 @@ void SiStripBaseCondObjDQM::fillSummaryMEs(const std::vector<uint32_t> & selecte
        fPSet_.getParameter<bool>("OutputSummaryProfileAtLayerLevelAsImage")){
 
       if( CondObj_fillId_ =="onlyProfile" || CondObj_fillId_ =="ProfileAndCumul"){
-
-	TCanvas c1("c1");
-	selME.SummaryOfProfileDistr->getTProfile()->Draw();
-	std::string name (selME.SummaryOfProfileDistr->getTProfile()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfProfileDistr);
       }
     }
     if(hPSet_.getParameter<bool>("FillSummaryAtLayerLevel") &&
        fPSet_.getParameter<bool>("OutputSummaryAtLayerLevelAsImage")){
-
-      TCanvas c1("c1");
-      selME.SummaryDistr->getTH1()->Draw();
-      std::string name (selME.SummaryDistr->getTH1()->GetTitle());
-      name+=".png";
-      c1.Print(name.c_str());
+      savePNG(selME.SummaryDistr);
     }
     if(hPSet_.getParameter<bool>("FillCumulativeSummaryAtLayerLevel") &&
        fPSet_.getParameter<bool>("OutputCumulativeSummaryAtLayerLevelAsImage")){
 
       if( CondObj_fillId_ =="onlyCumul" || CondObj_fillId_ =="ProfileAndCumul"){
-
-	TCanvas c1("c1");
-	selME.SummaryOfCumulDistr->getTH1()->Draw();
-	std::string name (selME.SummaryOfCumulDistr->getTH1()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfCumulDistr);
       }
     }
+  } 
+}
 
+//==========================
+void SiStripBaseCondObjDQM::fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
+  const TrackerTopology* const tTopo = topo(es);
+
+  for(std::vector<uint32_t>::const_iterator detIter_ = selectedDetIds.begin();
+      detIter_!= selectedDetIds.end();detIter_++){
+    fillMEsForLayer(/*SummaryMEsMap_,*/ *detIter_,tTopo);    
   }
+  saveSummaryMEs();
 }
