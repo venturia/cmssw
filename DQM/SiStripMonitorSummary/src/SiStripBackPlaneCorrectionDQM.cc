@@ -5,11 +5,12 @@
 // -----
 SiStripBackPlaneCorrectionDQM::SiStripBackPlaneCorrectionDQM(const edm::EventSetup & eSetup,
 					       edm::ParameterSet const& hPSet,
-					       edm::ParameterSet const& fPSet):SiStripBaseCondObjDQM(eSetup, hPSet, fPSet){
-
+					       edm::ParameterSet const& fPSet):
+  SiStripBaseCondObjDQM(eSetup, hPSet, fPSet),
+  last_id_processed_(0)
+{
   // Build the Histo_TkMap:
   if(HistoMaps_On_ ) Tk_HM_ = new TkHistoMap("SiStrip/Histo_Map","BP_TkMap",0.);
-
 }
 // -----
 
@@ -37,87 +38,29 @@ void SiStripBackPlaneCorrectionDQM::getActiveDetIds(const edm::EventSetup & eSet
 }
 // -----
 
-
-// -----
-void SiStripBackPlaneCorrectionDQM::fillSummaryMEs(const std::vector<uint32_t> & selectedDetIds, const edm::EventSetup& es){
-
-  //Retrieve tracker topology from geometry
-  edm::ESHandle<TrackerTopology> tTopoHandle;
-  es.get<IdealGeometryRecord>().get(tTopoHandle);
-  const TrackerTopology* const tTopo = tTopoHandle.product();
-
-  // -----
-  // BP on layer-level : fill at once all detIds belonging to same layer when encountering first detID in the layer 
-
-  bool fillNext = true; 
-  for(unsigned int i=0;i<selectedDetIds.size();i++){					    
-    int subDetId_ = ((selectedDetIds[i]>>25)&0x7);
-    if( subDetId_<3 ||subDetId_>6 ){ 
-      edm::LogError("SiStripBackPlaneCorrection")
-	<< "[SiStripBackPlaneCorrection::fillSummaryMEs] WRONG INPUT : no such subdetector type : "
-	<< subDetId_ << " and detId " << selectedDetIds[i] << " therefore no filling!" 
-	<< std::endl;
-    }    
-    else if (SummaryOnLayerLevel_On_) {    
-      if( fillNext) { fillMEsForLayer(/*SummaryMEsMap_,*/ selectedDetIds[i],tTopo);} 
-      if( getLayerNameAndId(selectedDetIds[i+1],tTopo)==getLayerNameAndId(selectedDetIds[i],tTopo)){ fillNext=false;}
-      else { fillNext=true;}
-    } 
-    else if (SummaryOnStringLevel_On_) {
-      if( fillNext) { fillMEsForLayer(/*SummaryMEsMap_,*/ selectedDetIds[i],tTopo);} 
-      if( getStringNameAndId(selectedDetIds[i+1],tTopo)==getStringNameAndId(selectedDetIds[i],tTopo)){ fillNext=false;}
-      else { fillNext=true;}
-    } 
-  }
-
+void SiStripBackPlaneCorrectionDQM::saveSummaryMEs(){
   for (std::map<uint32_t, ModMEs>::iterator iter=SummaryMEsMap_.begin(); iter!=SummaryMEsMap_.end(); iter++){
 
     ModMEs selME;
     selME = iter->second;
 
     if(SummaryOnStringLevel_On_){
-
       if (fPSet_.getParameter<bool>("OutputSummaryProfileAtLayerLevelAsImage")){
-
-	TCanvas c1("c1");
-	selME.SummaryOfProfileDistr->getTProfile()->Draw();
-	std::string name (selME.SummaryOfProfileDistr->getTProfile()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfProfileDistr);
       }
-
       if (fPSet_.getParameter<bool>("OutputCumulativeSummaryAtLayerLevelAsImage")){
-
-	TCanvas c2("c2");
-	selME.SummaryOfCumulDistr->getTH1()->Draw();
-	std::string name2 (selME.SummaryOfCumulDistr->getTH1()->GetTitle());
-	name2+=".png";
-	c2.Print(name2.c_str());
+	savePNG(selME.SummaryOfCumulDistr);
       }
-
     }
     else{
       if(hPSet_.getParameter<bool>("FillSummaryProfileAtLayerLevel") && fPSet_.getParameter<bool>("OutputSummaryProfileAtLayerLevelAsImage")){
-
-	TCanvas c1("c1");
-	selME.SummaryOfProfileDistr->getTProfile()->Draw();
-	std::string name (selME.SummaryOfProfileDistr->getTProfile()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfProfileDistr);
       }
-
       if(hPSet_.getParameter<bool>("FillCumulativeSummaryAtLayerLevel") && fPSet_.getParameter<bool>("OutputCumulativeSummaryAtLayerLevelAsImage")){
-
-	TCanvas c1("c1");
-	selME.SummaryOfCumulDistr->getTH1()->Draw();
-	std::string name (selME.SummaryOfCumulDistr->getTH1()->GetTitle());
-	name+=".png";
-	c1.Print(name.c_str());
+	savePNG(selME.SummaryOfCumulDistr);
       }
     }
-
   }
-
 }
 // -----
 
@@ -125,6 +68,22 @@ void SiStripBackPlaneCorrectionDQM::fillSummaryMEs(const std::vector<uint32_t> &
 
 // -----
 void SiStripBackPlaneCorrectionDQM::fillMEsForLayer( /*std::map<uint32_t, ModMEs> selMEsMap_,*/ uint32_t selDetId_, const TrackerTopology* tTopo){
+  //check if we need to do anything
+  int subDetId_ = ((selDetId_>>25)&0x7);
+  if( subDetId_<3 ||subDetId_>6 ){ 
+    edm::LogError("SiStripBackPlaneCorrection")
+      << "[SiStripBackPlaneCorrection::fillMEsForLayer] WRONG INPUT : no such subdetector type : "
+      << subDetId_ << " and detId " << selDetId_ << " therefore no filling!" 
+      << std::endl;
+  }    
+  else if (SummaryOnLayerLevel_On_) { 
+    if( getLayerNameAndId(last_id_processed_, tTopo) == getLayerNameAndId(selDetId_, tTopo)){return;}
+  } 
+  else if (SummaryOnStringLevel_On_) {
+    if( getStringNameAndId(last_id_processed_, tTopo)==getStringNameAndId(selDetId_, tTopo)){return;}
+  } 
+  last_id_processed_ = selDetId_;
+
 
   SiStripHistoId hidmanager;
 
@@ -134,8 +93,6 @@ void SiStripBackPlaneCorrectionDQM::fillMEsForLayer( /*std::map<uint32_t, ModMEs
 
   std::string hSummary_name; 
 
-  int subDetId_ = ((selDetId_>>25)&0x7);
-  
   if( subDetId_<3 || subDetId_>6 ){ 
     edm::LogError("SiStripBackPlaneCorrectionDQM")
       << "[SiStripBackPlaneCorrectionDQM::fillMEsForLayer] WRONG INPUT : no such subdetector type : "

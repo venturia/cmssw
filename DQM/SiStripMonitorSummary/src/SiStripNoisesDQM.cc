@@ -1,6 +1,6 @@
 #include "DQM/SiStripMonitorSummary/interface/SiStripNoisesDQM.h"
 
-
+#include "DataFormats/SiStripDetId/interface/SiStripDetId.h"
 #include "DQMServices/Core/interface/MonitorElement.h"
 
 #include "TCanvas.h"
@@ -16,6 +16,13 @@ SiStripNoisesDQM::SiStripNoisesDQM(const edm::EventSetup & eSetup,
   // Build the Histo_TkMap:
   if(HistoMaps_On_ ) Tk_HM_ = new TkHistoMap("SiStrip/Histo_Map","MeanNoise_TkMap",0.);
 
+  if(GlobalPlots_){
+    const TrackerTopology* tTopo = topo(eSetup);
+    folder_organizer.setLayerFolder(0, tTopo);
+    int last_enum_element = SiStripDetId::ModuleGeometry::W7 + 1;
+    noise_vs_dettype = dqmStore_->bookProfile("noise_vs_dettype", "noise_vs_dettype",   last_enum_element, 0, last_enum_element, 100, 0, 10);
+    legth_vs_dettype = dqmStore_->bookProfile("lenght_vs_dettype", "lenght_vs_dettype", last_enum_element, 0, last_enum_element, 150, 7, 22);
+  }
 }
 // -----
 
@@ -30,6 +37,35 @@ void SiStripNoisesDQM::getActiveDetIds(const edm::EventSetup & eSetup){
   getConditionObject(eSetup);
   noiseHandle_->getDetIds(activeDetIds);
 
+}
+
+// -----
+void SiStripNoisesDQM::fillMEsForAll(uint32_t selDetId_, const TrackerTopology* tTopo){
+  SiStripNoises::Range noiseRange = noiseHandle_->getRange(selDetId_);
+  
+  int nStrip   = reader->getNumberOfApvsAndStripLength(selDetId_).first*128;
+  float lenght = reader->getNumberOfApvsAndStripLength(selDetId_).second;
+  int detectory_type = SiStripDetId(selDetId_).moduleGeometry();
+
+  legth_vs_dettype->Fill(detectory_type, lenght);
+
+  float gainFactor;
+  float stripnoise;
+
+  SiStripApvGain::Range gainRange;
+  if( gainRenormalisation_ ){
+    gainRange = gainHandle_->getRange(selDetId_);
+  }
+
+  for(int istrip=0; istrip<nStrip; ++istrip){
+    if( gainRenormalisation_ )
+      gainFactor= gainHandle_ ->getStripGain(istrip, gainRange) ? gainHandle_ ->getStripGain(istrip,gainRange) : 1.;
+    else
+      gainFactor=1;
+
+    stripnoise = noiseHandle_->getNoise(istrip, noiseRange)/gainFactor;
+    noise_vs_dettype->Fill(detectory_type, stripnoise);
+  } //istrip  
 }
 
 // -----

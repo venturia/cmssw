@@ -25,6 +25,7 @@ CondDataMonitoring = cms.EDAnalyzer("SiStripMonitorCondData",
       HistoMaps_On            = cms.bool(True),
       SummaryOnStringLevel_On = cms.bool(False),
       SummaryOnLayerLevel_On  = cms.bool(True),
+      GlobalPlots             = cms.bool(False),
       GrandSummary_On         = cms.bool(True),
       StripQualityLabel       = cms.string(''),
 

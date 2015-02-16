@@ -86,6 +86,11 @@ options.register ('NoiseMon',
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.bool,          # string, int, or float
                   "Monitor noise?")
+options.register ('GainRenormalisation',
+                  False,
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.bool,          # string, int, or float
+                  "Renormalize noise according to gain?")
 options.register ('QualityMon',
                   False,
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -121,6 +126,11 @@ options.register ('MonitorCumulative',
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.bool,          # string, int, or float
                   "Cumulative Monitoring?")
+options.register ('GlobalPlots',
+                  False,
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.bool,          # string, int, or float
+                  "Produce detector-wide plots?")
 options.register ('ActiveDetId',
                   False,
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
@@ -241,6 +251,7 @@ else:
     process.CondDataMonitoring.FillConditions_PSet.TkMap_On         = True # This is just for test until TkMap is included in all classes!!! Uncomment!!!!
     process.CondDataMonitoring.FillConditions_PSet.ActiveDetIds_On  = options.ActiveDetId # This should be set to False only for Lorentz Angle
     process.CondDataMonitoring.FillConditions_PSet.Mod_On           = False # Set to True if you want to have single module histograms
+    process.CondDataMonitoring.FillConditions_PSet.GlobalPlots      = options.GlobalPlots
     
     process.CondDataMonitoring.SiStripPedestalsDQM_PSet.FillSummaryAtLayerLevel     = True
     process.CondDataMonitoring.SiStripNoisesDQM_PSet.FillSummaryAtLayerLevel        = True
@@ -280,6 +291,7 @@ else:
     process.CondDataMonitoring.SiStripNoisesDQM_PSet.TkMapName    = 'NoiseTkMap.png'
     process.CondDataMonitoring.SiStripNoisesDQM_PSet.minValue     = 3.
     process.CondDataMonitoring.SiStripNoisesDQM_PSet.maxValue     = 9.
+    process.CondDataMonitoring.SiStripNoisesDQM_PSet.GainRenormalisation = options.GainRenormalisation
     
     process.CondDataMonitoring.SiStripApvGainsDQM_PSet.TkMap_On     = True
     process.CondDataMonitoring.SiStripApvGainsDQM_PSet.TkMapName    = 'GainTkMap.png'
