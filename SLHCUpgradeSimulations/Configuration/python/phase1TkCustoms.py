@@ -170,7 +170,7 @@ def customise_Reco(process,pileup):
     #use with latest pixel geometry
     process.ClusterShapeHitFilterESProducer.PixelShapeFile = cms.string('RecoPixelVertexing/PixelLowPtUtilities/data/pixelShape_Phase1Tk.par')
     # Need this line to stop error about missing siPixelDigis.
-    process.MeasurementTracker.inactivePixelDetectorLabels = cms.VInputTag()
+    process.MeasurementTrackerEvent.inactivePixelDetectorLabels = cms.VInputTag()
 
     # new layer list (3/4 pixel seeding) in InitialStep and pixelTracks
     process.PixelLayerTriplets.layerList = cms.vstring( 'BPix1+BPix2+BPix3',
@@ -270,7 +270,10 @@ def customise_Reco(process,pileup):
     process.reconstruction.remove(process.castorreco)
     process.reconstruction.remove(process.CastorTowerReco)
     #process.reconstruction.remove(process.ak7BasicJets)
-    #process.reconstruction.remove(process.ak7CastorJetID)
+    process.reconstruction.remove(process.ak7CastorJets)
+    process.reconstruction.remove(process.ak7CastorJetID)
+    process.reconstruction.remove(process.ak5CastorJets)
+    process.reconstruction.remove(process.ak5CastorJetID)
 
     #the quadruplet merger configuration     
     process.load("RecoPixelVertexing.PixelTriplets.quadrupletseedmerging_cff")
@@ -342,6 +345,36 @@ def customise_Reco(process,pileup):
     process.pixelTracks.FilterPSet.tipMax = cms.double(0.05)
     process.pixelTracks.RegionFactoryPSet.RegionPSet.originRadius =  cms.double(0.02)
 
+    process.templates.DoLorentz=False
+    process.templates.LoadTemplatesFromDB = cms.bool(False)
+    process.PixelCPEGenericESProducer.useLAWidthFromDB = cms.bool(False)
+
+    process.duplicateTrackCandidates.ttrhBuilderName = cms.string('WithTrackAngle')
+    process.duplicateDisplacedTrackCandidates.ttrhBuilderName = cms.string('WithTrackAngle')
+    process.mergedDuplicateDisplacedTracks.TTRHBuilder = cms.string('WithTrackAngle')
+    process.convStepTracks.TTRHBuilder = cms.string('WithTrackAngle')
+    process.globalMuons.GLBTrajBuilderParameters.GlbRefitterParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.globalMuons.GLBTrajBuilderParameters.TrackTransformer.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.globalMuons.GLBTrajBuilderParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.displacedGlobalMuons.GLBTrajBuilderParameters.GlbRefitterParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.displacedGlobalMuons.GLBTrajBuilderParameters.TrackTransformer.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.displacedGlobalMuons.GLBTrajBuilderParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.glbTrackQual.RefitterParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.globalSETMuons.GLBTrajBuilderParameters.GlbRefitterParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.globalSETMuons.GLBTrajBuilderParameters.TrackTransformer.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.globalSETMuons.GLBTrajBuilderParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    process.tevMuons.RefitterParameters.TrackerRecHitBuilder = cms.string('WithTrackAngle')
+    
+    process.muonSeededTracksOutInDisplaced.TTRHBuilder = cms.string('WithTrackAngle')
+    process.muonSeededTracksOutInDisplacedSelector.vertices = cms.InputTag('pixelVertices')
+    process.duplicateDisplacedTrackSelector.vertices = cms.InputTag('pixelVertices')
+
+    process.GlobalTag.toGet = cms.VPSet(
+        cms.PSet(record = cms.string("SiPixelLorentzAngleRcd"),
+                 tag = cms.string("SiPixelLorentzAngle_0_106_612_slhc1_mc"),
+                 connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_PIXEL")
+                 )
+        )
 
 
     return process

@@ -201,7 +201,8 @@ MuonTrackLoader::loadTracks(const TrajectoryContainer& trajectories,
     theSmoother.reset(aSmoother->clone());
     edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
     try { 
-      std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // to be moved to cfg in another PR
+      //      std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // to be moved to cfg in another PR
+      std::string theTrackerRecHitBuilderName("WithTrackAngle");  // to be moved to cfg in another PR
       theService->eventSetup().get<TransientRecHitRecord>().get(theTrackerRecHitBuilderName,theTrackerRecHitBuilder);
       theTrackerRecHitBuilder.product();
     } catch(...) {
@@ -545,7 +546,8 @@ MuonTrackLoader::loadTracks(const TrajectoryContainer& trajectories,
     theSmoother.reset(aSmoother->clone());
     edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
     try {
-      std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // to be moved to cfg in another PR
+      //      std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // to be moved to cfg in another PR
+      std::string theTrackerRecHitBuilderName("WithTrackAngle");  // to be moved to cfg in another PR
       theService->eventSetup().get<TransientRecHitRecord>().get(theTrackerRecHitBuilderName,theTrackerRecHitBuilder);
       theTrackerRecHitBuilder.product();
     } catch(...) {

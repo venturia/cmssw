@@ -156,7 +156,8 @@ GoodSeedProducer::produce(Event& iEvent, const EventSetup& iSetup)
      /// FIXME FIXME CLONE
       edm::ESHandle<TransientTrackingRecHitBuilder> theTrackerRecHitBuilder;
       try {
-        std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // FIXME FIXME
+	//        std::string theTrackerRecHitBuilderName("WithAngleAndTemplate");  // FIXME FIXME
+        std::string theTrackerRecHitBuilderName("WithTrackAngle");  // FIXME FIXME
         iSetup.get<TransientRecHitRecord>().get(theTrackerRecHitBuilderName,theTrackerRecHitBuilder);
         theTrackerRecHitBuilder.product();
       } catch(...) {

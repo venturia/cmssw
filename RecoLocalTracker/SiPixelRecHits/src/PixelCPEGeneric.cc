@@ -692,7 +692,7 @@ PixelCPEGeneric::localError(DetParam const & theDetParam,  ClusterParam & theClu
   } else  { // simple errors
 
     // This are the simple errors, hardcoded in the code 
-    cout << "Track angles are not known and we are processing cosmics." << endl; 
+    //    cout << "Track angles are not known and we are processing cosmics." << endl; 
     //cout << "Default angle estimation which assumes track from PV (0,0,0) does not work." << endl;
       
     if ( theDetParam.thePart == GeomDetEnumerators::PixelBarrel || theDetParam.thePart == GeomDetEnumerators::P1PXB )  {
