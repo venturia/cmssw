@@ -34,7 +34,7 @@ class RawEventFileWriterForBU
   uint32 adler32() const { return (adlerb_ << 16) | adlera_; }
 
   void start(){}
-  void stop() {}
+  void stop();
   void initialize(std::string const& destinationDir, std::string const& name, int ls);
   void endOfLS(int ls);
   bool sharedMode() const {return false;}
@@ -45,7 +45,9 @@ class RawEventFileWriterForBU
 
  private:
 
-  void closefd(){if(outfd_>=0){close(outfd_); outfd_=-1;}}
+  bool closefd(){if(outfd_>=0){close(outfd_); outfd_=-1; return true;} else return false;}
+  void finishFileWrite(int ls);
+  void writeJsds(); 
   int outfd_ = -1;
 
   int run_ = -1;

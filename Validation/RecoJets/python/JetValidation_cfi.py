@@ -34,7 +34,7 @@ import FWCore.ParameterSet.Config as cms
 #-------------------------------------------------------------------------------
 JetAnalyzerAk4Calo = cms.EDAnalyzer("JetTester",
                                     JetType = cms.untracked.string('calo'),
-                                    OutputFile = cms.untracked.string('JetTester.root'),
+                                    OutputFile = cms.untracked.string(''),
                                     src            = cms.InputTag("ak4CaloJets"),
 #                                    srcRho         = cms.InputTag("rho", "ak4CaloJets"),
                                     srcGen         = cms.InputTag("ak4GenJets"),
@@ -65,7 +65,7 @@ JetAnalyzerAk4Calo = cms.EDAnalyzer("JetTester",
 #-------------------------------------------------------------------------------
 JetAnalyzerAk4PF = cms.EDAnalyzer("JetTester",
                                   JetType = cms.untracked.string('pf'),
-                                  OutputFile = cms.untracked.string('JetTester.root'),
+                                  OutputFile = cms.untracked.string(''),
                                   src            = cms.InputTag("ak4PFJets"),
 #                                  srcRho         = cms.InputTag("ak4PFJets","rho"),
                                   srcGen         = cms.InputTag("ak4GenJets"),
@@ -78,23 +78,23 @@ JetAnalyzerAk4PF = cms.EDAnalyzer("JetTester",
 
 # AntiKt5 JPT jets
 #-------------------------------------------------------------------------------
-JetAnalyzerAk4JPT = cms.EDAnalyzer("JetTester",
-                                   JetType = cms.untracked.string('jpt'),
-                                   OutputFile = cms.untracked.string(''),
-                                   src            = cms.InputTag("JetPlusTrackZSPCorJetAntiKt4"),
-#                                   srcRho         = cms.InputTag("JetPlusTrackZSPCorJetAntiKt4","rho"),
-                                   srcGen         = cms.InputTag("ak4GenJets"),
-                                   JetCorrections = cms.string("newAk4JPTL1FastL2L3"),
-                                   recoJetPtThreshold = cms.double(40),
-                                   genEnergyFractionThreshold     = cms.double(0.05),
-                                   matchGenPtThreshold                 = cms.double(20.0),
-                                   RThreshold                     = cms.double(0.3)
-                                   )
+#JetAnalyzerAk4JPT = cms.EDAnalyzer("JetTester",
+#                                   JetType = cms.untracked.string('jpt'),
+#                                   OutputFile = cms.untracked.string(''),
+#                                   src            = cms.InputTag("JetPlusTrackZSPCorJetAntiKt4"),
+##                                   srcRho         = cms.InputTag("JetPlusTrackZSPCorJetAntiKt4","rho"),
+#                                   srcGen         = cms.InputTag("ak4GenJets"),
+#                                   JetCorrections = cms.string("newAk4JPTL1FastL2L3"),
+#                                   recoJetPtThreshold = cms.double(40),
+#                                   genEnergyFractionThreshold     = cms.double(0.05),
+#                                   matchGenPtThreshold                 = cms.double(20.0),
+#                                   RThreshold                     = cms.double(0.3)
+#                                   )
 # AntiKt5 PF CHS jets
 #-------------------------------------------------------------------------------
 JetAnalyzerAk4PFCHS = cms.EDAnalyzer("JetTester",
                                   JetType = cms.untracked.string('pf'),
-                                  OutputFile = cms.untracked.string('JetTester.root'),
+                                  OutputFile = cms.untracked.string(''),
                                   src            = cms.InputTag("ak4PFJetsCHS"),
 #                                  srcRho         = cms.InputTag("ak4PFJetsCHS","rho"),
                                   srcGen         = cms.InputTag("ak4GenJets"),
