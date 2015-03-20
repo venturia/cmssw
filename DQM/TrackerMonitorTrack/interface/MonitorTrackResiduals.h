@@ -28,7 +28,7 @@ namespace edm { class Event; }
 
 typedef std::map<int32_t, MonitorElement *> HistoClass;
 
-class MonitorTrackResiduals : public DQMEDAnalyzer {
+class MonitorTrackResiduals : public thread_unsafe::DQMEDAnalyzer {
  public:
   // constructors and EDAnalyzer Methods
   explicit MonitorTrackResiduals(const edm::ParameterSet&);
@@ -41,8 +41,6 @@ class MonitorTrackResiduals : public DQMEDAnalyzer {
   void bookHistograms(DQMStore::IBooker &, edm::Run const &, edm::EventSetup const &) override;
   // Own methods 
   void createMEs( DQMStore::IBooker & , const edm::EventSetup&);
-  void resetModuleMEs(int32_t modid);
-  void resetLayerMEs(const std::pair<std::string, int32_t>&);
  private:
 
   DQMStore * dqmStore_;
@@ -54,7 +52,6 @@ class MonitorTrackResiduals : public DQMEDAnalyzer {
   HistoClass NormedHitResiduals;
   SiStripFolderOrganizer folder_organizer;
   unsigned long long m_cacheID_;
-  bool reset_me_after_each_run;
   bool ModOn;
   GenericTriggerEventFlag* genTriggerEventFlag_;
 };

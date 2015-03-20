@@ -1097,7 +1097,7 @@ initializeProtoCands(std::list<PFEGammaAlgo::ProtoEGObject>& egobjs) {
 	 // link tests in the gap region can current split a gap electron
 	 // HEY THIS IS A WORK AROUND FOR A KNOWN BUG IN PFBLOCKALGO
 	 // MAYBE WE SHOULD FIX IT??????????????????????????????????
-	 LOGERR("PFEGammaAlgo")
+	 LOGDRESSED("PFEGammaAlgo")
 	   << "Encountered the known GSF-SC splitting bug "
 	   << " in PFBlockAlgo! We should really fix this!" << std::endl; 
        } else { // SC was not in a earlier proto-object	
@@ -1959,11 +1959,15 @@ fillPFCandidates(const std::list<PFEGammaAlgo::ProtoEGObject>& ROs,
     for( const auto& secdkf : RO.secondaryKFs ) {
       const PFKFElement* kf = secdkf.first;
       cand.addElementInBlock(_currentblock,kf->index());
-      reco::ConversionRef convref = kf->convRef();
-      if( convref.isNonnull() && convref.isAvailable() ) {
-	xtra.addConversionRef(convref);
+      const reco::ConversionRefVector& convrefs = kf->convRefs();
+      bool no_conv_ref = true;
+      for( const auto& convref : convrefs ) {
+	if( convref.isNonnull() && convref.isAvailable() ) {
+	  xtra.addConversionRef(convref);
+	  no_conv_ref = false;
+	}
       }
-      else {
+      if( no_conv_ref ) {
         //single leg conversions
         
         //look for stored mva value in map or else recompute

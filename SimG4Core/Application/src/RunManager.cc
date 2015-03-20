@@ -45,6 +45,7 @@
 #include "HepPDT/ParticleDataTable.hh"
 #include "SimGeneral/HepPDTRecord/interface/PDTRecord.h"
 
+#include "G4GeometryManager.hh"
 #include "G4StateManager.hh"
 #include "G4ApplicationState.hh"
 #include "G4RunManagerKernel.hh"
@@ -142,9 +143,6 @@ RunManager::RunManager(edm::ParameterSet const & p)
   m_FieldFile = p.getUntrackedParameter<std::string>("FileNameField","");
   if("" != m_FieldFile) { m_FieldFile += ".txt"; } 
 
-  m_currentRun = 0;
-  m_currentEvent = 0;
-  m_simEvent = 0;
   m_userRunAction = 0;
   m_runInterface = 0;
 
@@ -164,6 +162,9 @@ RunManager::RunManager(edm::ParameterSet const & p)
 
 RunManager::~RunManager() 
 { 
+  if (!m_runTerminated) { terminateRun(); }
+  G4StateManager::GetStateManager()->SetNewState(G4State_Quit);
+  G4GeometryManager::GetInstance()->OpenGeometry();
   //   if (m_kernel!=0) delete m_kernel; 
   delete m_runInterface;
 }
@@ -308,7 +309,12 @@ void RunManager::initG4(const edm::EventSetup & es)
   
   initializeRun();
   firstRun= false;
+}
 
+void RunManager::stopG4()
+{
+  G4StateManager::GetStateManager()->SetNewState(G4State_Quit);
+  if (!m_runTerminated) { terminateRun(); }
 }
 
 void RunManager::produce(edm::Event& inpevt, const edm::EventSetup & es)
@@ -375,6 +381,7 @@ G4Event * RunManager::generateEvent(edm::Event & inpevt)
 
 void RunManager::abortEvent()
 {
+  if (m_runTerminated) { return; }
   G4Track* t =
     m_kernel->GetEventManager()->GetTrackingManager()->GetTrack();
   t->SetTrackStatus(fStopAndKill) ;
@@ -390,7 +397,7 @@ void RunManager::abortEvent()
   // do NOT call this method for now
   // because it'll set abortRequested=true (withing G4EventManager)
   // this will make Geant4, in the event *next* after the aborted one
-  // NOT to get the primamry, thus there's NOTHING to trace, and it goes
+  // NOT to get the primary, thus there's NOTHING to trace, and it goes
   // to the end of G4Event::DoProcessing(G4Event*), where abortRequested
   // will be reset to true again
   //    
@@ -403,8 +410,6 @@ void RunManager::abortEvent()
      
   G4StateManager* stateManager = G4StateManager::GetStateManager();
   stateManager->SetNewState(G4State_GeomClosed);
-
-  return;
 }
 
 void RunManager::initializeUserActions()
@@ -440,7 +445,6 @@ void RunManager::initializeUserActions()
 					    << "No generator; initialized "
 					    << "only RunAction!";
   }
-  return;
 }
 
 void RunManager::initializeRun()
@@ -451,27 +455,30 @@ void RunManager::initializeRun()
   if (m_userRunAction!=0) { m_userRunAction->BeginOfRunAction(m_currentRun); }
   m_runAborted = false;
   m_runInitialized = true;
-  return;
 }
  
 void RunManager::terminateRun()
 {
-  m_runTerminated = false;
   if (m_userRunAction!=0) {
     m_userRunAction->EndOfRunAction(m_currentRun);
     delete m_userRunAction; 
     m_userRunAction = 0;
   }
+  /*
   if (m_currentRun!=0) { 
     delete m_currentRun; 
     m_currentRun = 0; 
   }
-  if (m_kernel!=0) {
+  */
+  if (m_kernel!=0 && !m_runTerminated) {
+    delete m_currentEvent;
+    m_currentEvent = 0;
+    delete m_simEvent;
+    m_simEvent = 0;
     m_kernel->RunTermination();
     m_runInitialized = false;
     m_runTerminated = true;
   }  
-  return;
 }
 
 void RunManager::abortRun(bool softAbort)
@@ -481,7 +488,7 @@ void RunManager::abortRun(bool softAbort)
   if (m_currentRun!=0) { delete m_currentRun; m_currentRun = 0; }
   m_runInitialized = false;
   m_runAborted = true;
-  return;
+  terminateRun();
 }
 
 void RunManager::resetGenParticleId( edm::Event& inpevt ) 
@@ -491,7 +498,6 @@ void RunManager::resetGenParticleId( edm::Event& inpevt )
   if ( theLHCTlink.isValid() ) {
     m_trackManager->setLHCTransportLink( theLHCTlink.product() );
   }
-  return;
 }
 
 SimTrackManager* RunManager::GetSimTrackManager()
@@ -521,6 +527,7 @@ void  RunManager::Connect(SteppingAction* steppingAction)
 {
   steppingAction->m_g4StepSignal.connect(m_registry.g4StepSignal_);
 }
+
 void RunManager::DumpMagneticField(const G4Field* field) const
 {
   std::ofstream fout(m_FieldFile.c_str(), std::ios::out);

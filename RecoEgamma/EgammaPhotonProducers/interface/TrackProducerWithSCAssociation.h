@@ -22,7 +22,7 @@ public:
   explicit TrackProducerWithSCAssociation(const edm::ParameterSet& iConfig);
 
 
-  virtual void produce(edm::Event&, const edm::EventSetup&);
+  virtual void produce(edm::Event&, const edm::EventSetup&) override;
 
   std::vector<reco::TransientTrack> getTransient(edm::Event&, const edm::EventSetup&);
 
@@ -33,7 +33,8 @@ private:
   std::string trackCSuperClusterAssociationCollection_;
   std::string trackSuperClusterAssociationCollection_;
   edm::EDGetTokenT<reco::TrackCandidateCaloClusterPtrAssociation> assoc_token;
-  edm::OrphanHandle<reco::TrackCollection> rTracks_;
+  edm::OrphanHandle<reco::TrackCollection> rTracks_; 
+  edm::EDGetTokenT<MeasurementTrackerEvent> measurementTrkToken_;
   bool myTrajectoryInEvent_;
   bool validTrackCandidateSCAssociationInput_;
 
