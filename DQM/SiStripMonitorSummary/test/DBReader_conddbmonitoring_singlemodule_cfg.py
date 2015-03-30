@@ -22,7 +22,7 @@ options.register ('simGainNorm',
                   VarParsing.VarParsing.varType.bool,          # string, int, or float
                   "has SIM gain normalization to be applied?")
 options.register ('globalTag',
-                  "DONOTEXIST",
+                  "DONOTEXIST::All",
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.string,          # string, int, or float
                   "GlobalTag")
@@ -100,7 +100,7 @@ process.source = cms.Source("EmptyIOVSource",
     interval = cms.uint64(1)
 )
 
-if options.globalTag == "DONOTEXIST":
+if options.globalTag == "DONOTEXIST::All":
     process.load('Configuration.Geometry.GeometryExtended_cff')
     process.TrackerTopologyEP = cms.ESProducer("TrackerTopologyEP")
     process.poolDBESSource = cms.ESSource("PoolDBESSource",
@@ -118,9 +118,8 @@ if options.globalTag == "DONOTEXIST":
                                           )
 else:
     process.load("Configuration.StandardSequences.GeometryDB_cff")
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-    from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag 
-    process.GlobalTag = GlobalTag(process.GlobalTag, options.globalTag, '')
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+    process.GlobalTag.globaltag = options.globalTag
     
 process.DQMStore = cms.Service("DQMStore",
                                referenceFileName = cms.untracked.string(''),
