@@ -4,6 +4,7 @@
 #include "ClusMultPlots.h"
 #include "SOF_profiles.h"
 #include "SiStripQualityHistoryPlots.h"
+#include "OOTMultiplicityPlotMacros.h"
 #ifdef __CINT__
 #pragma link off all functions;
 #pragma link C++ function PlotOccupancyMap;
@@ -25,4 +26,11 @@
 #pragma link C++ function printSOF;
 #pragma link C++ function AverageRunBadChannels;
 #pragma link C++ function StripCompletePlot;
+#pragma link C++ function FillingScheme;
+#pragma link C++ function FillingSchemeFromProfile;
+#pragma link C++ function ComputeOOTFraction;
+#pragma link C++ function ComputeOOTFractionvsRun;
+#pragma link C++ function ComputeOOTFractionvsFill;
+#pragma link C++ class OOTResult;
+#pragma link C++ class OOTSummary;
 #endif
