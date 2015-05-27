@@ -139,7 +139,7 @@ MultiplicityInvestigator::analyze(const edm::Event& iEvent, const edm::EventSetu
   Handle<std::map<unsigned int, int> > mults;
   iEvent.getByLabel(m_multiplicityMap,mults);
   
-  if(m_wantInvestHist) m_digiinvesthmevent.fill(iEvent.orbitNumber(),*mults);
+  if(m_wantInvestHist) m_digiinvesthmevent.fill(iEvent,*mults);
   
   if(m_wantVtxCorrHist) {
     Handle<reco::VertexCollection> vertices;
@@ -165,7 +165,7 @@ MultiplicityInvestigator::beginJob()
 void
 MultiplicityInvestigator::beginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) {
 
-  m_digiinvesthmevent.beginRun(iRun.run());
+  m_digiinvesthmevent.beginRun(iRun);
   m_digivtxcorrhmevent.beginRun(iRun);
   m_digilumicorrhmevent.beginRun(iRun);
 

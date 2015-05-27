@@ -7,6 +7,8 @@
 
 namespace edm {
   class ParameterSet;
+  class Event;
+  class Run;
 }
 class TH1F;
 class TProfile;
@@ -22,8 +24,8 @@ class DigiInvestigatorHistogramMaker {
 
   void book(const std::string dirname, const std::map<unsigned int, std::string>& labels);
   void book(const std::string dirname);
-  void beginRun(const unsigned int nrun);
-  void fill(const unsigned int orbit, const std::map<unsigned int,int>& ndigi);
+  void beginRun(const edm::Run& iRun);
+  void fill(const edm::Event& iEvent, const std::map<unsigned int,int>& ndigi);
 
  private:
 
@@ -33,12 +35,16 @@ class DigiInvestigatorHistogramMaker {
   const unsigned int m_LSfrac;
   int _scalefact;
   const bool _runHisto;
+  const bool _fillHisto;
   std::map<unsigned int,int> _binmax;
   std::map<unsigned int, std::string> _labels;
 
 
   RunHistogramManager _rhm;
+  RunHistogramManager _fhm;
   std::map<unsigned int,TProfile**> _nmultvsorbrun;
+  std::map<unsigned int,TProfile**> _nmultvsbxrun;
+  std::map<unsigned int,TProfile**> _nmultvsbxfill;
   std::map<unsigned int,TH1F*> _nmult;
   std::map<unsigned int,TFileDirectory*> _subdirs;
 
