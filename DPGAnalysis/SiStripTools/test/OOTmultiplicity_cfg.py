@@ -126,7 +126,9 @@ process.load("DPGAnalysis.SiStripTools.apvcyclephasemonitor_cfi")
 
 process.load("DPGAnalysis.SiStripTools.eventtimedistribution_cfi")
 process.eventtimedistribution.wantEWHDepthHisto = cms.untracked.bool(True)
+process.eventtimedistrFillScheme = process.eventtimedistribution.clone()
 process.eventtimedistrRandom = process.eventtimedistribution.clone()
+process.eventtimedistrNext = process.eventtimedistribution.clone()
 process.eventtimedistrnonoisybins = process.eventtimedistribution.clone()
 process.eventtimedistrnonoisybinsRandom = process.eventtimedistribution.clone()
 
@@ -165,6 +167,7 @@ process.ssclusmultinvestigator.wantedSubDets.extend(cms.untracked.VPSet(
     cms.PSet(detSelection = cms.uint32(206),detLabel = cms.string("TOBL6"),  binMax = cms.int32(10000))
 ))
 process.ssclusmultinvestRandom = process.ssclusmultinvestigator.clone()
+process.ssclusmultinvestNext = process.ssclusmultinvestigator.clone()
 process.ssclusmultinvestnonoisybins = process.ssclusmultinvestigator.clone()
 process.ssclusmultinvestnonoisybinsRandom = process.ssclusmultinvestigator.clone()
 
@@ -172,6 +175,7 @@ process.load("DPGAnalysis.SiStripTools.spclusmultinvestigator_cfi")
 process.spclusmultinvestigator.scaleFactor = cms.untracked.int32(2)
 process.spclusmultinvestigator.fillHisto = cms.untracked.bool(True)
 process.spclusmultinvestRandom = process.spclusmultinvestigator.clone()
+process.spclusmultinvestNext = process.spclusmultinvestigator.clone()
 process.spclusmultinvestnonoisybins = process.spclusmultinvestigator.clone()
 process.spclusmultinvestnonoisybinsRandom = process.spclusmultinvestigator.clone()
 
@@ -224,6 +228,8 @@ process.hltRandom = triggerResultsFilter.clone(
     )
 
 
+process.load("DPGAnalysis.SiStripTools.fillingschemefilter_cfi")
+process.fillingschemenext = process.fillingschemefilter.clone(bxOffset=cms.int32(1))
 
 process.TFileService = cms.Service('TFileService',
                                    fileName = cms.string('OOTmultiplicity.root')
@@ -233,6 +239,13 @@ process.TFileService = cms.Service('TFileService',
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
 process.GlobalTag.globaltag = options.globalTag
+
+process.rn = cms.ESSource("PoolDBESSource",
+                          process.CondDBSetup,
+                          connect = cms.string('frontier://FrontierPrep/CMS_COND_RUN_INFO'),
+                          timetype = cms.string('timestamp'),
+                          toGet = cms.VPSet(cms.PSet(record = cms.string('FillInfoRcd'),tag = cms.string('FillInfo_v0_hlt')))
+                          )
 
 
 process.pzerobias = cms.Path(process.hltZeroBias
@@ -244,6 +257,8 @@ process.pzerobias = cms.Path(process.hltZeroBias
 #                             + process.ssclusmulttimecorrelations 
                              + process.spclustermultprod + process.spclusmultinvestigator
 #                             + process.spclusmulttimecorrelations
+                             + process.fillingschemefilter
+                             + process.eventtimedistrFillScheme
                              )
 
 process.prandom = cms.Path(process.hltRandom
@@ -255,6 +270,10 @@ process.prandom = cms.Path(process.hltRandom
 #                           + process.ssclusmulttimecorrRandom 
                            + process.spclustermultprod + process.spclusmultinvestRandom
 #                           + process.spclusmulttimecorrRandom
+                           + process.fillingschemenext
+                           + process.eventtimedistrNext
+                           + process.ssclusmultinvestNext
+                           + process.spclusmultinvestNext
                            )
 
 

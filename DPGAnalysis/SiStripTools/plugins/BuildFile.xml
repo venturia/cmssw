@@ -22,6 +22,7 @@
 <use   name="CalibFormats/SiStripObjects"/>
 <use   name="CondFormats/SiPixelObjects"/>
 <use   name="CondFormats/DataRecord"/>
+<use   name="CondFormats/RunInfo"/>
 <use   name="CalibTracker/Records"/>
 <use   name="CalibTracker/SiStripCommon"/>
 <use   name="CalibTracker/SiPixelESProducers"/>
