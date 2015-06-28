@@ -31,6 +31,7 @@ class TSOSHistogramMaker {
   std::vector<TH1F*> m_tsosx;
   std::vector<TH2F*> m_tsosxy;
   std::vector<TH1F*> m_tsosprojx;
+  std::vector<TH2F*> m_tsosxprojx;
   std::vector<TH1F*> m_tsosprojy;
   std::vector<TH1F*> m_ttrhy;
   std::vector<TH1F*> m_ttrhx;

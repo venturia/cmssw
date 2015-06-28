@@ -12,6 +12,7 @@ TSOSHistogramMaker::TSOSHistogramMaker():
   m_2dhistos(false), 
   m_detsels(), m_selnames(), m_seltitles(), m_histocluslenangle(), 
   m_tsosy(), m_tsosx(), m_tsosxy(), 
+  m_tsosprojx(), m_tsosxprojx(), m_tsosprojy(),
   m_ttrhy(), m_ttrhx(), m_ttrhxy(), 
   m_tsosdy(), m_tsosdx(), m_tsosdxdy() 
 {}
@@ -20,6 +21,7 @@ TSOSHistogramMaker::TSOSHistogramMaker(const edm::ParameterSet& iConfig):
   m_2dhistos(iConfig.getUntrackedParameter<bool>("wanted2DHistos",false)),
   m_detsels(), m_selnames(), m_seltitles(), m_histocluslenangle(), 
   m_tsosy(), m_tsosx(), m_tsosxy(), 
+  m_tsosprojx(), m_tsosxprojx(), m_tsosprojy(),
   m_ttrhy(), m_ttrhx(), m_ttrhxy(), 
   m_tsosdy(), m_tsosdx(), m_tsosdxdy() 
 {
@@ -55,14 +57,17 @@ TSOSHistogramMaker::TSOSHistogramMaker(const edm::ParameterSet& iConfig):
       name = "tsosxy_" + m_selnames[isel];
       title = "TSOS y vs x " + m_seltitles[isel];
       m_tsosxy.push_back(subdir.make<TH2F>(name.c_str(),title.c_str(),200,-20.,20.,200,-20.,20.));
+      name = "tsosxprojx_" + m_selnames[isel];
+      title = "TSOS x projection vs x " + m_seltitles[isel];
+      m_tsosxprojx.push_back(subdir.make<TH2F>(name.c_str(),title.c_str(),200,-20.,20.,800,-2.,2.));
     }
 
     name = "tsosprojx_" + m_selnames[isel];
     title = "TSOS x projection " + m_seltitles[isel];
-    m_tsosprojx.push_back(subdir.make<TH1F>(name.c_str(),title.c_str(),400,-2.,2.));
+    m_tsosprojx.push_back(subdir.make<TH1F>(name.c_str(),title.c_str(),800,-2.,2.));
     name = "tsosprojy_" + m_selnames[isel];
     title = "TSOS y projection " + m_seltitles[isel];
-    m_tsosprojy.push_back(subdir.make<TH1F>(name.c_str(),title.c_str(),400,-2.,2.));
+    m_tsosprojy.push_back(subdir.make<TH1F>(name.c_str(),title.c_str(),800,-2.,2.));
 
     name = "ttrhy_" + m_selnames[isel];
     title = "TT RecHit y " + m_seltitles[isel];
@@ -116,6 +121,7 @@ void TSOSHistogramMaker::fill(const TrajectoryStateOnSurface& tsos, TransientTra
       if(tsos.localDirection().z() != 0) {
 	m_tsosprojx[i]->Fill(tsos.localDirection().x()/tsos.localDirection().z());
 	m_tsosprojy[i]->Fill(tsos.localDirection().y()/tsos.localDirection().z());
+	if(m_2dhistos) m_tsosxprojx[i]->Fill(tsos.localPosition().x(),tsos.localDirection().x()/tsos.localDirection().z());
       }
 
     }

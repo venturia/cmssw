@@ -43,7 +43,10 @@ AlignmentTrackSelector.chi2nMax = 100.
 
 refittedATSTracks = TrackRefitter.clone(src = cms.InputTag("AlignmentTrackSelector"))
 
-seqTrackRefitting = cms.Sequence( refittedTracks
+from RecoTracker.MeasurementDet.MeasurementTrackerEventProducer_cfi import *
+
+seqTrackRefitting = cms.Sequence( MeasurementTrackerEvent
+                                  + refittedTracks
                                   + TrackerTrackHitFilter
                                   + HitFilteredTracks
                                   + AlignmentTrackSelector
