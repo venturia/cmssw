@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
+from PhysicsTools.PatAlgos.tools.helpers import cloneProcessingSnippet
+
 process = cms.Process("TIDTECInnerRingInvestigator")
 
 #prepare options
@@ -12,6 +14,31 @@ options.register ('globalTag',
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.string,          # string, int, or float
                   "GlobalTag")
+options.register ('fromRAW',
+                  "0",
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.int,          # string, int, or float
+                  "=1 if from RAW")
+options.register ('HLTprocess',
+                  "HLT",
+                  VarParsing.VarParsing.multiplicity.singleton, # singleton or list
+                  VarParsing.VarParsing.varType.string,          # string, int, or float
+                  "HLTProcess")
+options.register ('triggerPaths',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.string,          # string, int, or float
+                  "list of HLT paths")
+options.register ('triggerLabels',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.string,          # string, int, or float
+                  "list of labels")
+options.register ('negateFlags',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.int,          # string, int, or float
+                  "list of flags to negate HLT selection")
 
 options.parseArguments()
 
@@ -53,8 +80,31 @@ process.source = cms.Source("PoolSource",
                     inputCommands = cms.untracked.vstring("keep *", "drop *_MEtoEDMConverter_*_*")
                     )
 
-#--------------------------------------
+# HLT Selection ------------------------------------------------------------
+process.load("HLTrigger.HLTfilters.triggerResultsFilter_cfi")
+process.triggerResultsFilter.hltResults = cms.InputTag( "TriggerResults", "", options.HLTprocess )
+process.triggerResultsFilter.l1tResults = cms.InputTag( "" )
+process.triggerResultsFilter.throw = cms.bool(False)
 
+process.seqHLTSelection = cms.Sequence(process.triggerResultsFilter)
+
+#--------------------------------------
+process.load('Configuration.Geometry.GeometryExtended2015Reco_cff')
+process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
+process.load("Configuration.StandardSequences.Reconstruction_cff")
+
+process.seqRECO = cms.Sequence()
+
+if options.fromRAW == 1:
+    process.load("Configuration.StandardSequences.RawToDigi_Data_cff")
+    process.load("Configuration.StandardSequences.L1Reco_cff")
+    process.siPixelClusters = process.siPixelClustersPreSplitting.clone()
+    process.seqRECO = cms.Sequence(process.scalersRawToDigi +
+                                   process.siStripDigis + process.siStripZeroSuppression + process.siStripClusters
+                                   + process.siPixelDigis + process.siPixelClusters )
+
+
+#
 
 process.froml1abcHEs = cms.EDProducer("EventWithHistoryProducerFromL1ABC",
                                       l1ABCCollection=cms.InputTag("scalersRawToDigi")
@@ -122,13 +172,27 @@ process.digibigeventsdebugger.collection = cms.InputTag("siStripClustersToDigis"
 
 process.seqClusMultInvest = cms.Sequence(process.ssclusmultinvestigator + process.clusterbigeventsdebugger + process.digibigeventsdebugger ) 
 
-
+process.seqAnalyzers = cms.Sequence(process.seqEventHistory + process.seqClusMultInvest)
 
 process.p0 = cms.Path(
-    #    process.hltSelection +
+    process.seqRECO + 
     process.seqProducers +
-    process.seqEventHistory +
-    process.seqClusMultInvest)
+    process.seqAnalyzers)
+
+for label, trigger,negate in zip(options.triggerLabels,options.triggerPaths,options.negateFlags):
+   cloneProcessingSnippet(process,process.seqHLTSelection,label)
+   getattr(process,"triggerResultsFilter"+label).triggerConditions = cms.vstring(trigger)
+
+   if negate == 1:
+      tempmodule = getattr(process,"triggerResultsFilter"+label)
+      getattr(process,"seqHLTSelection"+label).replace(getattr(process,"triggerResultsFilter"+label),~tempmodule)
+
+   cloneProcessingSnippet(process,process.seqAnalyzers,label)
+   
+   setattr(process,"ptrigger"+label,cms.Path(process.seqRECO +
+                                             process.seqProducers +
+                                             getattr(process,"seqHLTSelection"+label) +
+                                             getattr(process,"seqAnalyzers"+label)))
 
 #----GlobalTag ------------------------
 

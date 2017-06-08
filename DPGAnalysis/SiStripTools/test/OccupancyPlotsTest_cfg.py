@@ -39,7 +39,21 @@ options.register ('trackCollection',
                   VarParsing.VarParsing.multiplicity.singleton, # singleton or list
                   VarParsing.VarParsing.varType.string,          # string, int, or float
                   "Track collection to use")
-
+options.register ('triggerPaths',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.string,          # string, int, or float
+                  "list of HLT paths")
+options.register ('triggerLabels',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.string,          # string, int, or float
+                  "list of labels")
+options.register ('negateFlags',
+                  "",
+                  VarParsing.VarParsing.multiplicity.list, # singleton or list
+                  VarParsing.VarParsing.varType.int,          # string, int, or float
+                  "list of flags to negate HLT selection")
 
 options.parseArguments()
 
@@ -357,5 +371,21 @@ process.p0 = cms.Path(
     process.seqAnalyzers
 )
 
+for label, trigger,negate in zip(options.triggerLabels,options.triggerPaths,options.negateFlags):
+   cloneProcessingSnippet(process,process.seqHLTSelection,label)
+   getattr(process,"triggerResultsFilter"+label).triggerConditions = cms.vstring(trigger)
 
-#print process.dumpPython()
+   if negate == 1:
+      tempmodule = getattr(process,"triggerResultsFilter"+label)
+      getattr(process,"seqHLTSelection"+label).replace(getattr(process,"triggerResultsFilter"+label),~tempmodule)
+
+   cloneProcessingSnippet(process,process.seqAnalyzers,label)
+   
+   setattr(process,"ptrigger"+label,cms.Path(process.seqRECO +
+                                             process.seqProducers +
+                                             getattr(process,"seqHLTSelection"+label) +
+                                             getattr(process,"seqAnalyzers"+label)))
+
+
+
+print process.dumpPython()
