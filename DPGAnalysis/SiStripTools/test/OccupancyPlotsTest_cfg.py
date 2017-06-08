@@ -388,4 +388,4 @@ for label, trigger,negate in zip(options.triggerLabels,options.triggerPaths,opti
 
 
 
-print process.dumpPython()
+#print process.dumpPython()
