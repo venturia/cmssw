@@ -40,6 +40,7 @@
 #include "DataFormats/SiStripCluster/interface/SiStripCluster.h"
 #include "DataFormats/SiStripDigi/interface/SiStripDigi.h"
 #include "DataFormats/SiPixelCluster/interface/SiPixelCluster.h"
+#include "DataFormats/SiPixelDigi/interface/PixelDigi.h"
 
 #include "CommonTools/UtilAlgos/interface/DetIdSelector.h"
 //
@@ -135,20 +136,15 @@ MultiplicityProducer<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 
   for(typename T::const_iterator det = digis->begin();det!=digis->end();++det) {
 
-    //    if(m_subdets.find(0)!=m_subdets.end()) (*mults)[0]+= det->size();
-    if(m_subdets.find(0)!=m_subdets.end()) (*mults)[0]+= multiplicity(det);
+    if(m_subdets.find(0)!=m_subdets.end() && !m_subdetsels[0].isValid() ) (*mults)[0]+= multiplicity(det);
 
     DetId detid(det->detId());
     unsigned int subdet = detid.subdetId();
 
-    //    if(m_subdets.find(subdet)!=m_subdets.end() && !m_subdetsels[subdet].isValid() ) (*mults)[subdet] += det->size();
     if(m_subdets.find(subdet)!=m_subdets.end() && !m_subdetsels[subdet].isValid() ) (*mults)[subdet] += multiplicity(det);
 
     for(std::map<unsigned int,DetIdSelector>::const_iterator detsel=m_subdetsels.begin();detsel!=m_subdetsels.end();++detsel) {
-
-      //      if(detsel->second.isValid() && detsel->second.isSelected(detid)) (*mults)[detsel->first] += det->size();
       if(detsel->second.isValid() && detsel->second.isSelected(detid)) (*mults)[detsel->first] += multiplicity(det);
-
     }
 
   }
@@ -245,8 +241,10 @@ MultiplicityProducer<edmNew::DetSetVector<SiPixelCluster> >::detSetMultiplicity(
 typedef MultiplicityProducer<edmNew::DetSetVector<SiStripCluster> > SiStripClusterMultiplicityProducer;
 typedef MultiplicityProducer<edmNew::DetSetVector<SiPixelCluster> > SiPixelClusterMultiplicityProducer;
 typedef MultiplicityProducer<edm::DetSetVector<SiStripDigi> > SiStripDigiMultiplicityProducer;
+typedef MultiplicityProducer<edm::DetSetVector<PixelDigi> > SiPixelDigiMultiplicityProducer;
 
 
 DEFINE_FWK_MODULE(SiStripClusterMultiplicityProducer);
 DEFINE_FWK_MODULE(SiPixelClusterMultiplicityProducer);
 DEFINE_FWK_MODULE(SiStripDigiMultiplicityProducer);
+DEFINE_FWK_MODULE(SiPixelDigiMultiplicityProducer);
