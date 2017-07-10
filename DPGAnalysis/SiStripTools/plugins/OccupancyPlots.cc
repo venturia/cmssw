@@ -347,16 +347,17 @@ OccupancyPlots::endRun(const edm::Run& iRun, const edm::EventSetup& iSetup) {
    for(std::vector<uint32_t>::const_iterator detid=pxldetids.begin();detid!=pxldetids.end();++detid) {
 
      int nchannideal = pxlreader.getDetUnitDimensions(*detid).first*pxlreader.getDetUnitDimensions(*detid).second;
-     int nchannreal = 0;
+     int nchannreal = nchannideal;
+     /*
      if(!pxlquality->IsModuleBad(*detid)) {
        nchannreal = pxlreader.getDetUnitDimensions(*detid).first*pxlreader.getDetUnitDimensions(*detid).second;
      }
-     /*
-     int nchannreal = 0;
-     for(int strip = 0; strip < nchannideal; ++strip) {
-       if(!quality->IsStripBad(*detid,strip)) ++nchannreal;
-     }
      */
+
+     short badrocs = pxlquality->getBadRocs(*detid);
+     for (unsigned int roc=0;roc<16;++roc) {
+       if((badrocs & (1 << roc)) == (1 << roc)) nchannreal -= 80*52;
+     }
 
      for(std::map<unsigned int,DetIdSelector>::const_iterator sel=m_wantedsubdets.begin();sel!=m_wantedsubdets.end();++sel) {
 
