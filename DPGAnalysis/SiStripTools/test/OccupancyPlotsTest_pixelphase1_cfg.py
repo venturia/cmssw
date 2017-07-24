@@ -183,6 +183,10 @@ process.load("DPGAnalysis.SiStripTools.apvcyclephaseproducerfroml1tsDB_cfi")
 process.APVPhases.wantHistos = cms.untracked.bool(True)
 process.load("DPGAnalysis.SiStripTools.eventtimedistribution_cfi")
 process.eventtimedistribution.historyProduct = cms.InputTag("froml1abcHEs")
+process.eventtimedistribution.dbxHistosParams = cms.untracked.VPSet(
+cms.PSet(suffix=cms.untracked.string("_zoom"),min=cms.double(-0.5),max=cms.double(49999.5),nbins=cms.int32(1000),firstEvent=cms.uint32(0),secondEvent=cms.uint32(1)),
+cms.PSet(min=cms.double(-0.5),max=cms.double(499999.5),nbins=cms.int32(1000),firstEvent=cms.uint32(0),secondEvent=cms.uint32(1))
+)
 process.load("DPGAnalysis.SiStripTools.l1TSDebugger_cfi")
 
 process.seqEventHistoryReco = cms.Sequence(process.froml1abcHEs + process.APVPhases)
@@ -225,18 +229,67 @@ process.spclusmultprod = cms.EDProducer("SiPixelClusterMultiplicityProducer",
         cms.PSet(detSelection = cms.uint32(14),detLabel = cms.string("BPIXLayer4"),selection=cms.untracked.vstring("0x1ef00000-0x12400000")),
         cms.PSet(detSelection = cms.uint32(21),detLabel = cms.string("BPIXLayer1Odd"),selection=cms.untracked.vstring("0x1ef01000-0x12101000")),
         cms.PSet(detSelection = cms.uint32(22),detLabel = cms.string("BPIXLayer1Even"),selection=cms.untracked.vstring("0x1ef01000-0x12100000")),
-        cms.PSet(detSelection = cms.uint32(2),detLabel = cms.string("FPIX"),selection=cms.untracked.vstring("0x1e000000-0x14000000"))
+        cms.PSet(detSelection = cms.uint32(2),detLabel = cms.string("FPIX"),selection=cms.untracked.vstring("0x1e000000-0x14000000")),
+        cms.PSet(detSelection = cms.uint32(26),detLabel = cms.string("FPIXinner"),selection=cms.untracked.vstring("0x1e03f000-0x14001000",
+                                                                                                                  "0x1e03f000-0x14002000",
+                                                                                                                  "0x1e03f000-0x14003000",
+                                                                                                                  "0x1e03f000-0x14004000",
+                                                                                                                  "0x1e03f000-0x14005000",
+                                                                                                                  "0x1e03f000-0x14006000",
+                                                                                                                  "0x1e03f000-0x14007000",
+                                                                                                                  "0x1e03f000-0x14008000",
+                                                                                                                  "0x1e03f000-0x14009000",
+                                                                                                                  "0x1e03f000-0x1400a000",
+                                                                                                                  "0x1e03f000-0x1400b000",
+                                                                                                                  "0x1e03f000-0x1400c000",
+                                                                                                                  "0x1e03f000-0x1400d000",
+                                                                                                                  "0x1e03f000-0x1400e000",
+                                                                                                                  "0x1e03f000-0x1400f000",
+                                                                                                                  "0x1e03f000-0x14010000",
+                                                                                                                  "0x1e03f000-0x14011000",
+                                                                                                                  "0x1e03f000-0x14012000",
+                                                                                                                  "0x1e03f000-0x14013000",
+                                                                                                                  "0x1e03f000-0x14014000",
+                                                                                                                  "0x1e03f000-0x14015000",
+                                                                                                                  "0x1e03f000-0x14016000")),
+        cms.PSet(detSelection = cms.uint32(27),detLabel = cms.string("FPIXouter"),selection=cms.untracked.vstring("0x1e03f000-0x14017000",
+                                                                                                                  "0x1e03f000-0x14018000",
+                                                                                                                  "0x1e03f000-0x14019000",
+                                                                                                                  "0x1e03f000-0x1401a000",
+                                                                                                                  "0x1e03f000-0x1401b000",
+                                                                                                                  "0x1e03f000-0x1401c000",
+                                                                                                                  "0x1e03f000-0x1401d000",
+                                                                                                                  "0x1e03f000-0x1401e000",
+                                                                                                                  "0x1e03f000-0x1401f000",
+                                                                                                                  "0x1e03f000-0x14020000",
+                                                                                                                  "0x1e03f000-0x14021000",
+                                                                                                                  "0x1e03f000-0x14022000",
+                                                                                                                  "0x1e03f000-0x14023000",
+                                                                                                                  "0x1e03f000-0x14024000",
+                                                                                                                  "0x1e03f000-0x14025000",
+                                                                                                                  "0x1e03f000-0x14026000",
+                                                                                                                  "0x1e03f000-0x14027000",
+                                                                                                                  "0x1e03f000-0x14028000",
+                                                                                                                  "0x1e03f000-0x14029000",
+                                                                                                                  "0x1e03f000-0x1402a000",
+                                                                                                                  "0x1e03f000-0x1402b000",
+                                                                                                                  "0x1e03f000-0x1402c000",
+                                                                                                                  "0x1e03f000-0x1402d000",
+                                                                                                                  "0x1e03f000-0x1402e000",
+                                                                                                                  "0x1e03f000-0x1402f000",
+                                                                                                                  "0x1e03f000-0x14030000",
+                                                                                                                  "0x1e03f000-0x14031000",
+                                                                                                                  "0x1e03f000-0x14032000",
+                                                                                                                  "0x1e03f000-0x14033000",
+                                                                                                                  "0x1e03f000-0x14034000",
+                                                                                                                  "0x1e03f000-0x14035000",
+                                                                                                                  "0x1e03f000-0x14036000",
+                                                                                                                  "0x1e03f000-0x14037000",
+                                                                                                                  "0x1e03f000-0x14038000"))
         )
                                         )
 process.spclusmultprod.wantedSubDets.extend(OccupancyPlotsPixelWantedSubDets)
 process.spclusmultprodontrack=process.spclusmultprod.clone(clusterdigiCollection = cms.InputTag("AlignmentTrackSelector"))
-
-#process.spclusoccuprod = cms.EDProducer("SiPixelClusterMultiplicityProducer",
-#                                        clusterdigiCollection = cms.InputTag("siPixelClusters"),
-#                                        withClusterSize = cms.untracked.bool(True),
-#                                        wantedSubDets = cms.VPSet()
-#                                        )
-#process.spclusoccuprod.wantedSubDets.extend(OccupancyPlotsPixelWantedSubDets)
 
 process.spclusoccuprod = process.spclusmultprod.clone(withClusterSize = cms.untracked.bool(True))
 process.spclusoccuprodontrack=process.spclusoccuprod.clone(clusterdigiCollection = cms.InputTag("AlignmentTrackSelector"))
@@ -301,6 +354,8 @@ process.spclusmultinvestigator.wantedSubDets = cms.untracked.VPSet(
                                cms.PSet(detSelection = cms.uint32(14),detLabel = cms.string("BPIXLayer4"), binMax=cms.int32(50000)),
                                cms.PSet(detSelection = cms.uint32(21),detLabel = cms.string("BPIXLayer1Odd"), binMax=cms.int32(50000)),
                                cms.PSet(detSelection = cms.uint32(22),detLabel = cms.string("BPIXLayer1Even"), binMax=cms.int32(50000)),
+                               cms.PSet(detSelection = cms.uint32(26),detLabel = cms.string("FPIXinner"), binMax=cms.int32(100000)),
+                               cms.PSet(detSelection = cms.uint32(27),detLabel = cms.string("FPIXouter"), binMax=cms.int32(100000)),
                                cms.PSet(detSelection = cms.uint32(111),detLabel = cms.string("BPIXL1mod1"), binMax=cms.int32(10000)),
                                cms.PSet(detSelection = cms.uint32(112),detLabel = cms.string("BPIXL1mod2"), binMax=cms.int32(10000)),
                                cms.PSet(detSelection = cms.uint32(113),detLabel = cms.string("BPIXL1mod3"), binMax=cms.int32(10000)),
@@ -313,6 +368,27 @@ process.spclusmultinvestigator.wantedSubDets = cms.untracked.VPSet(
 
 process.spclusoccuinvestigator = process.spclusmultinvestigator.clone(multiplicityMap = cms.InputTag("spclusoccuprod"),scaleFactor = cms.untracked.int32(1),hitName = cms.untracked.string("pixels"))
 process.spdigimultinvestigator = process.spclusmultinvestigator.clone(multiplicityMap = cms.InputTag("spdigimultprod"),scaleFactor = cms.untracked.int32(1),hitName = cms.untracked.string("pixels"))
+
+process.load("DPGAnalysis.SiStripTools.ssclusmulttimecorrelations_cfi")
+process.ssclusmulttimecorrelations.multiplicityMap=cms.InputTag("ssclusmultprod")
+process.ssclusmulttimecorrelations.scaleFactors=cms.untracked.vint32(1)
+process.load("DPGAnalysis.SiStripTools.spclusmulttimecorrelations_cfi")
+process.spclusmulttimecorrelations.multiplicityMap=cms.InputTag("spclusmultprod")
+process.spclusmulttimecorrelations.scaleFactors=cms.untracked.vint32(10)
+process.spclusmulttimecorrelations.wantedSubDets = cms.untracked.VPSet(    
+                               cms.PSet(detSelection = cms.uint32(0),detLabel = cms.string("Pixel"), binMax = cms.int32(400000)),
+                               cms.PSet(detSelection = cms.uint32(1),detLabel = cms.string("BPIX"), binMax = cms.int32(200000)),
+                               cms.PSet(detSelection = cms.uint32(2),detLabel = cms.string("FPIX"), binMax = cms.int32(200000)),
+                               cms.PSet(detSelection = cms.uint32(11),detLabel = cms.string("BPIXLayer1"), binMax=cms.int32(100000)),
+                               cms.PSet(detSelection = cms.uint32(12),detLabel = cms.string("BPIXLayer2"), binMax=cms.int32(100000)),
+                               cms.PSet(detSelection = cms.uint32(14),detLabel = cms.string("BPIXLayer4"), binMax=cms.int32(50000)),
+                               cms.PSet(detSelection = cms.uint32(21),detLabel = cms.string("BPIXLayer1Odd"), binMax=cms.int32(50000)),
+                               cms.PSet(detSelection = cms.uint32(22),detLabel = cms.string("BPIXLayer1Even"), binMax=cms.int32(50000)),
+                               cms.PSet(detSelection = cms.uint32(26),detLabel = cms.string("FPIXinner"), binMax = cms.int32(100000)),
+                               cms.PSet(detSelection = cms.uint32(27),detLabel = cms.string("FPIXouter"), binMax = cms.int32(100000))
+                              )
+process.spclusoccutimecorrelations = process.spclusmulttimecorrelations.clone(multiplicityMap = cms.InputTag("spclusoccuprod"),scaleFactors = cms.untracked.vint32(1),hitName = cms.untracked.string("pixels"))
+
 
 process.multiplicitycorr = cms.EDAnalyzer('MultiplicityCorrelator',
                             correlationConfigurations = cms.VPSet(    
@@ -343,7 +419,47 @@ process.multiplicitycorr = cms.EDAnalyzer('MultiplicityCorrelator',
     cms.PSet(xMultiplicityMap = cms.InputTag("spclusmultprod"), xDetSelection = cms.uint32(14), xDetLabel = cms.string("BPIXLayer4"), xBins = cms.uint32(1000), xMax=cms.double(5000),
              yMultiplicityMap = cms.InputTag("spclusmultprod"), yDetSelection = cms.uint32(22), yDetLabel = cms.string("BPIXLayer1Even"), yBins = cms.uint32(1000), yMax=cms.double(5000),
              rBins = cms.uint32(200), scaleFactor = cms.untracked.double(1),
-             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True))
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("ssclusmultprod"), xDetSelection = cms.uint32(0), xDetLabel = cms.string("TK"), xBins = cms.uint32(1000), xMax=cms.double(150000), 
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(11), yDetLabel = cms.string("BPIXLayer1digi"), yBins = cms.uint32(1000), yMax=cms.double(40000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(5.),
+             runHisto=cms.bool(False),runHistoBXProfile=cms.bool(False),runHistoBX=cms.bool(False),runHisto2D=cms.bool(False)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("ssclusmultprod"), xDetSelection = cms.uint32(0), xDetLabel = cms.string("TK"), xBins = cms.uint32(1000), xMax=cms.double(150000), 
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(14), yDetLabel = cms.string("BPIXLayer4digi"), yBins = cms.uint32(1000), yMax=cms.double(20000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(10.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("ssclusmultprod"), xDetSelection = cms.uint32(0), xDetLabel = cms.string("TK"), xBins = cms.uint32(1000), xMax=cms.double(150000), 
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(21), yDetLabel = cms.string("BPIXLayer1Odddigi"), yBins = cms.uint32(1000), yMax=cms.double(20000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(10.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("ssclusmultprod"), xDetSelection = cms.uint32(0), xDetLabel = cms.string("TK"), xBins = cms.uint32(1000), xMax=cms.double(150000), 
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(22), yDetLabel = cms.string("BPIXLayer1Evendigi"), yBins = cms.uint32(1000), yMax=cms.double(20000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(10.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(14), xDetLabel = cms.string("BPIXLayer4digi"), xBins = cms.uint32(1000), xMax=cms.double(20000),
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(11), yDetLabel = cms.string("BPIXLayer1digi"), yBins = cms.uint32(1000), yMax=cms.double(40000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(.5),
+             runHisto=cms.bool(False),runHistoBXProfile=cms.bool(False),runHistoBX=cms.bool(False),runHisto2D=cms.bool(False)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(14), xDetLabel = cms.string("BPIXLayer4digi"), xBins = cms.uint32(1000), xMax=cms.double(20000),
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(21), yDetLabel = cms.string("BPIXLayer1Odddigi"), yBins = cms.uint32(1000), yMax=cms.double(20000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(1),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(14), xDetLabel = cms.string("BPIXLayer4digi"), xBins = cms.uint32(1000), xMax=cms.double(20000),
+             yMultiplicityMap = cms.InputTag("spclusoccuprod"), yDetSelection = cms.uint32(22), yDetLabel = cms.string("BPIXLayer1Evendigi"), yBins = cms.uint32(1000), yMax=cms.double(20000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(1),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(14), xDetLabel = cms.string("BPIXLayer4digi"), xBins = cms.uint32(1000), xMax=cms.double(20000), 
+             yMultiplicityMap = cms.InputTag("spclusmultprod"), yDetSelection = cms.uint32(14), yDetLabel = cms.string("BPIXLayer4"), yBins = cms.uint32(1000), yMax=cms.double(5000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(4.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(21), xDetLabel = cms.string("BPIXLayer1Odddigi"), xBins = cms.uint32(1000), xMax=cms.double(20000), 
+             yMultiplicityMap = cms.InputTag("spclusmultprod"), yDetSelection = cms.uint32(21), yDetLabel = cms.string("BPIXLayer1Odd"), yBins = cms.uint32(1000), yMax=cms.double(5000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(4.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
+    cms.PSet(xMultiplicityMap = cms.InputTag("spclusoccuprod"), xDetSelection = cms.uint32(22), xDetLabel = cms.string("BPIXLayer1Evendigi"), xBins = cms.uint32(1000), xMax=cms.double(20000), 
+             yMultiplicityMap = cms.InputTag("spclusmultprod"), yDetSelection = cms.uint32(22), yDetLabel = cms.string("BPIXLayer1Even"), yBins = cms.uint32(1000), yMax=cms.double(5000),
+             rBins = cms.uint32(200), scaleFactor = cms.untracked.double(4.),
+             runHisto=cms.bool(True),runHistoBXProfile=cms.bool(True),runHistoBX=cms.bool(True),runHisto2D=cms.bool(True)),
     )
                                   )
 
@@ -434,6 +550,7 @@ process.duplicaterechits.trackCollection = cms.InputTag(options.trackCollection)
 process.seqAnalyzers = cms.Sequence(
     process.seqEventHistory +
     process.spclusmultinvestigator + process.spclusoccuinvestigator + process.ssclusmultinvestigator +
+    process.spclusmulttimecorrelations + process.spclusoccutimecorrelations + process.ssclusmulttimecorrelations +
     process.multiplicitycorr +
     process.occupancyplots +
     process.pixeldetailedoccupancyplots
@@ -445,6 +562,7 @@ if options.withTracks == 1:
         #process.bxlumianalyzer + 
         process.primaryvertexanalyzer +
         process.spclusmultinvestigator + process.spclusoccuinvestigator + process.ssclusmultinvestigator +
+        process.spclusmulttimecorrelations + process.spclusoccutimecorrelations + process.ssclusmulttimecorrelations +
         process.multiplicitycorr +
         process.occupancyplots +     process.occupancyplotsontrack + 
         process.pixeldetailedoccupancyplots +     process.pixeldetailedoccupancyplotsontrack + 
