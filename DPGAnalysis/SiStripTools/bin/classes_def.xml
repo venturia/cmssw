@@ -27,6 +27,8 @@
   <function name="PlotOnTrackOccupancy"/>
   <function name="PlotOnTrackOccupancyPhase1"/>
   <function name="PlotOnTrackOccupancyPhase2"/>
+  <function name="GenericTimeProfileRatio"/>
+  <function name="GenericProfileRatio"/>
   <function name="projectProfile2DAlongX"/>
   <function name="projectProfile2DAlongY"/>
   <function name="TrackPlots"/>

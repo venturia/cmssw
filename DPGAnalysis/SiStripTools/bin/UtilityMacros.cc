@@ -1,6 +1,8 @@
 #include <math.h>
 #include "TH1D.h"
+#include "TFile.h"
 #include "TProfile2D.h"
+#include "DPGAnalysis/SiStripTools/interface/CommonAnalyzer.h"
 
 TH1D* projectProfile2DAlongX(TProfile2D* prof2d) {
 
@@ -66,5 +68,63 @@ TH1D* projectProfile2DAlongY(TProfile2D* prof2d) {
   }
   
   return res;
+}
+
+TH1D* GenericTimeProfileRatio(TFile& ff, const char* modulen, const char* moduled, const char* hnamen, const char* hnamed, const int irun) {
+  
+  CommonAnalyzer castatn(&ff,"",modulen);
+  CommonAnalyzer castatd(&ff,"",moduled);
+  
+  
+  char runlabel[100];
+  sprintf(runlabel,"%d",irun);
+  char runpath[100];
+  sprintf(runpath,"run_%d",irun);
+  castatn.setPath(runpath);
+  castatd.setPath(runpath);
+  
+  TH1D* ratio = 0;
+  TH1D* denom = 0;
+  
+  TProfile* profn=0;
+  if(profn==0) profn = (TProfile*)castatn.getObject(hnamen);
+  TProfile* profd=0;
+  if(profd==0) profd = (TProfile*)castatd.getObject(hnamed);
+  if(profn != 0 && profd != 0) {
+    ratio=profn->ProjectionX();
+    ratio->SetDirectory(0);
+    denom=profd->ProjectionX();
+    denom->SetDirectory(0);
+    ratio->Divide(denom);
+  }
+  return ratio;
+  
+}
+
+TH1D* GenericProfileRatio(TFile& ff, const char* modulen, const char* moduled, const char* foldern, const char* folderd, const char* hnamen, const char* hnamed) {
+  
+  CommonAnalyzer castatn(&ff,"",modulen);
+  CommonAnalyzer castatd(&ff,"",moduled);
+  
+  
+  castatn.setPath(foldern);
+  castatd.setPath(folderd);
+  
+  TH1D* ratio = 0;
+  TH1D* denom = 0;
+  
+  TProfile* profn=0;
+  if(profn==0) profn = (TProfile*)castatn.getObject(hnamen);
+  TProfile* profd=0;
+  if(profd==0) profd = (TProfile*)castatd.getObject(hnamed);
+  if(profn != 0 && profd != 0) {
+    ratio=profn->ProjectionX();
+    ratio->SetDirectory(0);
+    denom=profd->ProjectionX();
+    denom->SetDirectory(0);
+    ratio->Divide(denom);
+  }
+  return ratio;
+  
 }
 
